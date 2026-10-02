@@ -1,0 +1,10 @@
+{
+  "name": "Tableau des scores Football",
+  "short_name": "Scores Football",
+  "start_url": "./",
+  "scope": "./",
+  "display": "standalone",
+  "background_color": "#29343a",
+  "theme_color": "#202a2f",
+  "description": "Tableau de scores football pour téléphone et tablette"
+}
