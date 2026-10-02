@@ -1,8 +1,8 @@
 {
   "name": "Tableau des scores Football",
   "short_name": "Scores Football",
-  "start_url": "./",
-  "scope": "./",
+  "start_url": "/D-l-gu-/",
+  "scope": "/D-l-gu-/",
   "display": "standalone",
   "background_color": "#29343a",
   "theme_color": "#202a2f",
