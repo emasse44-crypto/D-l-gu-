@@ -1,0 +1,791 @@
+<!doctype html>
+<html lang="fr">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,maximum-scale=1,user-scalable=no">
+<title>Tableau des scores Football</title>
+<style>
+:root{--bg:#29343a;--panel:#313d43;--panel2:#202a2f;--blue:#4d63c7;--red:#f0443d;--green:#087d58;--yellow:#ffd43b;--white:#fff;--muted:#c8d0d4}
+*{box-sizing:border-box}html{scroll-behavior:smooth}body{margin:0;background:var(--bg);color:var(--white);font-family:Arial,sans-serif;padding-bottom:96px}button,input,select{font:inherit}button{border:0;border-radius:12px;padding:10px 14px;font-weight:700;color:#fff;background:#3b484e;cursor:pointer}button:active{transform:scale(.97)}
+header{position:relative;z-index:100000;height:58px;display:flex;gap:10px;align-items:center;padding:8px 14px;background:#202a2f;position:sticky;top:0;z-index:20;border-bottom:1px solid #455158}header h1{font-size:18px;margin:0;flex:1}.topbtn{padding:8px 12px;font-size:13px;position:relative;z-index:100001;pointer-events:auto;cursor:pointer}
+main{max-width:1500px;margin:auto;padding:0 14px}
+.scoreboard{position:relative;display:grid;grid-template-columns:1fr 250px 1fr;align-items:start;gap:0;min-height:520px;background:var(--bg)}
+.team{padding:14px 18px 8px;background:transparent;border:0!important;min-height:0;text-align:center}.teamname{display:flex;gap:12px;align-items:center;justify-content:center}.teamname input{width:100%;background:transparent;border:0;color:white;font-size:34px;font-weight:400;text-align:center;outline:none}.team-ball{width:72px;height:72px;display:inline-flex;align-items:center;justify-content:center;flex:none;font-size:62px;line-height:1;filter:drop-shadow(0 3px 4px rgba(0,0,0,.35))}
+.team-color{display:flex;align-items:center;justify-content:center;gap:8px;margin:8px auto 0;font-size:12px;color:#c8d0d4}.team-color input{width:42px;height:28px;padding:2px;border:1px solid #64747b;border-radius:8px;background:#202a2f;cursor:pointer}.team.blue,.team.red{border-top:5px solid var(--team-color,#485fc2)!important}.team.red{--team-color:#f0443d}.shield{background:var(--team-color,#485fc2)!important}.team-color label{font-weight:700}
+.score{font-size:138px;text-align:center;font-weight:900;line-height:1;margin:75px 0 35px;letter-spacing:-4px}.scorebuttons{display:flex;justify-content:center;gap:12px}.plus,.minus{width:52px;height:42px;font-size:24px;border-radius:22px;padding:0}.plus{background:#fff;color:#29343a}.minus{background:#45535a;color:#fff}
+.middle-ball{font-size:54px;line-height:1;margin:0 0 8px;filter:drop-shadow(0 3px 4px rgba(0,0,0,.28))}.timer{position:relative;background:#fff;color:#273239;border-radius:0 0 18px 18px;text-align:center;padding:20px 16px 16px;min-height:108px;box-shadow:0 5px 12px rgba(0,0,0,.12)}.phase{font-size:18px;font-weight:800;display:inline}.phase:before{content:'▶';font-size:18px;margin-right:10px}.clock{display:inline;font-size:46px;font-weight:900;margin:0 6px}.timer button{margin:4px;background:#34434a;color:#fff;font-size:12px}.timer .start{background:#087d58}.timer .stop{background:#e52b32}
+.counters{display:grid;grid-template-columns:1fr 1fr;gap:0;margin:0 auto;max-width:980px;background:transparent}.counter{background:transparent;border-radius:0;padding:8px 18px;text-align:center;font-size:22px}.counter b{display:inline;font-size:32px;margin-left:5px}.counter button{padding:3px 7px;margin-left:4px;font-size:12px}.counter:nth-child(n+3){display:none}
+.content{display:grid;grid-template-columns:repeat(2,1fr);gap:12px;margin-top:22px}.card{background:var(--panel);border-radius:16px;padding:14px}.card h2{font-size:18px;margin:0 0 10px}.list{min-height:60px}.row{display:flex;justify-content:space-between;gap:10px;border-bottom:1px solid #455158;padding:8px 0;align-items:center}.roster{display:grid;grid-template-columns:1fr 1fr;gap:6px;margin:10px 0}.player-row{display:flex;gap:5px;align-items:center}.player-row input{min-width:0;flex:1;background:#202a2f;border:1px solid #536067;color:white;padding:8px;border-radius:8px}.num{width:34px;text-align:center;font-weight:800}.del{padding:7px 9px;background:#9d2028}.staff-list{display:grid;gap:6px;margin:10px 0}.staff-row{display:grid;grid-template-columns:34px 1fr 1fr auto;gap:5px;align-items:center}.staff-row input{min-width:0;background:#202a2f;border:1px solid #536067;color:white;padding:8px;border-radius:8px}.staff-role{color:#c8d0d4;font-size:12px}.staff-full{grid-template-columns:34px 1fr auto}@media(max-width:900px){.staff-row{grid-template-columns:30px 1fr auto}.staff-row .staff-role{display:none}}.player-row.cardable{cursor:pointer;border:1px solid transparent;border-radius:9px;padding:2px}.player-row.cardable:hover{background:#3a474d;border-color:#64747b}.player-row.cardable:active{transform:scale(.99)}.card-badge{width:20px;height:28px;display:inline-block;border-radius:4px;flex:none;border:1px solid rgba(255,255,255,.35);box-shadow:0 1px 3px rgba(0,0,0,.25)}.card-badge-yellow{background:#ffd43b}.card-badge-red{background:#e52b32}.card-badge-white{background:#fff;border-color:#c7cdd0}.sub-title{font-weight:800;margin-top:12px;padding-top:10px;border-top:1px solid #455158}.small{font-size:12px;color:var(--muted)}select{width:100%;background:#202a2f;border:1px solid #536067;color:white;padding:10px;border-radius:8px}.danger{background:#b51d25}.accent{background:#1268e8}textarea{font-family:Arial,sans-serif}#ocrActions{display:flex;flex-wrap:wrap}
+nav{position:fixed;left:50%;bottom:10px;transform:translateX(-50%);z-index:30;display:grid;grid-template-columns:repeat(7,minmax(48px,1fr));gap:0;width:min(790px,calc(100% - 20px));background:#f7f7f7;border-radius:18px;box-shadow:0 6px 24px rgba(0,0,0,.35);padding:6px}nav button{border-radius:10px;background:transparent;color:#374249;padding:12px 8px;font-size:22px}nav button.active{background:#087d58;color:#fff}nav .label{display:block;font-size:10px;margin-top:2px;font-weight:700}
+@media(max-width:900px){.action-buttons{grid-template-columns:1fr}.action-teams{grid-template-columns:1fr 1fr}header h1{display:none}.scoreboard{grid-template-columns:1fr 160px 1fr;min-height:390px}.teamname{flex-direction:column;gap:4px}.teamname input{font-size:22px}.team-ball{width:48px;height:48px;font-size:42px}.score{font-size:86px;margin:50px 0 20px}.timer{padding:12px 6px}.clock{font-size:32px}.phase{font-size:12px}.counters{font-size:17px}.counter{padding:6px 2px}.counter b{font-size:25px}.content{grid-template-columns:1fr}.roster{grid-template-columns:1fr 1fr}nav{grid-template-columns:repeat(7,1fr)}nav button{font-size:18px;padding:9px 3px}}
+.match-actions{display:none;position:fixed;inset:0;background:rgba(0,0,0,.82);z-index:9998;align-items:center;justify-content:center;padding:16px}.match-actions.show{display:flex}.action-sheet{width:min(560px,100%);max-height:88vh;overflow:auto;background:#313d43;border-radius:20px;padding:18px;box-shadow:0 12px 45px rgba(0,0,0,.55)}.action-title{font-size:21px;font-weight:900}.action-sub{font-size:12px;color:#c8d0d4;margin:5px 0 14px}.action-teams{display:grid;grid-template-columns:1fr 1fr;gap:8px}.team-action,.action-buttons button{width:100%;padding:14px;border-radius:12px;background:#45535a;color:#fff;font-weight:800}.action-buttons{display:grid;grid-template-columns:1fr 1fr;gap:8px;margin-top:10px}.action-team-label{font-weight:900;font-size:18px;margin:8px 0}.action-cancel{width:100%;margin-top:10px;background:#202a2f;color:#fff;padding:12px;border-radius:10px}.middle-ball{border:0;background:transparent;color:inherit;cursor:pointer;display:block;margin:0 auto 8px;font-size:54px;line-height:1;filter:drop-shadow(0 3px 4px rgba(0,0,0,.28));padding:0}.middle-ball:active{transform:scale(.94)}
+.sanction-modal{display:none;position:fixed;inset:0;background:rgba(0,0,0,.82);z-index:9999;align-items:center;justify-content:center;padding:16px;pointer-events:auto;touch-action:manipulation}.sanction-modal.show{display:flex}.sanction-menu{position:relative;z-index:10000;width:min(560px,100%);max-height:88vh;overflow:auto;background:#313d43;border-radius:20px;padding:18px;box-shadow:0 12px 45px rgba(0,0,0,.55)}.sanction-list{display:grid;gap:7px}.sanction-list-inline{display:grid;grid-template-columns:1fr 1fr;gap:7px;max-height:42vh;overflow-y:auto;padding:2px;touch-action:pan-y}.sanction-list-inline .sanction-person{min-height:48px}.sanction-heading{font-weight:900;font-size:17px;margin:12px 0 7px;padding-top:10px;border-top:1px solid #536067}.sanction-person{position:relative;z-index:10001;pointer-events:auto;touch-action:manipulation;width:100%;display:flex;align-items:center;gap:9px;text-align:left;background:#45535a;padding:13px;border-radius:12px;color:#fff}.sanction-person .pn{font-weight:900;min-width:34px}.sanction-person .badge{margin-left:auto}.sanction-person:disabled{opacity:.4}.direct-row{cursor:default}.direct-cards{margin-left:auto;display:flex;gap:4px}.mini-card{border:0;border-radius:8px;min-width:34px;height:34px;font-size:17px;cursor:pointer;padding:0}.mini-card:disabled{opacity:.35;cursor:not-allowed}.mini-card.yellow{background:#f4d03f;color:#111}.mini-card.red{background:#e74c3c;color:#fff}.mini-card.white{background:#fff;color:#111}.sanction-back{width:100%;margin-top:9px;background:#202a2f}
+</style>
+<script src="https://cdn.jsdelivr.net/npm/tesseract.js@5/dist/tesseract.min.js"></script>
+
+<style>
+/* V31: masquer uniquement les compteurs de fautes/jaunes de l'écran principal. */
+.counter:has(#faA), .counter:has(#jaA), .counter:has(#faB), .counter:has(#jaB) { display:none !important; }
+</style>
+</head>
+<body>
+<header>
+  <div>⚽</div><h1>Tableau des scores Football</h1>
+  <button type="button" class="topbtn" id="newMatchBtn" onclick="newMatch();return false;">Nouveau match</button>
+  <button type="button" class="topbtn" id="saveBtn" onclick="save();showSaved();return false;">💾 Sauvegarder</button>
+</header>
+<main>
+<section class="scoreboard">
+  <div class="team blue" id="teamBoxA">
+    <div class="teamname"><span class="team-ball" id="shieldA" aria-label="Ballon équipe A">⚽</span><input id="teamA" value="Poiré sur Vie" onchange="save()"></div>
+    <div class="team-color"><label for="colorA">Couleur de l’équipe</label><input id="colorA" type="color" value="#485fc2" title="Choisir la couleur de l’équipe A" onchange="setTeamColor('A',this.value)"></div>
+    <div class="score" id="scoreA">0</div>
+    <div class="scorebuttons"><button class="plus" onclick="goal('A')">+</button><button class="minus" onclick="goal('A',-1)">−</button></div>
+  </div>
+  <div class="timer">
+    <button class="middle-ball" aria-label="Actions sanction et changement de joueur" onclick="openMatchActions()">⚽</button>
+    <div><span class="phase" id="phase">1ère mi-temps</span> <span class="clock" id="clock">00:00</span></div>
+    <div><button class="start" onclick="toggleTimer()" id="startBtn">▶</button><button onclick="setPhase(1)">1P</button><button onclick="pauseTimer()">Ⅱ</button><button onclick="setPhase(2)">2P</button><button onclick="setPhase(3)">PROL.</button><button onclick="finishMatch()">🏁 Fin</button></div>
+  </div>
+  <div class="team red" id="teamBoxB">
+    <div class="teamname"><input id="teamB" value="Roche ESO" onchange="save()"><span class="team-ball" id="shieldB" aria-label="Ballon équipe B">⚽</span></div>
+    <div class="team-color"><label for="colorB">Couleur de l’équipe</label><input id="colorB" type="color" value="#f0443d" title="Choisir la couleur de l’équipe B" onchange="setTeamColor('B',this.value)"></div>
+    <div class="score" id="scoreB">0</div>
+    <div class="scorebuttons"><button class="plus" onclick="goal('B')">+</button><button class="minus" onclick="goal('B',-1)">−</button></div>
+  </div>
+</section>
+
+<section class="counters">
+  <div class="counter">⚽ Fautes A <b id="faA">0</b><button onclick="count('faA',1)">+</button><button onclick="count('faA',-1)">−</button></div>
+  <div class="counter">🟨 Jaunes A <b id="jaA">0</b><button onclick="count('jaA',1)">+</button><button onclick="count('jaA',-1)">−</button></div>
+  <div class="counter">🟥 Rouges A <b id="roA">0</b><button onclick="count('roA',1)">+</button><button onclick="count('roA',-1)">−</button></div>
+  <div class="counter">⬜ Blancs A <b id="blA">0</b><button onclick="whiteCard('A')">+ 10 min</button><button onclick="count('blA',-1)">−</button></div>
+  <div class="counter">🔄 Rempl. A <b id="reA">0</b><button onclick="count('reA',1)">+</button><button onclick="count('reA',-1)">−</button></div>
+  <div class="counter">⚽ Fautes B <b id="faB">0</b><button onclick="count('faB',1)">+</button><button onclick="count('faB',-1)">−</button></div>
+  <div class="counter">🟨 Jaunes B <b id="jaB">0</b><button onclick="count('jaB',1)">+</button><button onclick="count('jaB',-1)">−</button></div>
+  <div class="counter">🟥 Rouges B <b id="roB">0</b><button onclick="count('roB',1)">+</button><button onclick="count('roB',-1)">−</button></div>
+  <div class="counter">⬜ Blancs B <b id="blB">0</b><button onclick="whiteCard('B')">+ 10 min</button><button onclick="count('blB',-1)">−</button></div>
+  <div class="counter">🔄 Rempl. B <b id="reB">0</b><button onclick="count('reB',1)">+</button><button onclick="count('reB',-1)">−</button></div>
+</section>
+
+<section class="content">
+  <div id="buteursA" class="card"><h2>⚽ Buteurs - <span id="nameA">Poiré sur Vie</span></h2><div id="goalsA" class="list"><div class="small">Aucun but pour le moment</div></div></div><div id="buteursB" class="card"><h2>⚽ Buteurs - <span id="nameB">Roche ESO</span></h2><div id="goalsB" class="list"><div class="small">Aucun but pour le moment</div></div></div>
+  <div id="equipeA" class="card squad-card">
+    <h2>👥 Équipe A - 11 titulaires + remplaçants</h2>
+    <div class="small">Titulaires : n°1 à 11. Remplaçants : modifiables selon la compétition.</div>
+    <div class="small" style="margin:8px 0 4px">Capitaine : <select id="captainA" onchange="setCaptain('A',this.value)"></select></div><div id="rosterA" class="roster"></div>
+    <div class="sub-title">🔄 Remplaçants <span id="subCountA"></span></div>
+    <div id="subsA" class="roster"></div>
+    <button class="accent" onclick="addSub('A')">＋ Ajouter un remplaçant</button>
+    <div class="sub-title">🧑‍🏫 Staff <span id="staffCountA"></span></div>
+    <div id="staffA" class="staff-list"></div>
+    <button class="accent" onclick="addStaff('A')">＋ Ajouter au staff</button>
+  </div>
+  <div id="equipeB" class="card squad-card">
+    <h2>👥 Équipe B - 11 titulaires + remplaçants</h2>
+    <div class="small">Titulaires : n°1 à 11. Remplaçants : modifiables selon la compétition.</div>
+    <div class="small" style="margin:8px 0 4px">Capitaine : <select id="captainB" onchange="setCaptain('B',this.value)"></select></div><div id="rosterB" class="roster"></div>
+    <div class="sub-title">🔄 Remplaçants <span id="subCountB"></span></div>
+    <div id="subsB" class="roster"></div>
+    <button class="accent" onclick="addSub('B')">＋ Ajouter un remplaçant</button>
+    <div class="sub-title">🧑‍🏫 Staff <span id="staffCountB"></span></div>
+    <div id="staffB" class="staff-list"></div>
+    <button class="accent" onclick="addStaff('B')">＋ Ajouter au staff</button>
+  </div>
+  <div id="exclusions" class="card"><h2>⬜ Exclusions 10 minutes</h2>
+    <div id="sinbins" class="list"><div class="small">Aucune exclusion en cours</div></div>
+  </div>
+  <div id="remplacements" class="card">
+    <h2>🔄 Remplacements en direct</h2>
+    <div class="small">Choisis le joueur qui sort, puis celui qui entre. La minute est enregistrée automatiquement.</div>
+    <div style="display:grid;grid-template-columns:1fr 1fr;gap:8px;margin-top:10px">
+      <select id="subTeam" onchange="refreshSubSelects()"><option value="A">Équipe A</option><option value="B">Équipe B</option></select>
+      <button class="accent" onclick="makeSubstitution()">🔄 Valider le remplacement</button>
+      <select id="subOut"></select>
+      <select id="subIn"></select>
+    </div>
+    <div id="subLog" class="list" style="margin-top:10px"></div>
+  </div>
+  <div id="feuilleOCR" class="card">
+    <h2>📷 Importer une feuille de match</h2>
+    <div class="small">Prends une photo de la feuille officielle. L’application essaie de lire les numéros et les noms. Vérifie toujours le résultat avant de l’importer, parce que l’OCR n’a malheureusement pas encore appris à lire dans l’âme des secrétaires de club.</div>
+    <div style="display:grid;grid-template-columns:1fr 1fr;gap:8px;margin-top:10px">
+      <select id="ocrTeam"><option value="A">Importer pour l’équipe A</option><option value="B">Importer pour l’équipe B</option></select>
+      <label class="accent" style="display:flex;align-items:center;justify-content:center;border-radius:8px;padding:10px;font-weight:700;cursor:pointer">📷 Choisir / prendre la photo<input id="ocrFile" type="file" accept="image/*" capture="environment" style="display:none" onchange="handleOCRFile(this.files[0])"></label>
+    </div>
+    <div id="ocrStatus" class="small" style="margin-top:10px"></div>
+    <img id="ocrPreview" style="display:none;max-width:100%;max-height:280px;margin:10px auto;border-radius:10px;border:1px solid #536067" alt="Aperçu de la feuille">
+    <textarea id="ocrText" placeholder="Le texte reconnu apparaîtra ici. Tu peux le corriger avant l’import." style="display:none;width:100%;min-height:180px;margin-top:10px;background:#202a2f;border:1px solid #536067;color:white;border-radius:10px;padding:10px;resize:vertical"></textarea>
+    <div id="ocrActions" style="display:none;gap:8px;margin-top:10px">
+      <button class="accent" onclick="importOCRPlayers()">👥 Importer les joueurs détectés</button>
+      <button onclick="document.getElementById('ocrText').value=''">Effacer le texte</button>
+    </div>
+  </div>
+  <div id="actions" class="card"><h2>📝 Actions</h2><button class="accent" onclick="undo()">↩ Annuler dernière action</button> <button class="danger" onclick="resetMatch()">Réinitialiser</button><p class="small">Les données sont conservées dans le navigateur.</p></div>
+</section>
+<nav><button class="active" onclick="goTop()">⚽<span class="label">Match</span></button><button onclick="goTo('buteursA')">⚽<span class="label">Buts</span></button><button onclick="goTo('remplacements')">↔<span class="label">Rempl.</span></button><button onclick="goTo('equipeA')">▣<span class="label">Équipes</span></button><button onclick="renderReport()">▤<span class="label">Feuille</span></button><button onclick="alert('Classement : à venir')">★<span class="label">Classement</span></button><button onclick="share()">↗<span class="label">Partager</span></button></nav>
+</main>
+<div id="matchActions" class="match-actions" onclick="closeMatchActions(event)"><div class="action-sheet" onclick="event.stopPropagation()"><div class="action-title">Actions du match</div><div class="action-sub">Choisis l'équipe puis l'action.</div><div class="action-teams"><button type="button" class="team-action" onclick="selectActionTeam('A')">⚽ <span id="actionTeamA">Équipe A</span></button><button type="button" class="team-action" onclick="selectActionTeam('B')"><span id="actionTeamB">Équipe B</span> ⚽</button></div><div id="actionChoice" style="display:none"><div class="action-team-label" id="actionSelectedTeam"></div><div class="action-buttons"><button type="button" onclick="openSubstitutionAction()">🔄 Changement de joueur</button></div></div><button class="action-cancel" onclick="closeMatchActions()">Fermer</button></div></div>
+<div id="sanctionModal" class="sanction-modal" onclick="closeSanctionModal(event)">
+  <div class="sanction-menu" onclick="event.stopPropagation()">
+    <div class="card-menu-title" id="sanctionTitle">Sanctions</div>
+    <div class="card-menu-sub">Choisis le joueur ou le membre du staff fautif</div>
+    <div id="sanctionList"></div>
+    <button class="card-cancel" onclick="closeSanctionModal()">Fermer</button>
+  </div>
+</div>
+<div id="goalModal" class="card-modal" onclick="closeGoalMenu()"><div class="card-menu" onclick="event.stopPropagation()"><div class="card-menu-title">⚽ But</div><div class="card-menu-sub">Choisis le buteur</div><input type="hidden" id="goalTeam"><select id="goalPlayer"></select><div class="card-menu-buttons" style="margin-top:10px"><button class="accent" onclick="confirmGoal()">Valider le but</button></div><button class="card-cancel" onclick="closeGoalMenu()">Annuler</button></div></div>
+<div id="reportModal" class="card-modal" onclick="closeReport()"><div class="report-menu" onclick="event.stopPropagation()"><div class="card-menu-title">📋 Feuille du match</div><div id="reportBody" class="report-body"></div><div class="report-actions"><button class="accent" onclick="printReport()">🖨️ Imprimer / PDF</button><button onclick="closeReport()">Fermer</button></div></div></div>
+<div id="cardModal" class="card-modal" onclick="closeCardMenu()">
+  <div class="card-menu" onclick="event.stopPropagation()">
+    <div class="card-menu-title" id="cardPlayerName">Joueur</div>
+    <div class="card-menu-sub">Choisir le carton</div>
+    <div class="card-menu-buttons">
+      <button class="card-yellow" onclick="giveCard('yellow')">🟨 Jaune</button>
+      <button class="card-red" onclick="giveCard('red')">🟥 Rouge</button>
+      <button class="card-white" onclick="giveCard('white')">⬜ Blanc · 10 min</button>
+    </div>
+    <button class="card-cancel" onclick="closeCardMenu()">Annuler</button>
+  </div>
+</div>
+<style>
+.match-plus{pointer-events:auto;touch-action:manipulation;z-index:99999;position:absolute;z-index:100001;left:50%;top:60%;transform:translate(-50%,-50%);width:58px;height:58px;border-radius:50%;padding:0;background:transparent;border:2px solid #fff;color:#fff;font-size:38px;font-weight:300;line-height:52px;box-shadow:0 0 0 1px rgba(255,255,255,.15)}.match-plus:active{background:#fff;color:#29343a;transform:translate(-50%,-50%) scale(.94)}
+
+.card-modal{display:none;position:fixed;inset:0;background:rgba(0,0,0,.62);z-index:200;align-items:center;justify-content:center;padding:20px}.card-modal.show{display:flex}.card-menu{width:min(390px,100%);background:#313d43;border-radius:18px;padding:18px;box-shadow:0 12px 40px rgba(0,0,0,.45);text-align:center}.card-menu-title{font-size:22px;font-weight:900}.card-menu-sub{font-size:13px;color:#c8d0d4;margin:5px 0 15px}.card-menu-buttons{display:grid;gap:9px}.card-menu-buttons button{font-size:17px;padding:14px;border-radius:12px}.card-yellow{background:#ffd43b!important;color:#202a2f!important}.card-red{background:#e52b32!important}.card-white{background:#fff!important;color:#202a2f!important}.card-cancel{margin-top:12px;width:100%;background:#45535a!important}.report-menu{width:min(760px,100%);max-height:88vh;overflow:auto;background:#f7f7f7;color:#202a2f;border-radius:18px;padding:18px;box-shadow:0 12px 40px rgba(0,0,0,.45)}.report-score{text-align:center;font-size:22px;font-weight:800;margin:8px 0 18px}.report-score b{font-size:36px;margin:0 12px}.report-body h3{margin:16px 0 7px;border-bottom:1px solid #ccd3d6;padding-bottom:5px}.report-body>div{padding:4px 0}.report-actions{display:flex;gap:8px;margin-top:18px}.report-actions button{flex:1}@media print{body>*:not(#reportModal){display:none!important}#reportModal{display:flex!important;position:static!important;background:#fff!important;padding:0!important}.report-menu{box-shadow:none;width:100%;max-height:none;color:#000}.report-actions{display:none!important}}
+</style>
+<div id="saveToast" style="display:none;position:fixed;top:70px;left:50%;transform:translateX(-50%);z-index:100000;background:#087d58;color:#fff;padding:10px 18px;border-radius:12px;font-weight:800;box-shadow:0 6px 20px rgba(0,0,0,.35)">💾 Match sauvegardé</div>
+<script>
+let s={colorA:'#485fc2',colorB:'#f0443d',a:0,b:0,faA:0,jaA:0,roA:0,blA:0,reA:0,faB:0,jaB:0,roB:0,blB:0,reB:0,sec:0,phase:1,running:false,goalsA:[],goalsB:[],rosterA:Array(11).fill(''),rosterB:Array(11).fill(''),subsA:Array(5).fill(''),subsB:Array(5).fill(''),staffA:[],staffB:[],captainA:1,captainB:1,subLog:[],sinbins:[],cardLog:[],history:[]};
+let timer=null;
+const $=id=>document.getElementById(id);
+
+async function handleOCRFile(file){
+  if(!file)return;
+  const status=$('ocrStatus'), preview=$('ocrPreview'), text=$('ocrText'), actions=$('ocrActions');
+  preview.src=URL.createObjectURL(file); preview.style.display='block'; text.style.display='none'; actions.style.display='none';
+  status.textContent='⏳ Lecture de la feuille en cours…';
+  try{
+    if(typeof Tesseract==='undefined') throw new Error('OCR indisponible');
+    const result=await Tesseract.recognize(file,'fra+eng',{
+      logger:m=>{ if(m.status==='recognizing text'&&m.progress) status.textContent='⏳ Lecture… '+Math.round(m.progress*100)+' %'; }
+    });
+    text.value=result.data.text||'';
+    text.style.display='block'; actions.style.display='flex';
+    status.textContent='✅ Lecture terminée. Corrige le texte si nécessaire puis importe les joueurs.';
+  }catch(e){
+    status.textContent='❌ Impossible de lire la photo. Vérifie la connexion internet et réessaie avec une photo nette.';
+    console.error(e);
+  }
+}
+function normalizeOCRLine(line){
+  return String(line||'').replace(/[|]/g,'1').replace(/\s+/g,' ').trim();
+}
+function parseOCRPlayers(raw){
+  const lines=String(raw||'').split(/\n+/).map(normalizeOCRLine).filter(x=>x.length>=2);
+  const found=[]; const seen=new Set();
+  for(const line of lines){
+    let m=line.match(/^(?:n[°o]?\s*)?(\d{1,2})\s*[-.)\/:]?\s+(.{2,60})$/i);
+    if(!m) m=line.match(/^(.{2,60}?)\s+(\d{1,2})$/i);
+    if(!m) continue;
+    let num,name;
+    if(/^\d/.test(m[1])){num=parseInt(m[1],10);name=m[2]}else{name=m[1];num=parseInt(m[2],10)}
+    name=name.replace(/\s{2,}/g,' ').replace(/^[\-–—:]+|[\-–—:]+$/g,'').trim();
+    if(num<1||num>99||name.length<2||seen.has(num)) continue;
+    seen.add(num); found.push({num,name});
+  }
+  return found;
+}
+function importOCRPlayers(){
+  const t=$('ocrTeam').value, raw=$('ocrText').value, found=parseOCRPlayers(raw);
+  if(!found.length){alert('Aucun joueur avec un numéro clair n’a été détecté. Corrige le texte en mettant par exemple : 1 DUPONT Jean');return;}
+  snapshot(); ensureSquad(t);
+  const starters=s['roster'+t], subs=s['subs'+t];
+  let added=0;
+  found.sort((a,b)=>a.num-b.num).forEach(x=>{
+    if(x.num<=11){starters[x.num-1]=x.name;added++;}
+    else {const idx=subs.findIndex(v=>!v); if(idx>=0){subs[idx]=x.name;added++;}else{subs.push(x.name);added++;}}
+  });
+  save(); render();
+  $('ocrStatus').textContent=`✅ ${added} joueur(s) importé(s) pour l’équipe ${t}. Vérifie les noms dans l’effectif.`;
+}
+function render(){for(const k of ['faA','jaA','roA','blA','reA','faB','jaB','roB','blB','reB']) $(k).textContent=s[k];
+$('scoreA').textContent=s.a;$('scoreB').textContent=s.b;$('clock').textContent=fmt(s.sec);$('phase').textContent=s.phase==1?'1ère mi-temps':s.phase==2?'2e mi-temps':'Prolongation';
+$('nameA').textContent=$('teamA').value;$('nameB').textContent=$('teamB').value;renderTeamColors();renderGoals('A');renderGoals('B');renderRoster('A');renderRoster('B');renderStaff('A');renderStaff('B');renderSinbins();renderSubLog();if($('subTeam'))refreshSubSelects();}
+function fmt(x){return String(Math.floor(x/60)).padStart(2,'0')+':'+String(x%60).padStart(2,'0')}
+function snapshot(){s.history.push(JSON.stringify({...s,history:[]}));if(s.history.length>30)s.history.shift()}
+function goal(t,d=1){
+  if(d<0){snapshot();s[t==='A'?'a':'b']=Math.max(0,s[t==='A'?'a':'b']-1);if(s['goals'+t].length)s['goals'+t].pop();save();render();return;}
+  openGoalMenu(t);
+}
+function playerStatus(t, number){
+  const red=(s.cardLog||[]).some(c=>c.team===t && c.number===number && c.card==='rouge');
+  const whiteEntry=(s.sinbins||[]).find(x=>x.team===t && x.player.startsWith('n°'+number+' '));
+  const white=!!whiteEntry;
+  const captainFromStaffWhite=!!whiteEntry && whiteEntry.source==='staffWhite';
+  return {red,white,captainFromStaffWhite,blocked:red||white,notSanctionable:captainFromStaffWhite};
+}
+function openGoalMenu(t){
+  const arr=s['roster'+t].slice(0,11), subs=s['subs'+t]||[];
+  $('goalTeam').value=t;
+  let html='<option value="">Sélectionner le buteur</option>';
+  arr.forEach((n,i)=>{
+    const st=playerStatus(t,i+1);
+    if(st.red || st.white) return;
+    html+=`<option value="${i}">n°${i+1} · ${esc(n||('Joueur '+(i+1)))}</option>`;
+  });
+  subs.forEach((n,i)=>{
+    const st=playerStatus(t,12+i);
+    if(st.red || st.white) return;
+    html+=`<option value="R${i}">n°${12+i} · ${esc(n||('Remplaçant '+(12+i)))}</option>`;
+  });
+  $('goalPlayer').innerHTML=html;
+  $('goalModal').classList.add('show');
+}
+function confirmGoal(){
+  const t=$('goalTeam').value, v=$('goalPlayer').value;
+  snapshot();
+  s[t==='A'?'a':'b']++;
+  let player='';
+  if(v!==''){
+    if(String(v).startsWith('R')) player='n°'+(12+Number(String(v).slice(1)))+' '+(s['subs'+t][Number(String(v).slice(1))]||'');
+    else player='n°'+(Number(v)+1)+' '+(s['roster'+t][Number(v)]||'');
+  }
+  s['goals'+t].push({min:fmt(s.sec),player:player.trim()});
+  closeGoalMenu(); save(); render();
+}
+function closeGoalMenu(){$('goalModal').classList.remove('show')}
+
+let selectedCard=null;
+function openCardMenu(t,i){
+  const name=s['roster'+t]?.[i] || ('Joueur n°'+(i+1));
+  const status=playerStatus(t,i+1);
+  if(status.red){ alert('Ce joueur est exclu (carton rouge) et ne peut plus participer au match.'); return; }
+  if(status.notSanctionable){ alert('Le capitaine est sorti 10 minutes à la suite d’un carton blanc donné au staff. Il ne peut pas recevoir de sanction pendant cette exclusion.'); return; }
+  selectedCard={team:t,index:i,player:name};
+  $('cardPlayerName').textContent=(t==='A'?$('teamA').value:$('teamB').value)+' · n°'+(i+1)+' · '+name;
+  $('cardModal').classList.add('show');
+}
+let actionTeam=null;
+function openStaffCardMenu(t,i){
+  const x=s['staff'+t]?.[i];
+  const name=typeof x==='string'?(x||('Staff '+(i+1))):(x?.name||('Staff '+(i+1)));
+  const st=staffStatus(t,i);
+  if(st.red){ alert('Ce membre du staff est exclu (carton rouge) et ne peut plus recevoir de sanction.'); return; }
+  selectedCard={team:t,staff:true,staffIndex:i,player:name};
+  $('cardPlayerName').textContent=(t==='A'?$('teamA').value:$('teamB').value)+' · Staff · '+name;
+  $('cardModal').classList.add('show');
+}
+function openMatchActions(){
+  const m=$('matchActions'); if(!m)return;
+  m.classList.remove('show');
+  $('actionTeamA').textContent=$('teamA').value;
+  $('actionTeamB').textContent=$('teamB').value;
+  actionTeam=null;
+  $('actionChoice').innerHTML=`
+    <div class="action-team-label" id="actionSelectedTeam"></div>
+    <div class="action-buttons">
+      <button type="button" onclick="openChangeActions(actionTeam)">🔄 Changement de joueur</button>
+    </div>`;
+  $('actionChoice').style.display='none';
+  $('matchActions').classList.add('show');
+}
+function closeMatchActions(e){
+  if(e && e.target!==$('matchActions')) return;
+  $('matchActions').classList.remove('show');
+}
+function selectActionTeam(t){
+  if(t!=='A' && t!=='B') return;
+  actionTeam=t;
+  const teamName=t==='A'?$('teamA').value:$('teamB').value;
+  $('actionChoice').innerHTML=`
+    <div class="action-team-label">${esc(teamName)}</div>
+    <div class="action-buttons">
+      <button type="button" onclick="openChangeActions(\'${t}\')">🔄 Changement de joueur</button>
+    </div>`;
+  $('actionChoice').style.display='block';
+}
+function openChangeActions(teamArg){
+  const t=teamArg || actionTeam;
+  if(t!=='A' && t!=='B'){ alert('Choisis d’abord une équipe.'); return; }
+  actionTeam=t;
+  const teamName=t==='A'?$('teamA').value:$('teamB').value;
+  $('actionChoice').innerHTML=`
+    <div class="action-team-label">${esc(teamName)}</div>
+    <div class="card-menu-sub">Choisis l'action à enregistrer.</div>
+    <div class="action-buttons" style="margin-top:12px">
+      <button type="button" onclick="openSubstitutionAction('${t}')">🔄 Changement de joueur</button>
+      <button type="button" onclick="openSanctionPlayers('${t}')">🟨🟥⬜ Sanction</button>
+    </div>
+    <button class="action-cancel" onclick="event.stopPropagation();openMatchActions()">← Retour</button>`;
+  $('actionChoice').style.display='block';
+  $('matchActions').classList.add('show');
+}
+function openSubstitutionAction(teamArg){
+  const tSelected=teamArg || actionTeam;
+  if(tSelected!=='A' && tSelected!=='B'){ alert('Choisis d’abord une équipe.'); return; }
+  const t=tSelected;
+  actionTeam=t;
+  ensureSquad(t);
+  const teamName=t==='A'?$('teamA').value:$('teamB').value;
+  const starters=s['roster'+t].slice(0,11);
+  const subs=s['subs'+t]||[];
+  const outOptions=starters.map((n,i)=>{
+    const st=playerStatus(t,i+1);
+    if(st.blocked) return '';
+    return `<option value="${i}">${i+1} - ${esc(n)||'Joueur '+(i+1)}</option>`;
+  }).join('');
+  const inOptions=subs.map((n,i)=>`<option value="${i}">${12+i} - ${esc(n)||'Remplaçant n°'+(12+i)}</option>`).join('');
+  $('actionChoice').innerHTML=`
+    <div class="action-team-label">${esc(teamName)} · Remplacement</div>
+    <div class="card-menu-sub">Choisis le joueur qui sort puis le remplaçant qui entre.</div>
+    <div style="display:grid;gap:8px;margin-top:10px">
+      <label class="small">⬇ Joueur qui sort<select id="quickSubOut" style="width:100%;margin-top:4px"><option value="">Choisir...</option>${outOptions}</select></label>
+      <label class="small">⬆ Remplaçant qui entre<select id="quickSubIn" style="width:100%;margin-top:4px"><option value="">Choisir...</option>${inOptions}</select></label>
+      <button class="accent" onclick="event.stopPropagation();makeQuickSubstitution()">🔄 Valider le remplacement</button>
+    </div>
+    <button class="action-cancel" onclick="event.stopPropagation();openMatchActions()">← Retour</button>`;
+  $('actionChoice').style.display='block';
+  $('matchActions').classList.add('show');
+}
+function makeQuickSubstitution(){
+  const t=actionTeam;
+  const outEl=$('quickSubOut'), inEl=$('quickSubIn');
+  if(!outEl || !inEl || outEl.value==='' || inEl.value==='') return alert('Choisis le joueur qui sort et celui qui entre.');
+  const oi=Number(outEl.value), ii=Number(inEl.value);
+  ensureSquad(t);
+  if(playerStatus(t,oi+1).blocked) return alert('Ce joueur est exclu et ne peut pas être remplacé.');
+  const out=s['roster'+t][oi]||('Joueur '+(oi+1));
+  const inn=s['subs'+t][ii]||('Remplaçant '+(12+ii));
+  snapshot();
+  s.subLog=s.subLog||[];
+  s.subLog.push({team:t,minute:fmt(s.sec),out:out,in:inn});
+  s['roster'+t][oi]=inn;
+  s['subs'+t][ii]=out;
+  s['re'+t]++;
+  save(); render();
+  closeMatchActions();
+}
+function closeSanctionModal(e){
+  if(e && e.target!==$('sanctionModal')) return;
+  $('sanctionModal').classList.remove('show');
+}
+function openSanctionPlayers(teamArg){
+  const t=teamArg || actionTeam;
+  if(t!=='A' && t!=='B'){ alert('Choisis d’abord une équipe.'); return; }
+  actionTeam=t;
+  const arr=(s['roster'+t]||[]).slice(0,11), staff=s['staff'+t]||[];
+  const teamName=t==='A'?$('teamA').value:$('teamB').value;
+  const cardButtons=(team,index,isStaff)=>{
+    const st=isStaff?staffStatus(team,index):playerStatus(team,index+1);
+    const disabled=isStaff?st.red:(st.red||st.notSanctionable);
+    const title=st.notSanctionable?'Capitaine temporairement exclu suite à un carton blanc du staff':'';
+    const safe=esc(title);
+    const yell=`<button type="button" class="mini-card yellow" ${disabled?'disabled':''} title="${safe}" onclick="event.stopPropagation();directSanction('${team}',${index},'yellow',${isStaff?'true':'false'});return false;">🟨</button>`;
+    const red=`<button type="button" class="mini-card red" ${disabled?'disabled':''} title="${safe}" onclick="event.stopPropagation();directSanction('${team}',${index},'red',${isStaff?'true':'false'});return false;">🟥</button>`;
+    const white=`<button type="button" class="mini-card white" ${disabled?'disabled':''} title="${safe}" onclick="event.stopPropagation();directSanction('${team}',${index},'white',${isStaff?'true':'false'});return false;">⬜</button>`;
+    return yell+red+white;
+  };
+  const players=arr.map((n,i)=>`<div class="sanction-person direct-row"><span class="pn">n°${i+1}</span><span>${esc(n||('Joueur '+(i+1)))}</span><span class="badge">${playerCardBadge(t,i)}</span><span class="direct-cards">${cardButtons(t,i,false)}</span></div>`).join('');
+  const staffRows=staff.length?staff.map((x,i)=>{
+    const name=typeof x==='string'?(x||('Staff '+(i+1))):(x?.name||('Staff '+(i+1)));
+    return `<div class="sanction-person direct-row"><span class="pn">Staff ${i+1}</span><span>${esc(name)}</span><span class="badge">${staffCardBadge(t,i)}</span><span class="direct-cards">${cardButtons(t,i,true)}</span></div>`;
+  }).join(''):'<div class="small">Aucun membre du staff renseigné.</div>';
+  $('actionChoice').innerHTML=`
+    <div class="action-team-label">${esc(teamName)} · Sanctions</div>
+    <div class="card-menu-sub">Clique directement sur le carton à donner.</div>
+    <div class="sanction-section-title">👥 Joueurs</div>
+    <div class="sanction-list-inline direct-sanctions">${players}</div>
+    <div class="sanction-section-title">🧑‍🏫 Staff</div>
+    <div class="sanction-list-inline direct-sanctions">${staffRows}</div>
+    <button class="action-cancel" onclick="event.stopPropagation();openChangeActions('${t}')">← Retour</button>`;
+  $('actionChoice').style.display='block';
+  $('matchActions').classList.add('show');
+}
+function directSanction(team,index,type,isStaff){
+  if(team!=='A' && team!=='B') return;
+  selectedCard=isStaff ? {
+    team, staff:true, staffIndex:index,
+    player:(typeof s['staff'+team]?.[index]==='string' ? (s['staff'+team][index]||('Staff '+(index+1))) : (s['staff'+team]?.[index]?.name||('Staff '+(index+1))))
+  } : {
+    team, staff:false, index, player:s['roster'+team]?.[index]||('Joueur n°'+(index+1))
+  };
+  giveCard(type);
+}
+function showSanctionChoices(){
+  const name=selectedCard?.player||'Personne';
+  const team=selectedCard?.team;
+  const teamName=team==='A'?$('teamA').value:$('teamB').value;
+  $('actionChoice').innerHTML=`
+    <div class="action-team-label">${esc(teamName)} · ${esc(name)}</div>
+    <div class="card-menu-sub">Choisir le carton à donner</div>
+    <div class="card-menu-buttons" style="margin-top:12px">
+      <button class="card-yellow" onclick="event.stopPropagation();giveSanctionCard('yellow')">🟨 Jaune</button>
+      <button class="card-red" onclick="event.stopPropagation();giveSanctionCard('red')">🟥 Rouge</button>
+      <button class="card-white" onclick="event.stopPropagation();giveSanctionCard('white')">⬜ Blanc</button>
+    </div>
+    <button class="action-cancel" style="width:100%;margin-top:12px" onclick="event.stopPropagation();openSanctionPlayers('${team}')">← Retour aux joueurs</button>`;
+  $('actionChoice').style.display='block';
+  $('matchActions').classList.add('show');
+  $('sanctionModal').classList.remove('show');
+}
+function giveSanctionCard(type){
+  if(!selectedCard)return;
+  $('sanctionModal').classList.remove('show');
+  $('matchActions').classList.remove('show');
+  const old=document.getElementById('cardModal');
+  if(old) old.classList.remove('show');
+  giveCard(type);
+}
+function chooseSanctionStaff(t,i){
+  const x=s['staff'+t]?.[i];
+  const name=typeof x==='string'?(x|| ('Staff '+(i+1))):(x?.name|| ('Staff '+(i+1)));
+  selectedCard={team:t,staff:true,staffIndex:i,player:name};
+  showSanctionChoices();
+}
+function chooseSanctionPlayer(t,i){
+  const name=s['roster'+t]?.[i] || ('Joueur n°'+(i+1));
+  selectedCard={team:t,index:i,player:name};
+  showSanctionChoices();
+}
+function addTeamFoul(){
+  if(!actionTeam)return;
+  snapshot(); s['fa'+actionTeam]++; save(); render(); closeMatchActions();
+}
+
+function closeCardMenu(){selectedCard=null;$('cardModal').classList.remove('show')}
+function giveCard(type){
+  if(!selectedCard)return;
+  const {team,player}=selectedCard;
+  const kind=type==='yellow'?'jaune':type==='red'?'rouge':'blanc';
+
+  // Deux jaunes = rouge. Blanc + jaune = rouge, pour joueurs comme pour staff.
+  if(type==='yellow'){
+    const cards=(s.cardLog||[]).filter(c=>c.team===team && (
+      selectedCard.staff ? (c.staff && c.staffIndex===selectedCard.staffIndex) : (!c.staff && c.number===selectedCard.index+1)
+    ));
+    const yellows=cards.filter(c=>c.card==='jaune').length;
+    const hasWhite=cards.some(c=>c.card==='blanc');
+    if(yellows>=1 || hasWhite){
+      snapshot();
+      s.cardLog=s.cardLog||[];
+      s['ja'+team]++;
+      s['ro'+team]++;
+      const meta={team,staff:!!selectedCard.staff,staffIndex:selectedCard.staff?selectedCard.staffIndex:null,number:selectedCard.staff?null:selectedCard.index+1,player};
+      s.cardLog.push({...meta,card:'jaune',minute:fmt(s.sec)});
+      s.cardLog.push({...meta,card:'rouge',minute:fmt(s.sec),reason:hasWhite?'blanc + jaune':'2e jaune'});
+      if(!selectedCard.staff){
+        s.sinbins=(s.sinbins||[]).filter(x=>!(x.team===team && x.player.startsWith('n°'+(selectedCard.index+1)+' ')));
+      }
+      closeCardMenu(); save(); render(); return;
+    }
+  }
+
+  // Un carton blanc donné au staff fait sortir le capitaine de son équipe pendant 10 minutes.
+  if(selectedCard.staff && type==='white'){
+    const cap=captainNumber(team);
+    const capStatus=playerStatus(team,cap);
+    if(capStatus.red){
+      alert('Le capitaine est exclu (carton rouge). Impossible d\'appliquer le carton blanc au staff.');
+      return;
+    }
+    if(capStatus.white){
+      alert('Le capitaine est déjà exclu temporairement pendant 10 minutes.');
+      return;
+    }
+  }
+
+  snapshot();
+  s.cardLog=s.cardLog||[];
+  s[''+(type==='yellow'?'ja':type==='red'?'ro':'bl')+team]++;
+  if(selectedCard.staff){
+    s.cardLog.push({team,staff:true,staffIndex:selectedCard.staffIndex,number:null,player,card:kind,minute:fmt(s.sec)});
+    if(type==='white'){
+      const cap=captainNumber(team);
+      const capName=s['roster'+team][cap-1]||('Joueur '+cap);
+      s.sinbins=s.sinbins||[];
+      s.sinbins.push({team,player:'n°'+cap+' '+capName,remaining:600,source:'staffWhite',staffIndex:selectedCard.staffIndex});
+    }
+  }else{
+    const index=selectedCard.index;
+    s.cardLog.push({team,number:index+1,player,card:kind,minute:fmt(s.sec)});
+    if(type==='white'){
+      s.sinbins=s.sinbins||[];
+      s.sinbins.push({team,player:'n°'+(index+1)+' '+player,remaining:600});
+    }
+  }
+  closeCardMenu(); save(); render();
+}
+
+function renderSinbins(){
+  const el=$('sinbins'), arr=s.sinbins||[];
+  el.innerHTML=arr.length ? arr.map((x,i)=>
+    `<div class="row"><span>${x.team==='A'?$('teamA').value:$('teamB').value} - ${x.player}</span>
+     <strong>${fmt(x.remaining)}</strong>
+     <button onclick="endSinbin(${i})">Retour</button></div>`
+  ).join('') : '<div class="small">Aucune exclusion en cours</div>';
+}
+function endSinbin(i){
+  snapshot();
+  s.sinbins.splice(i,1);
+  save(); render();
+}
+
+function renderGoals(t){const el=$('goals'+t), arr=s['goals'+t];el.innerHTML=arr.length?arr.map((g,i)=>`<div class="row"><span>${g.min}</span><span><input placeholder="N° / joueur" value="${g.player}" onchange="s.goals${t}[${i}].player=this.value;save()"></span></div>`).join(''):'<div class="small">Aucun but pour le moment</div>'}
+function count(k,d){snapshot();s[k]=Math.max(0,s[k]+d);save();render()}
+function toggleTimer(){
+  if(s.running){pauseTimer();return;}
+  s.running=true;
+  $('startBtn').textContent='⏸ En cours';
+  clearInterval(timer);
+  timer=setInterval(()=>{
+    if(!s.running)return;
+    s.sec++;
+    (s.sinbins||[]).forEach(x=>x.remaining=Math.max(0,x.remaining-1));
+    s.sinbins=(s.sinbins||[]).filter(x=>x.remaining>0);
+    $('clock').textContent=fmt(s.sec);
+    // Le chrono ne reconstruit plus les autres éléments de la page à chaque seconde.
+    // Cela évite de perturber les boutons et les champs pendant le match.
+    const sin=$('sinbins');
+    if(sin){
+      const rows=sin.querySelectorAll('.row strong');
+      (s.sinbins||[]).forEach((x,i)=>{if(rows[i])rows[i].textContent=fmt(x.remaining);});
+    }
+  },1000);
+}
+function pauseTimer(){s.running=false;clearInterval(timer);$('startBtn').textContent='▶ Démarrer';save()}
+function setPhase(p){s.phase=p;if(p==2)s.sec=0;save();render()}
+function ensureSquad(t){
+  s['roster'+t]=s['roster'+t]||[];
+  while(s['roster'+t].length<11) s['roster'+t].push('');
+  s['subs'+t]=s['subs'+t]||[];
+  s['staff'+t]=Array.isArray(s['staff'+t])?s['staff'+t]:[];
+  s['captain'+t]=Number(s['captain'+t])>=1&&Number(s['captain'+t])<=11?Number(s['captain'+t]):1;
+  s['staff'+t]=s['staff'+t].slice(0,5);
+}
+function renderStaff(t){
+  ensureSquad(t);
+  const arr=s['staff'+t]||[], el=$('staff'+t);
+  el.innerHTML=arr.length ? arr.map((x,i)=>{
+    const name=typeof x==='string'?x:(x.name||'');
+    const role=typeof x==='string'?'':(x.role||'');
+    return `<div class="staff-row cardable" onclick="openStaffCardMenu('${t}',${i})" title="Cliquer sur le membre du staff pour une sanction"><span class="num">${i+1}</span><input onclick="event.stopPropagation()" placeholder="Nom / prénom" value="${esc(name)}" onchange="updateStaff('${t}',${i},'name',this.value)"><input onclick="event.stopPropagation()" class="staff-role" placeholder="Fonction" value="${esc(role)}" onchange="updateStaff('${t}',${i},'role',this.value)"><span>${staffCardBadge(t,i)}</span><button class="del" onclick="event.stopPropagation();removeStaff('${t}',${i})">✕</button></div>`;
+  }).join('') : '<div class="small">Aucun membre du staff.</div>';
+  $('staffCount'+t).textContent=`(${arr.length}/5)`;
+}
+function addStaff(t){
+  ensureSquad(t);
+  if(s['staff'+t].length>=5)return alert('Maximum 5 personnes dans le staff.');
+  snapshot(); s['staff'+t].push({name:'',role:''}); save(); render();
+}
+function removeStaff(t,i){snapshot();s['staff'+t].splice(i,1);save();render()}
+function updateStaff(t,i,key,value){ensureSquad(t);if(typeof s['staff'+t][i]==='string')s['staff'+t][i]={name:s['staff'+t][i],role:''};s['staff'+t][i][key]=value;save()}
+
+function staffCardBadge(t,index){
+  const cards=(s.cardLog||[]).filter(c=>c.team===t && c.staff && c.staffIndex===index);
+  if(!cards.length) return '';
+  const last=cards[cards.length-1];
+  if(last.card==='rouge') return '<span class="card-badge card-badge-red" title="Carton rouge"></span>';
+  if(last.card==='blanc') return '<span class="card-badge card-badge-white" title="Carton blanc"></span>';
+  return '<span class="card-badge card-badge-yellow" title="Carton jaune"></span>';
+}
+function cardBadge(t,number){
+  const cards=(s.cardLog||[]).filter(c=>c.team===t && c.number===number);
+  if(!cards.length) return '';
+  const last=cards[cards.length-1];
+  if(last.card==='rouge') return '<span class="card-badge card-badge-red" title="Carton rouge"></span>';
+  if(last.card==='blanc') return '<span class="card-badge card-badge-white" title="Carton blanc"></span>';
+  return '<span class="card-badge card-badge-yellow" title="Carton jaune"></span>';
+}
+function captainNumber(t){
+  const n=Number(s['captain'+t]);
+  return n>=1&&n<=11?n:1;
+}
+function setCaptain(t,v){
+  snapshot(); s['captain'+t]=Math.max(1,Math.min(11,Number(v)||1)); save(); render();
+}
+function renderCaptainSelect(t){
+  const el=$('captain'+t); if(!el)return;
+  const cap=captainNumber(t), arr=s['roster'+t]||[];
+  el.innerHTML=Array.from({length:11},(_,i)=>`<option value="${i+1}">${i+1} · ${esc(arr[i]||('Joueur '+(i+1)))}</option>`).join('');
+  el.value=String(cap);
+}
+function staffStatus(t,index){
+  const cards=(s.cardLog||[]).filter(c=>c.team===t && c.staff && c.staffIndex===index);
+  const red=cards.some(c=>c.card==='rouge');
+  const white=cards.some(c=>c.card==='blanc');
+  return {red,white};
+}
+function renderRoster(t){
+  ensureSquad(t);
+  renderCaptainSelect(t);
+  $('roster'+t).innerHTML=s['roster'+t].slice(0,11).map((n,i)=>
+    `<div class="player-row cardable" onclick="openCardMenu('${t}',${i})" title="Cliquer sur le joueur pour une sanction"><span class="num">${i+1}</span><input onclick="event.stopPropagation()" placeholder="Nom du joueur" value="${esc(n)}" onchange="s.roster${t}[${i}]=this.value;save()">${cardBadge(t,i+1)}</div>`
+  ).join('');
+  const subs=s['subs'+t]||[];
+  $('subs'+t).innerHTML=subs.map((n,i)=>
+    `<div class="player-row"><span class="num">${12+i}</span><input placeholder="Nom du remplaçant n°${12+i}" value="${esc(n)}" onchange="s.subs${t}[${i}]=this.value;save()">${cardBadge(t,12+i)}<button class="del" onclick="removeSub('${t}',${i})">✕</button></div>`
+  ).join('') || '<div class="small">Aucun remplaçant.</div>';
+  $('subCount'+t).textContent=`(${subs.length})`;
+}
+
+function refreshSubSelects(){
+  const t=$('subTeam').value;
+  ensureSquad(t);
+  const out=$('subOut'), inn=$('subIn');
+  const starters=s['roster'+t].slice(0,11);
+  const subs=s['subs'+t]||[];
+  out.innerHTML=starters.filter((n,i)=>!playerStatus(t,i+1).blocked).map((n,i)=>`<option value="${i}">${i+1} - ${esc(n)||'Joueur '+(i+1)}</option>`).join('');
+  if(!out.innerHTML) out.innerHTML='<option value="">Aucun joueur disponible</option>';
+  inn.innerHTML=subs.map((n,i)=>`<option value="${i}">${12+i} - ${esc(n)||'Remplaçant n°'+(12+i)}</option>`).join('');
+  if(!subs.length) inn.innerHTML='<option value="">Aucun remplaçant</option>';
+}
+function makeSubstitution(){
+  const t=$('subTeam').value, oi=Number($('subOut').value), ii=Number($('subIn').value);
+  ensureSquad(t);
+  if($('subOut').value==='') return alert('Aucun joueur disponible pour sortir.');
+  if(playerStatus(t,oi+1).blocked) return alert('Ce joueur est exclu et ne peut pas être remplacé.');
+  if(!s['subs'+t].length) return alert('Ajoute d’abord un remplaçant.');
+  const out=s['roster'+t][oi]||('Joueur '+(oi+1));
+  const inn=s['subs'+t][ii]||('Remplaçant '+(12+ii));
+  snapshot();
+  s.subLog=s.subLog||[];
+  s.subLog.push({team:t,minute:fmt(s.sec),out:out,in:inn});
+  s['roster'+t][oi]=inn;
+  s['subs'+t][ii]=out;
+  s['re'+t]++;
+  save(); render();
+  refreshSubSelects();
+}
+function renderSubLog(){
+  const el=$('subLog'), arr=s.subLog||[];
+  el.innerHTML=arr.length ? arr.slice().reverse().map((x,i)=>
+    `<div class="row"><span>${x.minute} · ${x.team==='A'?$('teamA').value:$('teamB').value}</span><span>⬇ ${esc(x.out)} → ⬆ ${esc(x.in)}</span></div>`
+  ).join('') : '<div class="small">Aucun remplacement enregistré.</div>';
+}
+
+function addSub(t){
+  ensureSquad(t);
+  if(s['subs'+t].length>=5)return alert('Maximum 5 remplaçants : n°12 à n°16.');
+  s['subs'+t].push('');
+  save(); render();
+}
+function removeSub(t,i){
+  snapshot();
+  s['subs'+t].splice(i,1);
+  save(); render();
+}
+function esc(v){
+  return String(v||'').replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;');
+}
+function goTo(id){const el=$(id);if(el)el.scrollIntoView({behavior:'smooth',block:'start'});}
+function goTop(){window.scrollTo({top:0,behavior:'smooth'});}
+function undo(){if(!s.history.length)return;let h=JSON.parse(s.history.pop());s=h;save();render()}
+function setTeamColor(t,color){
+  if(!/^#[0-9a-fA-F]{6}$/.test(color)) return;
+  s['color'+t]=color;
+  save();
+  renderTeamColors();
+}
+function renderTeamColors(){
+  const a=s.colorA||'#485fc2', b=s.colorB||'#f0443d';
+  const ca=$('colorA'), cb=$('colorB'), sa=$('shieldA'), sb=$('shieldB'), ta=$('teamBoxA'), tb=$('teamBoxB');
+  if(ca) ca.value=a; if(cb) cb.value=b;
+  if(sa) sa.style.background=a; if(sb) sb.style.background=b;
+  if(ta) ta.style.setProperty('--team-color',a); if(tb) tb.style.setProperty('--team-color',b);
+}
+function save(){localStorage.setItem('footballScore',JSON.stringify(s));localStorage.setItem('footballA',$('teamA').value);localStorage.setItem('footballB',$('teamB').value)}
+function showSaved(){const e=$('saveToast');if(!e)return;e.style.display='block';clearTimeout(window._saveToastTimer);window._saveToastTimer=setTimeout(()=>e.style.display='none',1400)}
+function load(){try{s={...s,...JSON.parse(localStorage.getItem('footballScore')||'{}')};s.sinbins=s.sinbins||[];s.subLog=s.subLog||[];s.cardLog=s.cardLog||[];s.blA=s.blA||0;s.blB=s.blB||0;s.colorA=s.colorA||'#485fc2';s.colorB=s.colorB||'#f0443d';s.captainA=s.captainA||1;s.captainB=s.captainB||1;s.rosterA=s.rosterA||[];s.rosterB=s.rosterB||[];s.subsA=(s.subsA||[]).slice(0,5);s.subsB=(s.subsB||[]).slice(0,5);ensureSquad('A');ensureSquad('B')}catch(e){}$('teamA').value=localStorage.getItem('footballA')||'Poiré sur Vie';$('teamB').value=localStorage.getItem('footballB')||'Roche ESO';render()}
+function newMatch(){if(confirm('Commencer un nouveau match ?'))resetMatch()}
+function resetMatch(){pauseTimer();s={colorA:s.colorA||'#485fc2',colorB:s.colorB||'#f0443d',a:0,b:0,faA:0,jaA:0,roA:0,blA:0,reA:0,faB:0,jaB:0,roB:0,blB:0,reB:0,sec:0,phase:1,running:false,goalsA:[],goalsB:[],rosterA:Array(11).fill(''),rosterB:Array(11).fill(''),subsA:Array(5).fill(''),subsB:Array(5).fill(''),staffA:[],staffB:[],captainA:1,captainB:1,subLog:[],sinbins:[],cardLog:[],history:[]};save();render()}
+function finishMatch(){
+  pauseTimer();
+  s.finishedAt=new Date().toISOString();
+  save();
+  renderReport();
+}
+function renderReport(){
+  const rows=[];
+  const teamName=t=>$('team'+t).value;
+  const cardIcon=c=>c==='jaune'?'🟨':c==='rouge'?'🟥':'⬜';
+  const playerCards=(t,num)=> (s.cardLog||[]).filter(c=>c.team===t&&!c.staff&&c.number===num);
+  const staffCards=(t,i)=> (s.cardLog||[]).filter(c=>c.team===t&&c.staff&&c.staffIndex===i);
+  const playerLine=(t,n,i)=>{
+    const cards=playerCards(t,n);
+    const cardText=cards.length?cards.map(c=>cardIcon(c.card)+' '+c.minute).join(' '):'';
+    const excl=(s.sinbins||[]).find(x=>x.team===t && x.player.startsWith('n°'+n+' '));
+    return `<div class="report-person"><span><b>${n}</b> · ${esc(i||'Joueur '+n)}</span><span>${n===captainNumber(t)?'👑 ':''}${cardText}${excl?' ⏱️':''}</span></div>`;
+  };
+  ['A','B'].forEach(t=>{
+    const starters=s['roster'+t]||[], subs=s['subs'+t]||[], staff=s['staff'+t]||[];
+    rows.push(`<section class="report-section"><h3>${esc(teamName(t))}</h3><div class="report-scoreline"><span>${esc(teamName(t))}</span><strong>${t==='A'?s.a:s.b}</strong></div>`);
+    rows.push('<h4>👕 Joueurs</h4><div class="report-list">');
+    starters.slice(0,11).forEach((n,i)=>rows.push(playerLine(t,i+1,n)));
+    subs.forEach((n,i)=>rows.push(playerLine(t,12+i,n)));
+    rows.push('</div><h4>🧑‍🏫 Staff</h4><div class="report-list">');
+    if(staff.length) staff.forEach((x,i)=>{const name=typeof x==='string'?x:(x.name||'');const role=typeof x==='string'?'':(x.role||'');const cards=staffCards(t,i);rows.push(`<div class="report-person"><span><b>${esc(name||'Staff '+(i+1))}</b>${role?' · '+esc(role):''}</span><span>${cards.map(c=>cardIcon(c.card)+' '+c.minute).join(' ')}</span></div>`)}); else rows.push('<div class="small">Aucun staff renseigné</div>');
+    rows.push('</div><div class="report-summary">🟨 '+s['ja'+t]+' · 🟥 '+s['ro'+t]+' · ⬜ '+s['bl'+t]+' · ⚽ Fautes '+s['fa'+t]+' · 🔄 Remplacements '+s['re'+t]+'</div></section>');
+    rows.push(`<section class="report-section"><h4>⚽ Buts</h4>${s['goals'+t].length?s['goals'+t].map(g=>`<div>⚽ ${esc(g.min)} · ${esc(g.player||'Buteur non renseigné')}</div>`).join(''):'<div class="small">Aucun but</div>'}</section>`);
+  });
+  rows.push('<section class="report-section"><h3>🔄 Remplacements</h3>');
+  rows.push((s.subLog||[]).length?s.subLog.map(x=>`<div>${esc(x.minute)} · ${esc(teamName(x.team))} · ⬇ ${esc(x.out)} → ⬆ ${esc(x.in)}</div>`).join(''):'<div class="small">Aucun remplacement</div>');
+  rows.push('</section><section class="report-section"><h3>📝 Chronologie des cartons</h3>');
+  rows.push((s.cardLog||[]).length?s.cardLog.map(x=>`<div>${esc(x.minute)} · ${cardIcon(x.card)} ${esc(teamName(x.team))} · ${x.staff?'Staff':'n°'+x.number} · ${esc(x.player||'')}</div>`).join(''):'<div class="small">Aucun carton</div>');
+  rows.push('</section>');
+  const finished=s.finishedAt?new Date(s.finishedAt).toLocaleString('fr-FR'):'Match en cours';
+  $('reportBody').innerHTML=`<div class="report-score">${esc($('teamA').value)} <b>${s.a} - ${s.b}</b> ${esc($('teamB').value)}</div><div class="report-meta">⏱️ ${esc(finished)} · Durée ${fmt(s.sec)}</div>`+rows.join('');
+  $('reportModal').classList.add('show');
+}
+function closeReport(){ $('reportModal').classList.remove('show') }
+function printReport(){ window.print(); }
+async function share(){let txt=`${$('teamA').value} ${s.a} - ${s.b} ${$('teamB').value}`;if(navigator.share)await navigator.share({title:'Résultat du match',text:txt});else alert(txt)}
+load();
+</script>
+
+<script>
+// V35 : gestion directe et unique des 3 commandes principales.
+(function(){
+  function byId(id){ return document.getElementById(id); }
+  function stop(e){ e.preventDefault(); e.stopImmediatePropagation(); }
+  function setup(){
+    const nouveau=byId("newMatchBtn");
+    const sauver=byId("saveBtn");
+    const plus=byId("matchPlusBtn");
+    if(nouveau){
+      nouveau.removeAttribute("onclick");
+      nouveau.addEventListener("click",function(e){
+        stop(e);
+        if(window.confirm("Commencer un nouveau match ?")){
+          try{ resetMatch(); }catch(err){ alert("Erreur lors du nouveau match : "+err.message); }
+        }
+      },true);
+    }
+    if(sauver){
+      sauver.removeAttribute("onclick");
+      sauver.addEventListener("click",function(e){
+        stop(e);
+        try{ save(); showSaved(); }catch(err){ alert("Erreur lors de la sauvegarde : "+err.message); }
+      },true);
+    }
+    if(plus){
+      plus.removeAttribute("onclick");
+      plus.addEventListener("click",function(e){
+        stop(e);
+        try{
+          const m=byId("matchActions");
+          if(!m) throw new Error("Panneau des actions introuvable");
+          byId("actionTeamA").textContent=byId("teamA").value || "Équipe A";
+          byId("actionTeamB").textContent=byId("teamB").value || "Équipe B";
+          actionTeam=null;
+          byId("actionChoice").style.display="none";
+          m.classList.add("show");
+        }catch(err){ alert("Erreur du bouton + : "+err.message); }
+      },true);
+    }
+  }
+  if(document.readyState==="loading") document.addEventListener("DOMContentLoaded",setup,{once:true});
+  else setup();
+})();
+</script>
+
+</body></html>
