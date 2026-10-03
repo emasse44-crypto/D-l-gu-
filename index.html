@@ -27,13 +27,27 @@ button:active{transform:scale(.97)}
 .page.active{display:block}
 .back{width:100%;margin-bottom:12px}
 input{width:100%;padding:12px;border-radius:9px;border:1px solid #4b5563;background:#111827;color:white;font-size:16px}
-@media(max-width:600px){.score{font-size:50px}.team{font-size:18px}.mainbuttons{grid-template-columns:1fr}.menu{grid-template-columns:1fr}}
+.composition-team{margin-top:18px}
+.player-row{display:grid;grid-template-columns:45px 1fr 130px;gap:8px;align-items:center;margin-bottom:8px}
+.player-number{font-weight:bold;text-align:center;background:#374151;border-radius:9px;padding:12px}
+.captain-button{padding:10px;font-size:14px}
+.captain-button.selected{background:#facc15;color:#422006}
+.section-title{margin:22px 0 10px}
+.note{color:#9ca3af;font-size:14px}
+@media(max-width:600px){
+  .score{font-size:50px}
+  .team{font-size:18px}
+  .mainbuttons{grid-template-columns:1fr}
+  .menu{grid-template-columns:1fr}
+  .player-row{grid-template-columns:38px 1fr 105px}
+  .player-row input{min-width:0}
+}
 </style>
 </head>
 <body>
 <div class="app">
 <h1>⚽ Tableau des scores Football</h1>
-<div class="version">VERSION SIMPLE ET STABLE</div>
+<div class="version">VERSION SIMPLE ET STABLE + COMPOSITIONS</div>
 
 <section id="home">
 <div class="card">
@@ -71,13 +85,25 @@ input{width:100%;padding:12px;border-radius:9px;border:1px solid #4b5563;backgro
 <section class="page card" id="compositions">
 <button class="back">← Retour</button>
 <h2>Compositions</h2>
-<p>Cette partie sera ajoutée après validation du score et du chronomètre.</p>
+<p class="note">1 à 11 : titulaires · 12 à 16 : remplaçants. Le capitaine est sélectionnable.</p>
+
+<div class="composition-team">
+<h3>Équipe A</h3>
+<div id="playersA"></div>
+</div>
+
+<div class="composition-team">
+<h3>Équipe B</h3>
+<div id="playersB"></div>
+</div>
+
+<button class="green" id="saveCompositions" style="width:100%;margin-top:18px">Enregistrer les compositions</button>
 </section>
 
 <section class="page card" id="changes">
 <button class="back">← Retour</button>
 <h2>Changements</h2>
-<p>Cette partie sera ajoutée après validation du fonctionnement de base.</p>
+<p>Cette partie sera ajoutée après validation des compositions.</p>
 </section>
 
 <section class="page card" id="events">
@@ -131,6 +157,9 @@ var seconds=0;
 var running=false;
 var timer=null;
 
+var playersA=Array.from({length:16},function(_,i){return {name:"",captain:false};});
+var playersB=Array.from({length:16},function(_,i){return {name:"",captain:false};});
+
 function el(id){return document.getElementById(id);}
 
 function update(){
@@ -168,6 +197,54 @@ function reset(){
   update();
 }
 
+function renderPlayers(team,containerId){
+  var container=el(containerId);
+  container.innerHTML="";
+  team.forEach(function(player,index){
+    var row=document.createElement("div");
+    row.className="player-row";
+
+    var number=document.createElement("div");
+    number.className="player-number";
+    number.textContent=index+1;
+
+    var input=document.createElement("input");
+    input.type="text";
+    input.placeholder=index<11?"Titulaire":"Remplaçant";
+    input.value=player.name;
+    input.setAttribute("data-team",containerId);
+    input.setAttribute("data-index",index);
+
+    var cap=document.createElement("button");
+    cap.type="button";
+    cap.className="captain-button"+(player.captain?" selected":"");
+    cap.textContent=player.captain?"★ Capitaine":"Capitaine";
+    cap.onclick=function(){
+      team.forEach(function(p){p.captain=false;});
+      player.captain=true;
+      renderPlayers(team,containerId);
+    };
+
+    row.appendChild(number);
+    row.appendChild(input);
+    row.appendChild(cap);
+    container.appendChild(row);
+  });
+}
+
+function readPlayers(team,containerId){
+  var container=el(containerId);
+  container.querySelectorAll("input[data-index]").forEach(function(input){
+    var index=Number(input.getAttribute("data-index"));
+    team[index].name=input.value.trim();
+  });
+}
+
+function renderAllPlayers(){
+  renderPlayers(playersA,"playersA");
+  renderPlayers(playersB,"playersB");
+}
+
 el("goalA").onclick=function(){scoreA++;update();};
 el("goalB").onclick=function(){scoreB++;update();};
 el("start").onclick=start;
@@ -178,6 +255,9 @@ el("pausePage").onclick=pause;
 
 document.querySelectorAll("[data-page]").forEach(function(button){
   button.onclick=function(){
+    if(button.getAttribute("data-page")==="compositions"){
+      renderAllPlayers();
+    }
     el("home").style.display="none";
     document.querySelectorAll(".page").forEach(function(p){p.classList.remove("active");});
     el(button.getAttribute("data-page")).classList.add("active");
@@ -199,6 +279,13 @@ el("saveNames").onclick=function(){
   el("home").style.display="block";
 };
 
+el("saveCompositions").onclick=function(){
+  readPlayers(playersA,"playersA");
+  readPlayers(playersB,"playersB");
+  renderAllPlayers();
+  alert("Compositions enregistrées.");
+};
+
 if("serviceWorker" in navigator){
   window.addEventListener("load",function(){
     navigator.serviceWorker.getRegistrations().then(function(regs){
@@ -207,6 +294,7 @@ if("serviceWorker" in navigator){
   });
 }
 
+renderAllPlayers();
 update();
 })();
 </script>
