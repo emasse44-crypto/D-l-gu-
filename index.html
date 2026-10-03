@@ -14,7 +14,7 @@ body{padding:12px}.app{width:min(1100px,100%);margin:auto}.top{display:flex;just
 .match{background:var(--panel);border:1px solid var(--line);border-radius:22px;overflow:hidden;box-shadow:0 12px 30px #0004}.bar{padding:12px 16px;text-align:center;background:#0d151c;border-bottom:1px solid var(--line);font-weight:700}.competition{color:var(--muted);font-size:13px;margin-top:4px}
 .teams{display:grid;grid-template-columns:1fr 1.15fr 1fr;align-items:center;text-align:center;padding:24px 14px 20px;gap:8px}.team{min-width:0}.badge{width:76px;height:76px;border-radius:50%;background:var(--panel2);border:2px solid var(--line);display:grid;place-items:center;margin:auto;font-size:30px}.teamname{font-size:clamp(17px,4vw,25px);font-weight:800;margin-top:10px;word-break:break-word}.score{font-size:clamp(48px,13vw,82px);font-weight:900;line-height:1}.status{margin-top:9px;color:var(--muted);font-size:13px}.clock{font-size:clamp(24px,7vw,42px);font-weight:800;margin-top:9px}.controls{display:grid;grid-template-columns:1fr 1fr;gap:10px;padding:0 14px 14px}.controls button,.actions button{min-height:52px;border:0;border-radius:14px;font-size:17px;font-weight:800;background:var(--panel2);color:var(--txt);border:1px solid var(--line);cursor:pointer}.controls button:active,.actions button:active{transform:scale(.98)}.primary{background:var(--accent)!important;color:#06120a!important;border-color:transparent!important}.secondary{background:#263745!important}.actions{display:grid;grid-template-columns:repeat(3,1fr);gap:10px;padding:14px;border-top:1px solid var(--line);background:#151f27}.section{margin-top:14px;background:var(--panel);border:1px solid var(--line);border-radius:18px;padding:16px}.section h2{font-size:18px;margin:0 0 12px}.grid{display:grid;grid-template-columns:1fr 1fr;gap:10px}.field{background:var(--panel2);border:1px solid var(--line);border-radius:12px;padding:11px}.field label{display:block;color:var(--muted);font-size:12px;margin-bottom:5px}.field input{width:100%;background:transparent;border:0;outline:0;color:var(--txt);font-size:17px;font-weight:700}.hidden{display:none!important}.footer{text-align:center;color:var(--muted);font-size:12px;padding:18px 0}
 @media(max-width:560px){body{padding:8px}.teams{padding-top:18px}.badge{width:62px;height:62px}.actions{grid-template-columns:1fr 1fr}.grid{grid-template-columns:1fr}.top{padding-bottom:8px}}
- .player{display:flex;align-items:center;gap:8px;margin:6px 0}.num{width:32px;height:32px;border-radius:8px;background:#263745;display:grid;place-items:center;font-weight:800}.player input{min-width:0;flex:1;background:#202e39;border:1px solid #334553;border-radius:9px;color:#fff;padding:8px;font-size:14px}.captain{font-size:12px;color:#aab7c2} </style>
+ .player{display:flex;align-items:center;gap:8px;margin:6px 0}.num{width:32px;height:32px;border-radius:8px;background:#263745;display:grid;place-items:center;font-weight:800}.player input{min-width:0;flex:1;background:#202e39;border:1px solid #334553;border-radius:9px;color:#fff;padding:8px;font-size:14px}.captain{font-size:12px;color:#aab7c2}  .subbox{margin-top:10px;padding:12px;background:#202e39;border:1px solid #334553;border-radius:12px}.subbox h3{margin:0 0 8px;font-size:14px}.subrow{display:grid;grid-template-columns:1fr 1fr;gap:8px;margin-top:8px}.subrow select{width:100%;background:#18232d;color:#fff;border:1px solid #334553;border-radius:9px;padding:10px;font-size:14px}.subrow button{border:0;border-radius:9px;padding:10px;font-weight:800;background:#35c759;color:#06120a} .capt{display:flex;gap:8px;align-items:center;margin-top:8px;color:#aab7c2;font-size:13px}.capt select{flex:1;background:#18232d;color:#fff;border:1px solid #334553;border-radius:9px;padding:9px} </style>
 </head>
 <body>
 <main class="app">
@@ -58,6 +58,15 @@ body{padding:12px}.app{width:min(1100px,100%);margin:auto}.top{display:flex;just
 </section>
 
 <section class="section">
+<h2>Capitaines et changements</h2>
+<div class="grid">
+<div><div class="capt">Capitaine <select id="captA"></select></div><div class="subbox"><h3>Changement Équipe A</h3><div class="subrow"><select id="outA"></select><select id="inA"></select></div><div class="subrow"><button id="subA">Effectuer le changement</button></div></div></div>
+<div><div class="capt">Capitaine <select id="captB"></select></div><div class="subbox"><h3>Changement Équipe B</h3><div class="subrow"><select id="outB"></select><select id="inB"></select></div><div class="subrow"><button id="subB">Effectuer le changement</button></div></div></div>
+</div>
+<div id="subLog" class="note">Aucun changement effectué.</div>
+</section>
+
+<section class="section">
 <h2>Prochaine étape</h2>
 <div class="grid">
 <div class="field"><label>Phase</label><strong>1re mi-temps</strong></div>
@@ -79,7 +88,23 @@ function drawRoster(side){
   box.appendChild(d);
  });
 }
-drawRoster("A");drawRoster("B");
+function fillSelect(id,side,onlyStarters=false){
+ const s=$(id); s.innerHTML="";
+ roster[side].forEach(p=>{if(onlyStarters&&p.n>11)return;const o=document.createElement("option");o.value=p.n;o.textContent=p.n+" "+(p.name||"Joueur "+p.n);s.appendChild(o)});
+}
+function refreshChoices(){["captA","outA"].forEach(id=>fillSelect(id,"A",true));fillSelect("inA","A");["captB","outB"].forEach(id=>fillSelect(id,"B",true));fillSelect("inB","B");}
+function performSub(side){
+ const out=Number($("out"+side).value), inn=Number($("in"+side).value);
+ if(inn<=11||out===inn){return}
+ const outP=roster[side].find(p=>p.n===out), inP=roster[side].find(p=>p.n===inn);
+ const t=outP.name; outP.name=inP.name||("Joueur "+inn); inP.name=t;
+ $("subLog").textContent="Changement "+side+" : "+outP.name+" entre, "+inP.name+" sort.";
+ drawRoster("A");drawRoster("B");refreshChoices();
+}
+drawRoster("A");drawRoster("B");refreshChoices();
+["teamAInput","teamBInput","competition","venue"].forEach(id=>$(id).addEventListener("input",sync));
+["captA","captB"].forEach(id=>$(id).addEventListener("change",()=>{}));
+$("subA").onclick=()=>performSub("A");$("subB").onclick=()=>performSub("B");
 let timer=null;
 const $=id=>document.getElementById(id);
 function render(){ $("scoreA").textContent=state.a; $("scoreB").textContent=state.b; $("clock").textContent=String(Math.floor(state.seconds/60)).padStart(2,"0")+":"+String(state.seconds%60).padStart(2,"0"); $("period").textContent=state.seconds?"1re mi-temps":"Avant-match"; }
@@ -88,7 +113,6 @@ function pauseTimer(){state.running=false;clearInterval(timer);timer=null;$("sta
 function resetMatch(){pauseTimer();state.a=0;state.b=0;state.seconds=0;$("start").textContent="▶ Démarrer";$("period").textContent="Avant-match";render();}
 $("goalA").onclick=()=>{state.a++;render()};$("goalB").onclick=()=>{state.b++;render()};$("start").onclick=startTimer;$("pause").onclick=pauseTimer;$("reset").onclick=resetMatch;
 function sync(){ $("teamA").textContent=$("teamAInput").value||"Équipe A";$("teamB").textContent=$("teamBInput").value||"Équipe B";$("compDisplay").textContent=$("competition").value||"MATCH DE FOOTBALL";$("venueDisplay").textContent=$("venue").value||"Stade • à définir"; }
-["teamAInput","teamBInput","competition","venue"].forEach(id=>$(id).addEventListener("input",sync));
 render();sync();
 if("serviceWorker" in navigator){window.addEventListener("load",()=>navigator.serviceWorker.register("./sw.js").catch(()=>{}))}
 </script>
