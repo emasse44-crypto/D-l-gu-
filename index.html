@@ -14,7 +14,7 @@ body{padding:12px}.app{width:min(1100px,100%);margin:auto}.top{display:flex;just
 .match{background:var(--panel);border:1px solid var(--line);border-radius:22px;overflow:hidden;box-shadow:0 12px 30px #0004}.bar{padding:12px 16px;text-align:center;background:#0d151c;border-bottom:1px solid var(--line);font-weight:700}.competition{color:var(--muted);font-size:13px;margin-top:4px}
 .teams{display:grid;grid-template-columns:1fr 1.15fr 1fr;align-items:center;text-align:center;padding:24px 14px 20px;gap:8px}.team{min-width:0}.badge{width:76px;height:76px;border-radius:50%;background:var(--panel2);border:2px solid var(--line);display:grid;place-items:center;margin:auto;font-size:30px}.teamname{font-size:clamp(17px,4vw,25px);font-weight:800;margin-top:10px;word-break:break-word}.score{font-size:clamp(48px,13vw,82px);font-weight:900;line-height:1}.status{margin-top:9px;color:var(--muted);font-size:13px}.clock{font-size:clamp(24px,7vw,42px);font-weight:800;margin-top:9px}.controls{display:grid;grid-template-columns:1fr 1fr;gap:10px;padding:0 14px 14px}.controls button,.actions button{min-height:52px;border:0;border-radius:14px;font-size:17px;font-weight:800;background:var(--panel2);color:var(--txt);border:1px solid var(--line);cursor:pointer}.controls button:active,.actions button:active{transform:scale(.98)}.primary{background:var(--accent)!important;color:#06120a!important;border-color:transparent!important}.secondary{background:#263745!important}.actions{display:grid;grid-template-columns:repeat(3,1fr);gap:10px;padding:14px;border-top:1px solid var(--line);background:#151f27}.section{margin-top:14px;background:var(--panel);border:1px solid var(--line);border-radius:18px;padding:16px}.section h2{font-size:18px;margin:0 0 12px}.grid{display:grid;grid-template-columns:1fr 1fr;gap:10px}.field{background:var(--panel2);border:1px solid var(--line);border-radius:12px;padding:11px}.field label{display:block;color:var(--muted);font-size:12px;margin-bottom:5px}.field input{width:100%;background:transparent;border:0;outline:0;color:var(--txt);font-size:17px;font-weight:700}.hidden{display:none!important}.footer{text-align:center;color:var(--muted);font-size:12px;padding:18px 0}
 @media(max-width:560px){body{padding:8px}.teams{padding-top:18px}.badge{width:62px;height:62px}.actions{grid-template-columns:1fr 1fr}.grid{grid-template-columns:1fr}.top{padding-bottom:8px}}
- .player{display:flex;align-items:center;gap:8px;margin:6px 0}.num{width:32px;height:32px;border-radius:8px;background:#263745;display:grid;place-items:center;font-weight:800}.player input{min-width:0;flex:1;background:#202e39;border:1px solid #334553;border-radius:9px;color:#fff;padding:8px;font-size:14px}.captain{font-size:12px;color:#aab7c2}  .subbox{margin-top:10px;padding:12px;background:#202e39;border:1px solid #334553;border-radius:12px}.subbox h3{margin:0 0 8px;font-size:14px}.subrow{display:grid;grid-template-columns:1fr 1fr;gap:8px;margin-top:8px}.subrow select{width:100%;background:#18232d;color:#fff;border:1px solid #334553;border-radius:9px;padding:10px;font-size:14px}.subrow button{border:0;border-radius:9px;padding:10px;font-weight:800;background:#35c759;color:#06120a} .capt{display:flex;gap:8px;align-items:center;margin-top:8px;color:#aab7c2;font-size:13px}.capt select{flex:1;background:#18232d;color:#fff;border:1px solid #334553;border-radius:9px;padding:9px} </style>
+ .player{display:flex;align-items:center;gap:8px;margin:6px 0}.num{width:32px;height:32px;border-radius:8px;background:#263745;display:grid;place-items:center;font-weight:800}.player input{min-width:0;flex:1;background:#202e39;border:1px solid #334553;border-radius:9px;color:#fff;padding:8px;font-size:14px}.captain{font-size:12px;color:#aab7c2}  .subbox{margin-top:10px;padding:12px;background:#202e39;border:1px solid #334553;border-radius:12px}.subbox h3{margin:0 0 8px;font-size:14px}.subrow{display:grid;grid-template-columns:1fr 1fr;gap:8px;margin-top:8px}.subrow select{width:100%;background:#18232d;color:#fff;border:1px solid #334553;border-radius:9px;padding:10px;font-size:14px}.subrow button{border:0;border-radius:9px;padding:10px;font-weight:800;background:#35c759;color:#06120a} .capt{display:flex;gap:8px;align-items:center;margin-top:8px;color:#aab7c2;font-size:13px}.capt select{flex:1;background:#18232d;color:#fff;border:1px solid #334553;border-radius:9px;padding:9px}  .eventbox{margin-top:10px}.eventrow{display:grid;grid-template-columns:80px 1fr 110px;gap:8px;margin:8px 0}.eventrow select,.eventrow input{width:100%;background:#18232d;color:#fff;border:1px solid #334553;border-radius:9px;padding:10px;font-size:14px}.eventrow button{border:0;border-radius:9px;background:#35c759;color:#06120a;font-weight:800}.event{display:flex;gap:8px;align-items:center;padding:8px 0;border-bottom:1px solid #334553;font-size:14px}.event:last-child{border-bottom:0}.tag{padding:3px 7px;border-radius:7px;background:#263745;font-weight:800} </style>
 </head>
 <body>
 <main class="app">
@@ -67,6 +67,15 @@ body{padding:12px}.app{width:min(1100px,100%);margin:auto}.top{display:flex;just
 </section>
 
 <section class="section">
+<h2>Buts et cartons</h2>
+<div class="grid">
+<div class="eventbox"><h3 style="margin:0 0 8px">But</h3><div class="eventrow"><input id="goalMinute" type="number" min="0" max="130" placeholder="Min"><select id="goalTeam"><option value="A">Équipe A</option><option value="B">Équipe B</option></select><button id="addGoal">Ajouter</button></div></div>
+<div class="eventbox"><h3 style="margin:0 0 8px">Carton</h3><div class="eventrow"><input id="cardMinute" type="number" min="0" max="130" placeholder="Min"><select id="cardTeam"><option value="A">Équipe A</option><option value="B">Équipe B</option></select><button id="addCard">Ajouter</button></div><select id="cardType" style="width:100%;background:#18232d;color:#fff;border:1px solid #334553;border-radius:9px;padding:10px"><option value="Jaune">🟨 Jaune</option><option value="Rouge">🟥 Rouge</option><option value="Blanc">⬜ Blanc</option></select></div>
+</div>
+<div id="events"><div class="note">Aucun événement.</div></div>
+</section>
+
+<section class="section">
 <h2>Prochaine étape</h2>
 <div class="grid">
 <div class="field"><label>Phase</label><strong>1re mi-temps</strong></div>
@@ -77,7 +86,7 @@ body{padding:12px}.app{width:min(1100px,100%);margin:auto}.top{display:flex;just
 <div class="footer">Base stable du projet • les fonctions seront ajoutées progressivement</div>
 </main>
 <script>
-const state={a:0,b:0,seconds:0,running:false};
+const state={a:0,b:0,seconds:0,running:false,events:[]};
 const roster={A:Array.from({length:16},(_,i)=>({n:i+1,name:""})),B:Array.from({length:16},(_,i)=>({n:i+1,name:""}))};
 function drawRoster(side){
  const box=$(side==="A"?"rosterA":"rosterB"); box.innerHTML="";
@@ -99,7 +108,22 @@ function performSub(side){
  const outP=roster[side].find(p=>p.n===out), inP=roster[side].find(p=>p.n===inn);
  const t=outP.name; outP.name=inP.name||("Joueur "+inn); inP.name=t;
  $("subLog").textContent="Changement "+side+" : "+outP.name+" entre, "+inP.name+" sort.";
- drawRoster("A");drawRoster("B");refreshChoices();
+ function addEvent(type){
+ const minute=Number($(type==="But"?"goalMinute":"cardMinute").value);
+ if(!Number.isFinite(minute)||minute<0)return;
+ const side=$(type==="But"?"goalTeam":"cardTeam").value;
+ let label=type==="But"?"⚽ But":"🟨 "+$("cardType").value;
+ if(type==="But"){if(side==="A")state.a++;else state.b++;}
+ state.events.push({type,minute,side,label});
+ renderEvents();render();
+}
+function renderEvents(){
+ const box=$("events");box.innerHTML="";
+ if(!state.events.length){box.innerHTML='<div class="note">Aucun événement.</div>';return}
+ [...state.events].sort((x,y)=>x.minute-y.minute).forEach(e=>{const d=document.createElement("div");d.className="event";d.innerHTML='<span class="tag">'+e.minute+"'</span><strong>"+e.label+"</strong><span>"+(e.side==="A"?$("teamA").textContent:$("teamB").textContent)+"</span>";box.appendChild(d)});
+}
+$("addGoal").onclick=()=>addEvent("But");$("addCard").onclick=()=>addEvent("Carton");
+drawRoster("A");drawRoster("B");refreshChoices();
 }
 drawRoster("A");drawRoster("B");refreshChoices();
 ["teamAInput","teamBInput","competition","venue"].forEach(id=>$(id).addEventListener("input",sync));
