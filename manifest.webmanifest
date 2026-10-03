@@ -1,8 +1,8 @@
 {
-  "id": "/D-l-gu-/football-v1",
-  "name": "Tableau des scores Football",
+  "id": "/D-l-gu-/football-final-2026",
+  "name": "Tableau des scores Football FINAL",
   "short_name": "Scores Football",
-  "start_url": "/D-l-gu/?app=football-v1",
+  "start_url": "/D-l-gu/?app=football-final-2026",
   "scope": "/D-l-gu/",
   "display": "standalone",
   "background_color": "#111827",
