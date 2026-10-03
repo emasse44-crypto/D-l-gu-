@@ -43,7 +43,7 @@ button,select,input{font:inherit}.controls button,.actions button,.homeMenu butt
 <div class="homeMenu">
 <button data-page="compositions">👥 Compositions<small>Titulaires et remplaçants</small></button>
 <button data-page="changes">🔄 Changements<small>Entrées et sorties</small></button>
-<button data-page="events">⚽ Buts & cartons<small>Événements du match</small></button>
+<button data-page="events">⚽ Buts & cartons<small>Événements du match</small></button><button data-page="sanctions">🛑 Sanctions<small>Exclusions temporaires et rouges</small></button>
 <button data-page="clock">⏱️ Chronomètre<small>Temps de jeu</small></button>
 <button data-page="sheet">📋 Feuille de match<small>Résumé du match</small></button>
 <button data-page="settings">⚙️ Match<small>Équipes, stade, compétition</small></button>
@@ -62,6 +62,8 @@ button,select,input{font:inherit}.controls button,.actions button,.homeMenu butt
 <div class="eventbox"><h3>Ajouter un carton</h3><input id="cardMinute" type="number" min="0" max="130" placeholder="Minute"><select id="cardTeam"><option value="A">Équipe A</option><option value="B">Équipe B</option></select><select id="cardType"><option>Jaune</option><option>Rouge</option><option>Blanc</option></select><select id="cardPlayer"></select><button id="addCard">Ajouter le carton</button></div>
 </div><div id="eventsList" style="margin-top:12px"><p class="muted">Aucun événement.</p></div></div></section>
 
+<section class="page" id="page-sanctions"><div class="section"><button class="back" data-home>← Retour au score</button><h2>Sanctions</h2><div class="grid"><div class="eventbox"><h3>Exclusion temporaire</h3><div class="mini">Carton blanc • 10 minutes</div><input id="whiteMinute" type="number" min="0" max="130" placeholder="Minute"><select id="whiteTeam"><option value="A">Équipe A</option><option value="B">Équipe B</option></select><select id="whitePlayer"></select><button id="addWhite">Exclure 10 minutes</button></div><div class="eventbox"><h3>Carton rouge</h3><div class="mini">Exclusion jusqu'à la fin du match</div><input id="redMinute" type="number" min="0" max="130" placeholder="Minute"><select id="redTeam"><option value="A">Équipe A</option><option value="B">Équipe B</option></select><select id="redPlayer"></select><button id="addRed">Exclure définitivement</button></div></div><div id="sanctionsList" style="margin-top:12px"><p class="muted">Aucune sanction.</p></div></div></section>
+
 <section class="page" id="page-clock"><div class="section"><button class="back" data-home>← Retour au score</button><h2>Chronomètre</h2><div class="clock" style="text-align:center" id="clockPage">00:00</div><p class="muted" id="clockStatus" style="text-align:center">Avant-match</p><div class="actions" style="border:0;background:transparent;padding:0"><button id="startPage">▶ Démarrer</button><button id="pausePage">⏸ Pause</button><button id="resetPage">↺ Remettre à zéro</button></div></div></section>
 
 <section class="page" id="page-sheet"><div class="section"><button class="back" data-home>← Retour au score</button><h2>Feuille de match</h2><div class="sheet" id="sheetContent"></div></div></section>
@@ -72,14 +74,18 @@ button,select,input{font:inherit}.controls button,.actions button,.homeMenu butt
 </main>
 <script>
 const $=id=>document.getElementById(id);
-const state={a:0,b:0,seconds:0,running:false,events:[],substitutions:[],captain:{A:1,B:1}};
+const state={a:0,b:0,seconds:0,running:false,events:[],substitutions:[],captain:{A:1,B:1},sanctions:[]};
 const roster={A:Array.from({length:16},(_,i)=>({n:i+1,name:""})),B:Array.from({length:16},(_,i)=>({n:i+1,name:""}))};
 let timer=null;
 
 function save(){localStorage.setItem("footballAppState",JSON.stringify({state,roster,competition:$("competition").value,venue:$("venue").value,teamA:$("teamAInput").value,teamB:$("teamBInput").value}))}
 function load(){try{const x=JSON.parse(localStorage.getItem("footballAppState"));if(!x)return;if(x.state)Object.assign(state,x.state);if(x.roster){roster.A.splice(0,16,...x.roster.A);roster.B.splice(0,16,...x.roster.B)}if(x.competition)$("competition").value=x.competition;if(x.venue)$("venue").value=x.venue;if(x.teamA)$("teamAInput").value=x.teamA;if(x.teamB)$("teamBInput").value=x.teamB}catch(e){}}
 
-function render(){ $("scoreA").textContent=state.a;$("scoreB").textContent=state.b;const t=String(Math.floor(state.seconds/60)).padStart(2,"0")+":"+String(state.seconds%60).padStart(2,"0");$("clock").textContent=t;$("clockPage").textContent=t;$("period").textContent=state.running?"1re mi-temps":state.seconds?"En pause":"Avant-match";$("clockStatus").textContent=$("period").textContent;save()}
+function fillSanctionPlayers(id,side){const s=$(id);s.innerHTML="";roster[side].forEach(p=>{const o=document.createElement("option");o.value=p.n;o.textContent=p.n+" "+(p.name||"Joueur "+p.n);s.appendChild(o)})}
+function refreshSanctionPlayers(){fillSanctionPlayers("whitePlayer",$("whiteTeam").value);fillSanctionPlayers("redPlayer",$("redTeam").value)}
+function addSanction(kind){const minute=Number($(kind==="white"?"whiteMinute":"redMinute").value);if(!Number.isFinite(minute)||minute<0)return;const side=$(kind==="white"?"whiteTeam":"redTeam").value;const no=Number($(kind==="white"?"whitePlayer":"redPlayer").value);const p=roster[side].find(x=>x.n===no);const player=p?p.name||("Joueur "+p.n):"Joueur";state.sanctions.push({kind,minute,side,player,startSecond:state.seconds});state.events.push({type:"sanction",minute,side,player,label:kind==="white"?"⬜ Exclusion 10 min":"🟥 Exclusion définitive"});renderEvents();renderSheet();renderSanctions();save()}
+function renderSanctions(){const box=$("sanctionsList");if(!box)return;box.innerHTML="";if(!state.sanctions.length){box.innerHTML='<p class="muted">Aucune sanction.</p>';return}state.sanctions.forEach(s=>{const d=document.createElement("div");d.className="event";const team=s.side==="A"?$("teamA").textContent:$("teamB").textContent;let status="🟥 Jusqu'à la fin";if(s.kind==="white"){const remaining=Math.max(0,600-(state.seconds-s.startSecond));status=remaining>0?"⏳ "+Math.ceil(remaining/60)+" min":"✅ Terminée"}d.innerHTML='<span class="tag">'+s.minute+"'</span><span>"+s.player+" · "+team+"</span><span>"+status+"</span>";box.appendChild(d)})}
+function render(){ $("scoreA").textContent=state.a;$("scoreB").textContent=state.b;const t=String(Math.floor(state.seconds/60)).padStart(2,"0")+":"+String(state.seconds%60).padStart(2,"0");$("clock").textContent=t;$("clockPage").textContent=t;renderSanctions();$("period").textContent=state.running?"1re mi-temps":state.seconds?"En pause":"Avant-match";$("clockStatus").textContent=$("period").textContent;save()}
 function startTimer(){if(state.running)return;state.running=true;timer=setInterval(()=>{state.seconds++;render()},1000);render()}
 function pauseTimer(){state.running=false;clearInterval(timer);timer=null;render()}
 function resetMatch(){pauseTimer();state.a=0;state.b=0;state.seconds=0;state.events=[];state.substitutions=[];render();renderEvents();renderSheet()}
@@ -97,9 +103,9 @@ function renderSheet(){const a=$("teamA").textContent,b=$("teamB").textContent;l
 
 function showPage(name){document.querySelectorAll(".page").forEach(p=>p.classList.remove("active"));if(name){const p=$("page-"+name);if(p)p.classList.add("active");if(name==="compositions"){drawRoster("A");drawRoster("B")}if(name==="changes")refreshChoices();if(name==="events")renderEvents();if(name==="sheet")renderSheet()}}
 document.querySelectorAll("[data-page]").forEach(b=>b.onclick=()=>showPage(b.dataset.page));document.querySelectorAll("[data-home]").forEach(b=>b.onclick=()=>showPage(null));
-$("goalA").onclick=()=>{state.a++;render();renderSheet()};$("goalTeam").onchange=refreshEventPlayers;$("cardTeam").onchange=refreshEventPlayers;$("goalB").onclick=()=>{state.b++;render();renderSheet()};$("start").onclick=startTimer;$("pause").onclick=pauseTimer;$("reset").onclick=resetMatch;$("startPage").onclick=startTimer;$("pausePage").onclick=pauseTimer;$("resetPage").onclick=resetMatch;
+$("goalA").onclick=()=>{state.a++;render();renderSheet()};$("whiteTeam").onchange=refreshSanctionPlayers;$("redTeam").onchange=refreshSanctionPlayers;$("addWhite").onclick=()=>addSanction("white");$("addRed").onclick=()=>addSanction("red");$("goalTeam").onchange=refreshEventPlayers;$("cardTeam").onchange=refreshEventPlayers;$("goalB").onclick=()=>{state.b++;render();renderSheet()};$("start").onclick=startTimer;$("pause").onclick=pauseTimer;$("reset").onclick=resetMatch;$("startPage").onclick=startTimer;$("pausePage").onclick=pauseTimer;$("resetPage").onclick=resetMatch;
 $("addGoal").onclick=()=>addEvent("goal");$("addCard").onclick=()=>addEvent("card");$("subA").onclick=()=>performSub("A");$("subB").onclick=()=>performSub("B");$("captA").onchange=()=>{state.captain.A=Number($("captA").value);save()};$("captB").onchange=()=>{state.captain.B=Number($("captB").value);save()};$("saveSettings").onclick=()=>{sync();showPage(null)};
-load();sync();drawRoster("A");drawRoster("B");refreshChoices();render();renderEvents();renderSheet();refreshEventPlayers();
+load();sync();drawRoster("A");drawRoster("B");refreshChoices();refreshEventPlayers();refreshSanctionPlayers();render();renderEvents();renderSheet();renderSanctions();
 if("serviceWorker" in navigator)window.addEventListener("load",()=>navigator.serviceWorker.register("./sw.js").catch(()=>{}));
 </script>
 </body>
