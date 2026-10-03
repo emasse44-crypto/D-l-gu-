@@ -3,39 +3,68 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
-<meta name="theme-color" content="#111827">
+<meta name="theme-color" content="#101820">
 <meta name="description" content="Tableau de scores football pour téléphone et tablette">
 <link rel="manifest" href="./manifest.webmanifest">
 <title>Tableau des scores Football</title>
 <style>
-*{box-sizing:border-box}html,body{margin:0;min-height:100%;font-family:Arial,sans-serif;background:#111827;color:#fff}
-body{display:flex;justify-content:center;padding:16px}.app{width:min(100%,900px)}
-header{padding:18px 0 12px;text-align:center}h1{margin:0;font-size:clamp(24px,6vw,42px)}.sub{opacity:.7;margin-top:6px}
-.card{background:#1f2937;border:1px solid #374151;border-radius:18px;padding:20px;margin-top:16px}
-.teams{display:grid;grid-template-columns:1fr auto 1fr;gap:12px;align-items:center;text-align:center}.team{font-size:clamp(20px,5vw,32px);font-weight:700}.score{font-size:clamp(48px,13vw,88px);font-weight:800}
-button{border:0;border-radius:12px;padding:14px 18px;font-size:18px;font-weight:700;cursor:pointer}.primary{background:#fff;color:#111827;width:100%;margin-top:18px}
-.row{display:flex;gap:10px;flex-wrap:wrap}.row button{flex:1;min-width:120px}
-.note{margin:16px 0 0;text-align:center;opacity:.65;font-size:14px}
+:root{--bg:#101820;--panel:#18232d;--panel2:#202e39;--line:#334553;--txt:#f7fafc;--muted:#aab7c2;--accent:#35c759;--danger:#ff453a}
+*{box-sizing:border-box}html,body{margin:0;min-height:100%;background:var(--bg);color:var(--txt);font-family:Arial,sans-serif}
+body{padding:12px}.app{width:min(1100px,100%);margin:auto}.top{display:flex;justify-content:space-between;align-items:center;gap:10px;padding:6px 2px 14px}.top h1{font-size:clamp(20px,5vw,30px);margin:0}.pill{font-size:12px;color:var(--muted)}
+.match{background:var(--panel);border:1px solid var(--line);border-radius:22px;overflow:hidden;box-shadow:0 12px 30px #0004}.bar{padding:12px 16px;text-align:center;background:#0d151c;border-bottom:1px solid var(--line);font-weight:700}.competition{color:var(--muted);font-size:13px;margin-top:4px}
+.teams{display:grid;grid-template-columns:1fr 1.15fr 1fr;align-items:center;text-align:center;padding:24px 14px 20px;gap:8px}.team{min-width:0}.badge{width:76px;height:76px;border-radius:50%;background:var(--panel2);border:2px solid var(--line);display:grid;place-items:center;margin:auto;font-size:30px}.teamname{font-size:clamp(17px,4vw,25px);font-weight:800;margin-top:10px;word-break:break-word}.score{font-size:clamp(48px,13vw,82px);font-weight:900;line-height:1}.status{margin-top:9px;color:var(--muted);font-size:13px}.clock{font-size:clamp(24px,7vw,42px);font-weight:800;margin-top:9px}.controls{display:grid;grid-template-columns:1fr 1fr;gap:10px;padding:0 14px 14px}.controls button,.actions button{min-height:52px;border:0;border-radius:14px;font-size:17px;font-weight:800;background:var(--panel2);color:var(--txt);border:1px solid var(--line);cursor:pointer}.controls button:active,.actions button:active{transform:scale(.98)}.primary{background:var(--accent)!important;color:#06120a!important;border-color:transparent!important}.secondary{background:#263745!important}.actions{display:grid;grid-template-columns:repeat(3,1fr);gap:10px;padding:14px;border-top:1px solid var(--line);background:#151f27}.section{margin-top:14px;background:var(--panel);border:1px solid var(--line);border-radius:18px;padding:16px}.section h2{font-size:18px;margin:0 0 12px}.grid{display:grid;grid-template-columns:1fr 1fr;gap:10px}.field{background:var(--panel2);border:1px solid var(--line);border-radius:12px;padding:11px}.field label{display:block;color:var(--muted);font-size:12px;margin-bottom:5px}.field input{width:100%;background:transparent;border:0;outline:0;color:var(--txt);font-size:17px;font-weight:700}.hidden{display:none!important}.footer{text-align:center;color:var(--muted);font-size:12px;padding:18px 0}
+@media(max-width:560px){body{padding:8px}.teams{padding-top:18px}.badge{width:62px;height:62px}.actions{grid-template-columns:1fr 1fr}.grid{grid-template-columns:1fr}.top{padding-bottom:8px}}
 </style>
 </head>
 <body>
 <main class="app">
-<header><h1>Tableau des scores Football</h1><div class="sub">Nouvelle base propre</div></header>
-<section class="card">
-<div class="teams"><div class="team">Équipe A</div><div class="score" id="score">0 - 0</div><div class="team">Équipe B</div></div>
-<button class="primary" id="newMatch">Nouveau match</button>
-<div class="row"><button id="minusA">− Équipe A</button><button id="plusA">+ Équipe A</button><button id="minusB">− Équipe B</button><button id="plusB">+ Équipe B</button></div>
-<p class="note">Base technique stable. Les fonctions du match seront ajoutées une par une.</p>
+<header class="top"><h1>Tableau des scores Football</h1><span class="pill">V1 propre</span></header>
+
+<section class="match">
+<div class="bar"><div id="compDisplay">MATCH DE FOOTBALL</div><div class="competition" id="venueDisplay">Stade • à définir</div></div>
+<div class="teams">
+<div class="team"><div class="badge">A</div><div class="teamname" id="teamA">Équipe A</div></div>
+<div><div class="score"><span id="scoreA">0</span> - <span id="scoreB">0</span></div><div class="clock" id="clock">00:00</div><div class="status" id="period">Avant-match</div></div>
+<div class="team"><div class="badge">B</div><div class="teamname" id="teamB">Équipe B</div></div>
+</div>
+<div class="controls"><button id="goalA">+ But A</button><button id="goalB">+ But B</button></div>
+<div class="actions">
+<button id="start">▶ Démarrer</button><button id="pause" class="secondary">⏸ Pause</button><button id="reset" class="secondary">↺ Nouveau</button>
+</div>
 </section>
+
+<section class="section">
+<h2>Informations du match</h2>
+<div class="grid">
+<div class="field"><label>Compétition</label><input id="competition" value="Match de football"></div>
+<div class="field"><label>Stade</label><input id="venue" value=""></div>
+<div class="field"><label>Équipe A</label><input id="teamAInput" value="Équipe A"></div>
+<div class="field"><label>Équipe B</label><input id="teamBInput" value="Équipe B"></div>
+</div>
+</section>
+
+<section class="section">
+<h2>Prochaine étape</h2>
+<div class="grid">
+<div class="field"><label>Phase</label><strong>1re mi-temps</strong></div>
+<div class="field"><label>Fonctions</label><strong>Joueurs • changements • cartons • buts</strong></div>
+</div>
+</section>
+
+<div class="footer">Base stable du projet • les fonctions seront ajoutées progressivement</div>
 </main>
 <script>
-let a=0,b=0;
-function render(){document.getElementById("score").textContent=a+" - "+b}
-document.getElementById("plusA").onclick=()=>{a++;render()};
-document.getElementById("minusA").onclick=()=>{a=Math.max(0,a-1);render()};
-document.getElementById("plusB").onclick=()=>{b++;render()};
-document.getElementById("minusB").onclick=()=>{b=Math.max(0,b-1);render()};
-document.getElementById("newMatch").onclick=()=>{a=0;b=0;render()};
+const state={a:0,b:0,seconds:0,running:false};
+let timer=null;
+const $=id=>document.getElementById(id);
+function render(){ $("scoreA").textContent=state.a; $("scoreB").textContent=state.b; $("clock").textContent=String(Math.floor(state.seconds/60)).padStart(2,"0")+":"+String(state.seconds%60).padStart(2,"0"); $("period").textContent=state.seconds?"1re mi-temps":"Avant-match"; }
+function startTimer(){if(state.running)return;state.running=true;timer=setInterval(()=>{state.seconds++;render()},1000);$("start").textContent="▶ En cours";$("period").textContent="1re mi-temps";}
+function pauseTimer(){state.running=false;clearInterval(timer);timer=null;$("start").textContent="▶ Reprendre";if(state.seconds)$("period").textContent="En pause";}
+function resetMatch(){pauseTimer();state.a=0;state.b=0;state.seconds=0;$("start").textContent="▶ Démarrer";$("period").textContent="Avant-match";render();}
+$("goalA").onclick=()=>{state.a++;render()};$("goalB").onclick=()=>{state.b++;render()};$("start").onclick=startTimer;$("pause").onclick=pauseTimer;$("reset").onclick=resetMatch;
+function sync(){ $("teamA").textContent=$("teamAInput").value||"Équipe A";$("teamB").textContent=$("teamBInput").value||"Équipe B";$("compDisplay").textContent=$("competition").value||"MATCH DE FOOTBALL";$("venueDisplay").textContent=$("venue").value||"Stade • à définir"; }
+["teamAInput","teamBInput","competition","venue"].forEach(id=>$(id).addEventListener("input",sync));
+render();sync();
 if("serviceWorker" in navigator){window.addEventListener("load",()=>navigator.serviceWorker.register("./sw.js").catch(()=>{}))}
 </script>
 </body>
