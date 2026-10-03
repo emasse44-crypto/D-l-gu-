@@ -8,13 +8,21 @@
 <link rel="manifest" href="./manifest.webmanifest">
 <title>Tableau des scores Football</title>
 <style>
-:root{--bg:#101820;--panel:#18232d;--panel2:#202e39;--line:#334553;--txt:#f7fafc;--muted:#aab7c2;--accent:#35c759;--danger:#ff453a}
-*{box-sizing:border-box}html,body{margin:0;min-height:100%;background:var(--bg);color:var(--txt);font-family:Arial,sans-serif}
-body{padding:12px}.app{width:min(1100px,100%);margin:auto}.top{display:flex;justify-content:space-between;align-items:center;gap:10px;padding:6px 2px 14px}.top h1{font-size:clamp(20px,5vw,30px);margin:0}.pill{font-size:12px;color:var(--muted)}
-.match{background:var(--panel);border:1px solid var(--line);border-radius:22px;overflow:hidden;box-shadow:0 12px 30px #0004}.bar{padding:12px 16px;text-align:center;background:#0d151c;border-bottom:1px solid var(--line);font-weight:700}.competition{color:var(--muted);font-size:13px;margin-top:4px}
-.teams{display:grid;grid-template-columns:1fr 1.15fr 1fr;align-items:center;text-align:center;padding:24px 14px 20px;gap:8px}.team{min-width:0}.badge{width:76px;height:76px;border-radius:50%;background:var(--panel2);border:2px solid var(--line);display:grid;place-items:center;margin:auto;font-size:30px}.teamname{font-size:clamp(17px,4vw,25px);font-weight:800;margin-top:10px;word-break:break-word}.score{font-size:clamp(48px,13vw,82px);font-weight:900;line-height:1}.status{margin-top:9px;color:var(--muted);font-size:13px}.clock{font-size:clamp(24px,7vw,42px);font-weight:800;margin-top:9px}.controls{display:grid;grid-template-columns:1fr 1fr;gap:10px;padding:0 14px 14px}.controls button,.actions button{min-height:52px;border:0;border-radius:14px;font-size:17px;font-weight:800;background:var(--panel2);color:var(--txt);border:1px solid var(--line);cursor:pointer}.controls button:active,.actions button:active{transform:scale(.98)}.primary{background:var(--accent)!important;color:#06120a!important;border-color:transparent!important}.secondary{background:#263745!important}.actions{display:grid;grid-template-columns:repeat(3,1fr);gap:10px;padding:14px;border-top:1px solid var(--line);background:#151f27}.section{margin-top:14px;background:var(--panel);border:1px solid var(--line);border-radius:18px;padding:16px}.section h2{font-size:18px;margin:0 0 12px}.grid{display:grid;grid-template-columns:1fr 1fr;gap:10px}.field{background:var(--panel2);border:1px solid var(--line);border-radius:12px;padding:11px}.field label{display:block;color:var(--muted);font-size:12px;margin-bottom:5px}.field input{width:100%;background:transparent;border:0;outline:0;color:var(--txt);font-size:17px;font-weight:700}.hidden{display:none!important}.footer{text-align:center;color:var(--muted);font-size:12px;padding:18px 0}.homeMenu{display:grid;grid-template-columns:repeat(2,1fr);gap:10px;margin-top:14px}.homeMenu button{min-height:58px;border:1px solid var(--line);border-radius:14px;background:var(--panel);color:var(--txt);font-size:16px;font-weight:800;cursor:pointer}.homeMenu button:active{transform:scale(.98)}.homeMenu small{display:block;color:var(--muted);font-size:11px;font-weight:400;margin-top:3px}.page{display:none}.page.active{display:block}.back{margin-bottom:12px;width:100%;min-height:48px;border:1px solid var(--line);border-radius:12px;background:var(--panel2);color:var(--txt);font-weight:800;font-size:16px}
-@media(max-width:560px){body{padding:8px}.teams{padding-top:18px}.badge{width:62px;height:62px}.actions{grid-template-columns:1fr 1fr}.grid{grid-template-columns:1fr}.top{padding-bottom:8px}}
- .player{display:flex;align-items:center;gap:8px;margin:6px 0}.num{width:32px;height:32px;border-radius:8px;background:#263745;display:grid;place-items:center;font-weight:800}.player input{min-width:0;flex:1;background:#202e39;border:1px solid #334553;border-radius:9px;color:#fff;padding:8px;font-size:14px}.captain{font-size:12px;color:#aab7c2}  .subbox{margin-top:10px;padding:12px;background:#202e39;border:1px solid #334553;border-radius:12px}.subbox h3{margin:0 0 8px;font-size:14px}.subrow{display:grid;grid-template-columns:1fr 1fr;gap:8px;margin-top:8px}.subrow select{width:100%;background:#18232d;color:#fff;border:1px solid #334553;border-radius:9px;padding:10px;font-size:14px}.subrow button{border:0;border-radius:9px;padding:10px;font-weight:800;background:#35c759;color:#06120a} .capt{display:flex;gap:8px;align-items:center;margin-top:8px;color:#aab7c2;font-size:13px}.capt select{flex:1;background:#18232d;color:#fff;border:1px solid #334553;border-radius:9px;padding:9px}  .eventbox{margin-top:10px}.eventrow{display:grid;grid-template-columns:80px 1fr 110px;gap:8px;margin:8px 0}.eventrow select,.eventrow input{width:100%;background:#18232d;color:#fff;border:1px solid #334553;border-radius:9px;padding:10px;font-size:14px}.eventrow button{border:0;border-radius:9px;background:#35c759;color:#06120a;font-weight:800}.event{display:flex;gap:8px;align-items:center;padding:8px 0;border-bottom:1px solid #334553;font-size:14px}.event:last-child{border-bottom:0}.tag{padding:3px 7px;border-radius:7px;background:#263745;font-weight:800} </style>
+:root{--bg:#101820;--panel:#18232d;--panel2:#202e39;--line:#334553;--txt:#f7fafc;--muted:#aab7c2;--accent:#35c759}
+*{box-sizing:border-box}html,body{margin:0;min-height:100%;background:var(--bg);color:var(--txt);font-family:Arial,sans-serif}body{padding:10px}.app{width:min(1050px,100%);margin:auto}
+.top{display:flex;justify-content:space-between;align-items:center;padding:6px 2px 12px}.top h1{font-size:clamp(20px,5vw,30px);margin:0}.pill{color:var(--muted);font-size:12px}
+.match{background:var(--panel);border:1px solid var(--line);border-radius:22px;overflow:hidden;box-shadow:0 12px 30px #0004}.bar{padding:12px;text-align:center;background:#0d151c;border-bottom:1px solid var(--line);font-weight:800}.competition{color:var(--muted);font-size:13px;margin-top:4px}
+.teams{display:grid;grid-template-columns:1fr 1.15fr 1fr;align-items:center;text-align:center;padding:22px 12px 18px;gap:8px}.badge{width:70px;height:70px;border-radius:50%;background:var(--panel2);border:2px solid var(--line);display:grid;place-items:center;margin:auto;font-size:28px}.teamname{font-size:clamp(17px,4vw,25px);font-weight:800;margin-top:9px;word-break:break-word}.score{font-size:clamp(48px,13vw,82px);font-weight:900;line-height:1}.clock{font-size:clamp(25px,7vw,42px);font-weight:900;margin-top:7px}.status{color:var(--muted);font-size:13px;margin-top:5px}
+.controls{display:grid;grid-template-columns:1fr 1fr;gap:10px;padding:0 14px 12px}.actions{display:grid;grid-template-columns:repeat(3,1fr);gap:10px;padding:12px;border-top:1px solid var(--line);background:#151f27}
+button,select,input{font:inherit}.controls button,.actions button,.homeMenu button,.back,.saveBtn{min-height:50px;border:1px solid var(--line);border-radius:13px;background:var(--panel2);color:var(--txt);font-weight:800;cursor:pointer}.controls button:active,.actions button:active,.homeMenu button:active{transform:scale(.98)}
+.primary,.saveBtn{background:var(--accent)!important;color:#06120a!important;border-color:transparent!important}
+.home{margin-top:14px}.homeMenu{display:grid;grid-template-columns:repeat(2,1fr);gap:10px}.homeMenu button{min-height:64px;font-size:16px}.homeMenu small{display:block;color:var(--muted);font-size:11px;font-weight:400;margin-top:4px}
+.page{display:none;margin-top:14px}.page.active{display:block}.section{background:var(--panel);border:1px solid var(--line);border-radius:18px;padding:16px}.section h2{margin:0 0 14px;font-size:20px}.back{width:100%;margin-bottom:12px}
+.grid{display:grid;grid-template-columns:1fr 1fr;gap:10px}.field{background:var(--panel2);border:1px solid var(--line);border-radius:12px;padding:11px}.field label{display:block;color:var(--muted);font-size:12px;margin-bottom:6px}.field input,.field select{width:100%;background:transparent;border:0;outline:0;color:var(--txt);font-weight:700}
+.rosterTitle{font-weight:800;margin:8px 0}.player{display:grid;grid-template-columns:34px 1fr;gap:8px;margin:6px 0}.num{display:grid;place-items:center;border-radius:8px;background:#263745;font-weight:800}.player input{width:100%;background:#202e39;border:1px solid var(--line);border-radius:9px;color:#fff;padding:9px}
+.subbox,.eventbox{margin-top:12px;padding:12px;background:var(--panel2);border:1px solid var(--line);border-radius:12px}.subrow{display:grid;grid-template-columns:1fr 1fr;gap:8px}.subbox select,.eventbox select,.eventbox input{width:100%;background:#18232d;color:#fff;border:1px solid var(--line);border-radius:9px;padding:10px;margin-bottom:8px}.subbox button,.eventbox button{width:100%;min-height:44px;border:0;border-radius:9px;background:var(--accent);color:#06120a;font-weight:800}.event{display:grid;grid-template-columns:55px 1fr auto;gap:8px;align-items:center;padding:10px 0;border-bottom:1px solid var(--line)}.tag{background:#263745;padding:4px 7px;border-radius:7px;text-align:center;font-weight:800}.muted{color:var(--muted)}.sheet{line-height:1.7}.sheet strong{color:#fff}.footer{text-align:center;color:var(--muted);font-size:12px;padding:18px 0}
+@media(max-width:560px){body{padding:7px}.teams{padding-top:17px}.badge{width:60px;height:60px}.actions{grid-template-columns:1fr 1fr}.grid{grid-template-columns:1fr}.homeMenu{grid-template-columns:1fr 1fr}.event{grid-template-columns:48px 1fr}.event button{grid-column:2}}
+</style>
 </head>
 <body>
 <main class="app">
@@ -23,154 +31,76 @@ body{padding:12px}.app{width:min(1100px,100%);margin:auto}.top{display:flex;just
 <section class="match">
 <div class="bar"><div id="compDisplay">MATCH DE FOOTBALL</div><div class="competition" id="venueDisplay">Stade • à définir</div></div>
 <div class="teams">
-<div class="team"><div class="badge">A</div><div class="teamname" id="teamA">Équipe A</div></div>
+<div><div class="badge">A</div><div class="teamname" id="teamA">Équipe A</div></div>
 <div><div class="score"><span id="scoreA">0</span> - <span id="scoreB">0</span></div><div class="clock" id="clock">00:00</div><div class="status" id="period">Avant-match</div></div>
-<div class="team"><div class="badge">B</div><div class="teamname" id="teamB">Équipe B</div></div>
+<div><div class="badge">B</div><div class="teamname" id="teamB">Équipe B</div></div>
 </div>
 <div class="controls"><button id="goalA">+ But A</button><button id="goalB">+ But B</button></div>
-<div class="actions">
-<button id="start">▶ Démarrer</button><button id="pause" class="secondary">⏸ Pause</button><button id="reset" class="secondary">↺ Nouveau</button>
-</div>
+<div class="actions"><button id="start">▶ Démarrer</button><button id="pause">⏸ Pause</button><button id="reset">↺ Nouveau</button></div>
 </section>
 
-<section class="section">
-<h2>Informations du match</h2>
-<div class="grid">
-<div class="field"><label>Compétition</label><input id="competition" value="Match de football"></div>
-<div class="field"><label>Stade</label><input id="venue" value=""></div>
-<div class="field"><label>Équipe A</label><input id="teamAInput" value="Équipe A"></div>
-<div class="field"><label>Équipe B</label><input id="teamBInput" value="Équipe B"></div>
-</div>
-</section>
-
-<section class="section">
-<h2>Compositions</h2>
-<div class="grid">
-<div>
-<h3 style="margin:0 0 8px">Équipe A</h3>
-<div id="rosterA"></div>
-</div>
-<div>
-<h3 style="margin:0 0 8px">Équipe B</h3>
-<div id="rosterB"></div>
-</div>
-</div>
-</section>
-
-<section class="section">
-<h2>Capitaines et changements</h2>
-<div class="grid">
-<div><div class="capt">Capitaine <select id="captA"></select></div><div class="subbox"><h3>Changement Équipe A</h3><div class="subrow"><select id="outA"></select><select id="inA"></select></div><div class="subrow"><button id="subA">Effectuer le changement</button></div></div></div>
-<div><div class="capt">Capitaine <select id="captB"></select></div><div class="subbox"><h3>Changement Équipe B</h3><div class="subrow"><select id="outB"></select><select id="inB"></select></div><div class="subrow"><button id="subB">Effectuer le changement</button></div></div></div>
-</div>
-<div id="subLog" class="note">Aucun changement effectué.</div>
-</section>
-
-<section class="section">
-<h2>Buts et cartons</h2>
-<div class="grid">
-<div class="eventbox"><h3 style="margin:0 0 8px">But</h3><div class="eventrow"><input id="goalMinute" type="number" min="0" max="130" placeholder="Min"><select id="goalTeam"><option value="A">Équipe A</option><option value="B">Équipe B</option></select><button id="addGoal">Ajouter</button></div></div>
-<div class="eventbox"><h3 style="margin:0 0 8px">Carton</h3><div class="eventrow"><input id="cardMinute" type="number" min="0" max="130" placeholder="Min"><select id="cardTeam"><option value="A">Équipe A</option><option value="B">Équipe B</option></select><button id="addCard">Ajouter</button></div><select id="cardType" style="width:100%;background:#18232d;color:#fff;border:1px solid #334553;border-radius:9px;padding:10px"><option value="Jaune">🟨 Jaune</option><option value="Rouge">🟥 Rouge</option><option value="Blanc">⬜ Blanc</option></select></div>
-</div>
-<div id="events"><div class="note">Aucun événement.</div></div>
-</section>
-
-<section class="section">
-<h2>Accès rapide</h2>
+<section class="home">
 <div class="homeMenu">
 <button data-page="compositions">👥 Compositions<small>Titulaires et remplaçants</small></button>
 <button data-page="changes">🔄 Changements<small>Entrées et sorties</small></button>
 <button data-page="events">⚽ Buts & cartons<small>Événements du match</small></button>
 <button data-page="clock">⏱️ Chronomètre<small>Temps de jeu</small></button>
-<button data-page="sheet">📋 Feuille de match<small>Résumé officiel</small></button>
+<button data-page="sheet">📋 Feuille de match<small>Résumé du match</small></button>
 <button data-page="settings">⚙️ Match<small>Équipes, stade, compétition</small></button>
 </div>
 </section>
 
-<div id="subPages">
-<section class="section page" id="page-compositions"><button class="back" data-home>← Retour au score</button><h2>Compositions</h2><div class="grid"><div><h3>Équipe A</h3><div id="rosterA"></div></div><div><h3>Équipe B</h3><div id="rosterB"></div></div></div></section>
-<section class="section page" id="page-changes"><button class="back" data-home>← Retour au score</button><h2>Changements</h2><p>Les changements seront gérés ici pendant le match.</p></section>
-<section class="section page" id="page-events"><button class="back" data-home>← Retour au score</button><h2>Buts et cartons</h2><div id="eventsPage"></div></section>
-<section class="section page" id="page-clock"><button class="back" data-home>← Retour au score</button><h2>Chronomètre</h2><div class="clock" style="text-align:center" id="clockPage">00:00</div><div class="row" style="margin-top:12px"><button id="startPage">▶ Démarrer</button><button id="pausePage">⏸ Pause</button></div></section>
-<section class="section page" id="page-sheet"><button class="back" data-home>← Retour au score</button><h2>Feuille de match</h2><p>Le résumé du match sera affiché ici.</p></section>
-<section class="section page" id="page-settings"><button class="back" data-home>← Retour au score</button><h2>Informations du match</h2><div class="grid"><div class="field"><label>Compétition</label><input id="competitionPage" value="Match de football"></div><div class="field"><label>Stade</label><input id="venuePage"></div><div class="field"><label>Équipe A</label><input id="teamAPage" value="Équipe A"></div><div class="field"><label>Équipe B</label><input id="teamBPage" value="Équipe B"></div></div></section>
-</div>
+<section class="page" id="page-compositions"><div class="section"><button class="back" data-home>← Retour au score</button><h2>Compositions</h2><div class="grid"><div><div class="rosterTitle" id="rosterATitle">Équipe A</div><div id="rosterA"></div></div><div><div class="rosterTitle" id="rosterBTitle">Équipe B</div><div id="rosterB"></div></div></div></div></section>
 
-<section class="section">
-<h2>Prochaine étape</h2>
-<div class="grid">
-<div class="field"><label>Phase</label><strong>1re mi-temps</strong></div>
-<div class="field"><label>Fonctions</label><strong>Joueurs • changements • cartons • buts</strong></div>
-</div>
-</section>
+<section class="page" id="page-changes"><div class="section"><button class="back" data-home>← Retour au score</button><h2>Capitaines et changements</h2><div class="grid">
+<div><div class="field"><label>Capitaine Équipe A</label><select id="captA"></select></div><div class="subbox"><label class="muted">Sortant</label><select id="outA"></select><label class="muted">Entrant</label><select id="inA"></select><button id="subA">Effectuer le changement</button></div></div>
+<div><div class="field"><label>Capitaine Équipe B</label><select id="captB"></select></div><div class="subbox"><label class="muted">Sortant</label><select id="outB"></select><label class="muted">Entrant</label><select id="inB"></select><button id="subB">Effectuer le changement</button></div></div>
+</div><p id="subLog" class="muted">Aucun changement effectué.</p></div></section>
 
-<div class="footer">Base stable du projet • les fonctions seront ajoutées progressivement</div>
+<section class="page" id="page-events"><div class="section"><button class="back" data-home>← Retour au score</button><h2>Buts et cartons</h2><div class="grid">
+<div class="eventbox"><h3>Ajouter un but</h3><input id="goalMinute" type="number" min="0" max="130" placeholder="Minute"><select id="goalTeam"><option value="A">Équipe A</option><option value="B">Équipe B</option></select><button id="addGoal">Ajouter le but</button></div>
+<div class="eventbox"><h3>Ajouter un carton</h3><input id="cardMinute" type="number" min="0" max="130" placeholder="Minute"><select id="cardTeam"><option value="A">Équipe A</option><option value="B">Équipe B</option></select><select id="cardType"><option>Jaune</option><option>Rouge</option><option>Blanc</option></select><button id="addCard">Ajouter le carton</button></div>
+</div><div id="eventsList" style="margin-top:12px"><p class="muted">Aucun événement.</p></div></div></section>
+
+<section class="page" id="page-clock"><div class="section"><button class="back" data-home>← Retour au score</button><h2>Chronomètre</h2><div class="clock" style="text-align:center" id="clockPage">00:00</div><p class="muted" id="clockStatus" style="text-align:center">Avant-match</p><div class="actions" style="border:0;background:transparent;padding:0"><button id="startPage">▶ Démarrer</button><button id="pausePage">⏸ Pause</button><button id="resetPage">↺ Remettre à zéro</button></div></div></section>
+
+<section class="page" id="page-sheet"><div class="section"><button class="back" data-home>← Retour au score</button><h2>Feuille de match</h2><div class="sheet" id="sheetContent"></div></div></section>
+
+<section class="page" id="page-settings"><div class="section"><button class="back" data-home>← Retour au score</button><h2>Informations du match</h2><div class="grid"><div class="field"><label>Compétition</label><input id="competition" value="Match de football"></div><div class="field"><label>Stade</label><input id="venue"></div><div class="field"><label>Équipe A</label><input id="teamAInput" value="Équipe A"></div><div class="field"><label>Équipe B</label><input id="teamBInput" value="Équipe B"></div></div><button class="saveBtn" id="saveSettings" style="width:100%;margin-top:12px">Enregistrer les informations</button></div></section>
+
+<div class="footer">Projet football • base propre et évolutive</div>
 </main>
 <script>
-const state={a:0,b:0,seconds:0,running:false,events:[]};
-const roster={A:Array.from({length:16},(_,i)=>({n:i+1,name:""})),B:Array.from({length:16},(_,i)=>({n:i+1,name:""}))};
-function drawRoster(side){
- const box=$(side==="A"?"rosterA":"rosterB"); box.innerHTML="";
- roster[side].forEach((p,i)=>{
-  const d=document.createElement("div"); d.className="player";
-  d.innerHTML='<span class="num">'+p.n+'</span><input aria-label="Joueur '+p.n+' équipe '+side+'" placeholder="'+(p.n<=11?"Titulaire ":"Remplaçant ")+p.n+'"><span class="captain">'+(p.n===1?"": "")+'</span>';
-  const input=d.querySelector("input"); input.value=p.name; input.oninput=()=>p.name=input.value;
-  box.appendChild(d);
- });
-}
-function fillSelect(id,side,onlyStarters=false){
- const s=$(id); s.innerHTML="";
- roster[side].forEach(p=>{if(onlyStarters&&p.n>11)return;const o=document.createElement("option");o.value=p.n;o.textContent=p.n+" "+(p.name||"Joueur "+p.n);s.appendChild(o)});
-}
-function refreshChoices(){["captA","outA"].forEach(id=>fillSelect(id,"A",true));fillSelect("inA","A");["captB","outB"].forEach(id=>fillSelect(id,"B",true));fillSelect("inB","B");}
-function performSub(side){
- const out=Number($("out"+side).value), inn=Number($("in"+side).value);
- if(inn<=11||out===inn){return}
- const outP=roster[side].find(p=>p.n===out), inP=roster[side].find(p=>p.n===inn);
- const t=outP.name; outP.name=inP.name||("Joueur "+inn); inP.name=t;
- $("subLog").textContent="Changement "+side+" : "+outP.name+" entre, "+inP.name+" sort.";
- function addEvent(type){
- const minute=Number($(type==="But"?"goalMinute":"cardMinute").value);
- if(!Number.isFinite(minute)||minute<0)return;
- const side=$(type==="But"?"goalTeam":"cardTeam").value;
- let label=type==="But"?"⚽ But":"🟨 "+$("cardType").value;
- if(type==="But"){if(side==="A")state.a++;else state.b++;}
- state.events.push({type,minute,side,label});
- renderEvents();render();
-}
-function renderEvents(){
- const box=$("events");box.innerHTML="";
- if(!state.events.length){box.innerHTML='<div class="note">Aucun événement.</div>';return}
- [...state.events].sort((x,y)=>x.minute-y.minute).forEach(e=>{const d=document.createElement("div");d.className="event";d.innerHTML='<span class="tag">'+e.minute+"'</span><strong>"+e.label+"</strong><span>"+(e.side==="A"?$("teamA").textContent:$("teamB").textContent)+"</span>";box.appendChild(d)});
-}
-$("addGoal").onclick=()=>addEvent("But");$("addCard").onclick=()=>addEvent("Carton");
-drawRoster("A");drawRoster("B");refreshChoices();
-}
-drawRoster("A");drawRoster("B");refreshChoices();
-["teamAInput","teamBInput","competition","venue"].forEach(id=>$(id).addEventListener("input",sync));
-["captA","captB"].forEach(id=>$(id).addEventListener("change",()=>{}));
-$("subA").onclick=()=>performSub("A");$("subB").onclick=()=>performSub("B");
-let timer=null;
 const $=id=>document.getElementById(id);
-function render(){ $("scoreA").textContent=state.a; $("scoreB").textContent=state.b; $("clock").textContent=String(Math.floor(state.seconds/60)).padStart(2,"0")+":"+String(state.seconds%60).padStart(2,"0"); $("period").textContent=state.seconds?"1re mi-temps":"Avant-match"; }
-function startTimer(){if(state.running)return;state.running=true;timer=setInterval(()=>{state.seconds++;render()},1000);$("start").textContent="▶ En cours";$("period").textContent="1re mi-temps";}
-function pauseTimer(){state.running=false;clearInterval(timer);timer=null;$("start").textContent="▶ Reprendre";if(state.seconds)$("period").textContent="En pause";}
-function resetMatch(){pauseTimer();state.a=0;state.b=0;state.seconds=0;$("start").textContent="▶ Démarrer";$("period").textContent="Avant-match";render();}
-$("goalA").onclick=()=>{state.a++;render()};$("goalB").onclick=()=>{state.b++;render()};$("start").onclick=startTimer;$("pause").onclick=pauseTimer;$("reset").onclick=resetMatch;
-function sync(){ $("teamA").textContent=$("teamAInput").value||"Équipe A";$("teamB").textContent=$("teamBInput").value||"Équipe B";$("compDisplay").textContent=$("competition").value||"MATCH DE FOOTBALL";$("venueDisplay").textContent=$("venue").value||"Stade • à définir"; }
-function showPage(name){
- document.querySelectorAll(".page").forEach(p=>p.classList.remove("active"));
- document.querySelectorAll(".homeMenu").forEach(m=>m.parentElement.classList.toggle("hidden",!!name));
- if(name){const p=$("page-"+name);if(p)p.classList.add("active");}
- if(name==="compositions"){drawRoster("A");drawRoster("B")}
- if(name==="events"){renderEvents()}
- if(name==="clock"){$("clockPage").textContent=$("clock").textContent}
-}
-document.querySelectorAll("[data-page]").forEach(b=>b.onclick=()=>showPage(b.dataset.page));
-document.querySelectorAll("[data-home]").forEach(b=>b.onclick=()=>showPage(null));
-$("startPage").onclick=startTimer;$("pausePage").onclick=pauseTimer;
-render();sync();
-if("serviceWorker" in navigator){window.addEventListener("load",()=>navigator.serviceWorker.register("./sw.js").catch(()=>{}))}
+const state={a:0,b:0,seconds:0,running:false,events:[],substitutions:[],captain:{A:1,B:1}};
+const roster={A:Array.from({length:16},(_,i)=>({n:i+1,name:""})),B:Array.from({length:16},(_,i)=>({n:i+1,name:""}))};
+let timer=null;
+
+function save(){localStorage.setItem("footballAppState",JSON.stringify({state,roster,competition:$("competition").value,venue:$("venue").value,teamA:$("teamAInput").value,teamB:$("teamBInput").value}))}
+function load(){try{const x=JSON.parse(localStorage.getItem("footballAppState"));if(!x)return;if(x.state)Object.assign(state,x.state);if(x.roster){roster.A.splice(0,16,...x.roster.A);roster.B.splice(0,16,...x.roster.B)}if(x.competition)$("competition").value=x.competition;if(x.venue)$("venue").value=x.venue;if(x.teamA)$("teamAInput").value=x.teamA;if(x.teamB)$("teamBInput").value=x.teamB}catch(e){}}
+
+function render(){ $("scoreA").textContent=state.a;$("scoreB").textContent=state.b;const t=String(Math.floor(state.seconds/60)).padStart(2,"0")+":"+String(state.seconds%60).padStart(2,"0");$("clock").textContent=t;$("clockPage").textContent=t;$("period").textContent=state.running?"1re mi-temps":state.seconds?"En pause":"Avant-match";$("clockStatus").textContent=$("period").textContent;save()}
+function startTimer(){if(state.running)return;state.running=true;timer=setInterval(()=>{state.seconds++;render()},1000);render()}
+function pauseTimer(){state.running=false;clearInterval(timer);timer=null;render()}
+function resetMatch(){pauseTimer();state.a=0;state.b=0;state.seconds=0;state.events=[];state.substitutions=[];render();renderEvents();renderSheet()}
+
+function sync(){ $("teamA").textContent=$("teamAInput").value||"Équipe A";$("teamB").textContent=$("teamBInput").value||"Équipe B";$("compDisplay").textContent=$("competition").value||"MATCH DE FOOTBALL";$("venueDisplay").textContent=$("venue").value||"Stade • à définir";$("rosterATitle").textContent=$("teamAInput").value||"Équipe A";$("rosterBTitle").textContent=$("teamBInput").value||"Équipe B";renderEvents();renderSheet();save()}
+
+function drawRoster(side){const box=$(side==="A"?"rosterA":"rosterB");box.innerHTML="";roster[side].forEach(p=>{const d=document.createElement("div");d.className="player";const input=document.createElement("input");input.value=p.name;input.placeholder=(p.n<=11?"Titulaire ":"Remplaçant ")+p.n;input.oninput=()=>{p.name=input.value;refreshChoices();save()};d.innerHTML='<span class="num">'+p.n+"</span>";d.appendChild(input);box.appendChild(d)})}
+function fillSelect(id,side,startersOnly=false){const s=$(id);s.innerHTML="";roster[side].forEach(p=>{if(startersOnly&&p.n>11)return;const o=document.createElement("option");o.value=p.n;o.textContent=p.n+" "+(p.name||"Joueur "+p.n);s.appendChild(o)});s.value=state.captain[side]}
+function refreshChoices(){fillSelect("captA","A",true);fillSelect("outA","A",true);fillSelect("inA","A");fillSelect("captB","B",true);fillSelect("outB","B",true);fillSelect("inB","B");$("captA").value=state.captain.A;$("captB").value=state.captain.B}
+
+function performSub(side){const out=Number($("out"+side).value),inn=Number($("in"+side).value);if(inn<=11||out===inn)return;const outP=roster[side].find(p=>p.n===out),inP=roster[side].find(p=>p.n===inn);const outName=outP.name||"Joueur "+out,inName=inP.name||"Joueur "+inn;state.substitutions.push({side,out:outName,in:inName,minute:Math.floor(state.seconds/60)});inP.name=outP.name;outP.name=inName;$("subLog").textContent="Changement "+(side==="A"?$("teamA").textContent:$("teamB").textContent)+" : "+inName+" entre à la place de "+outName+".";drawRoster("A");drawRoster("B");refreshChoices();renderSheet();save()}
+function addEvent(type){const minute=Number($(type==="goal"?"goalMinute":"cardMinute").value);if(!Number.isFinite(minute)||minute<0)return;const side=$(type==="goal"?"goalTeam":"cardTeam").value;if(type==="goal"){if(side==="A")state.a++;else state.b++;state.events.push({type,minute,side,label:"⚽ But"})}else{state.events.push({type,minute,side,label:"🟨 "+$("cardType").value})}render();renderEvents();renderSheet();$(type==="goal"?"goalMinute":"cardMinute").value=""}
+function renderEvents(){const box=$("eventsList");box.innerHTML="";if(!state.events.length){box.innerHTML='<p class="muted">Aucun événement.</p>';return}[...state.events].sort((a,b)=>a.minute-b.minute).forEach((e,i)=>{const d=document.createElement("div");d.className="event";const team=e.side==="A"?$("teamA").textContent:$("teamB").textContent;d.innerHTML='<span class="tag">'+e.minute+"'</span><span>"+e.label+" · "+team+"</span><button data-remove="'+i+'">Supprimer</button>";box.appendChild(d)});box.querySelectorAll("[data-remove]").forEach(b=>b.onclick=()=>{const idx=Number(b.dataset.remove);const e=state.events[idx];if(e.type==="goal"){if(e.side==="A")state.a=Math.max(0,state.a-1);else state.b=Math.max(0,state.b-1)}state.events.splice(idx,1);render();renderEvents();renderSheet()})}
+function renderSheet(){const a=$("teamA").textContent,b=$("teamB").textContent;let html='<p><strong>'+a+" "+state.a+" - "+state.b+" "+b+"</strong></p><p>Temps : "+$("clock").textContent+"</p><h3>Événements</h3>";if(state.events.length)state.events.forEach(e=>html+="<div>"+e.minute+"' · "+e.label+" · "+(e.side==="A"?a:b)+"</div>");else html+='<div class="muted">Aucun événement.</div>';html+="<h3>Changements</h3>";if(state.substitutions.length)state.substitutions.forEach(s=>html+="<div>"+s.minute+"' · "+(s.side==="A"?a:b)+" : "+s.in+" ↔ "+s.out+"</div>");else html+='<div class="muted">Aucun changement.</div>';$("sheetContent").innerHTML=html}
+
+function showPage(name){document.querySelectorAll(".page").forEach(p=>p.classList.remove("active"));if(name){const p=$("page-"+name);if(p)p.classList.add("active");if(name==="compositions"){drawRoster("A");drawRoster("B")}if(name==="changes")refreshChoices();if(name==="events")renderEvents();if(name==="sheet")renderSheet()}}
+document.querySelectorAll("[data-page]").forEach(b=>b.onclick=()=>showPage(b.dataset.page));document.querySelectorAll("[data-home]").forEach(b=>b.onclick=()=>showPage(null));
+$("goalA").onclick=()=>{state.a++;render();renderSheet()};$("goalB").onclick=()=>{state.b++;render();renderSheet()};$("start").onclick=startTimer;$("pause").onclick=pauseTimer;$("reset").onclick=resetMatch;$("startPage").onclick=startTimer;$("pausePage").onclick=pauseTimer;$("resetPage").onclick=resetMatch;
+$("addGoal").onclick=()=>addEvent("goal");$("addCard").onclick=()=>addEvent("card");$("subA").onclick=()=>performSub("A");$("subB").onclick=()=>performSub("B");$("captA").onchange=()=>{state.captain.A=Number($("captA").value);save()};$("captB").onchange=()=>{state.captain.B=Number($("captB").value);save()};$("saveSettings").onclick=()=>{sync();showPage(null)};
+load();sync();drawRoster("A");drawRoster("B");refreshChoices();render();renderEvents();renderSheet();
+if("serviceWorker" in navigator)window.addEventListener("load",()=>navigator.serviceWorker.register("./sw.js").catch(()=>{}));
 </script>
 </body>
 </html>
