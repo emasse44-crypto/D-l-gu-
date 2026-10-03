@@ -110,7 +110,7 @@ $("addGoal").onclick=addGoal;$("addCard").onclick=addCard;$("addWhite").onclick=
 $("saveSettings").onclick=()=>{sync();showPage(null)};$("printSheet").onclick=()=>window.print();
 window.addEventListener("beforeprint",()=>{document.querySelectorAll(".page").forEach(p=>p.classList.remove("active"))});
 restore();renderAll();
-if("serviceWorker" in navigator)window.addEventListener("load",()=>navigator.serviceWorker.register("./sw.js").catch(()=>{}));
+if("serviceWorker" in navigator)window.addEventListener("load",async()=>{try{const regs=await navigator.serviceWorker.getRegistrations();for(const reg of regs)await reg.unregister();await navigator.serviceWorker.register("./sw.js?v=final3");}catch(e){}});
 </script>
 </body>
 </html>
