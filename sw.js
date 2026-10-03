@@ -1,5 +1,29 @@
-const CACHE="football-final-2026";
-const ASSETS=["./","./index.html","./manifest.webmanifest"];
-self.addEventListener("install",event=>event.waitUntil(caches.open(CACHE).then(cache=>cache.addAll(ASSETS)).then(()=>self.skipWaiting())));
-self.addEventListener("activate",event=>event.waitUntil(caches.keys().then(keys=>Promise.all(keys.filter(k=>k!==CACHE).map(k=>caches.delete(k)))).then(()=>self.clients.claim())));
-self.addEventListener("fetch",event=>event.respondWith(caches.match(event.request).then(r=>r||fetch(event.request))));
+const CACHE="football-final-2026-v2";
+const ASSETS=["./manifest.webmanifest"];
+
+self.addEventListener("install",event=>{
+  event.waitUntil(
+    caches.open(CACHE)
+      .then(cache=>cache.addAll(ASSETS))
+      .then(()=>self.skipWaiting())
+  );
+});
+
+self.addEventListener("activate",event=>{
+  event.waitUntil(
+    caches.keys()
+      .then(keys=>Promise.all(keys.filter(k=>k!==CACHE).map(k=>caches.delete(k))))
+      .then(()=>self.clients.claim())
+  );
+});
+
+self.addEventListener("fetch",event=>{
+  const request=event.request;
+  if(request.mode==="navigate" || request.url.endsWith("/index.html")){
+    event.respondWith(fetch(request,{cache:"no-store"}));
+    return;
+  }
+  event.respondWith(
+    caches.match(request).then(response=>response||fetch(request))
+  );
+});
