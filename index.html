@@ -12,7 +12,7 @@
 *{box-sizing:border-box}html,body{margin:0;min-height:100%;background:var(--bg);color:var(--txt);font-family:Arial,sans-serif}
 body{padding:12px}.app{width:min(1100px,100%);margin:auto}.top{display:flex;justify-content:space-between;align-items:center;gap:10px;padding:6px 2px 14px}.top h1{font-size:clamp(20px,5vw,30px);margin:0}.pill{font-size:12px;color:var(--muted)}
 .match{background:var(--panel);border:1px solid var(--line);border-radius:22px;overflow:hidden;box-shadow:0 12px 30px #0004}.bar{padding:12px 16px;text-align:center;background:#0d151c;border-bottom:1px solid var(--line);font-weight:700}.competition{color:var(--muted);font-size:13px;margin-top:4px}
-.teams{display:grid;grid-template-columns:1fr 1.15fr 1fr;align-items:center;text-align:center;padding:24px 14px 20px;gap:8px}.team{min-width:0}.badge{width:76px;height:76px;border-radius:50%;background:var(--panel2);border:2px solid var(--line);display:grid;place-items:center;margin:auto;font-size:30px}.teamname{font-size:clamp(17px,4vw,25px);font-weight:800;margin-top:10px;word-break:break-word}.score{font-size:clamp(48px,13vw,82px);font-weight:900;line-height:1}.status{margin-top:9px;color:var(--muted);font-size:13px}.clock{font-size:clamp(24px,7vw,42px);font-weight:800;margin-top:9px}.controls{display:grid;grid-template-columns:1fr 1fr;gap:10px;padding:0 14px 14px}.controls button,.actions button{min-height:52px;border:0;border-radius:14px;font-size:17px;font-weight:800;background:var(--panel2);color:var(--txt);border:1px solid var(--line);cursor:pointer}.controls button:active,.actions button:active{transform:scale(.98)}.primary{background:var(--accent)!important;color:#06120a!important;border-color:transparent!important}.secondary{background:#263745!important}.actions{display:grid;grid-template-columns:repeat(3,1fr);gap:10px;padding:14px;border-top:1px solid var(--line);background:#151f27}.section{margin-top:14px;background:var(--panel);border:1px solid var(--line);border-radius:18px;padding:16px}.section h2{font-size:18px;margin:0 0 12px}.grid{display:grid;grid-template-columns:1fr 1fr;gap:10px}.field{background:var(--panel2);border:1px solid var(--line);border-radius:12px;padding:11px}.field label{display:block;color:var(--muted);font-size:12px;margin-bottom:5px}.field input{width:100%;background:transparent;border:0;outline:0;color:var(--txt);font-size:17px;font-weight:700}.hidden{display:none!important}.footer{text-align:center;color:var(--muted);font-size:12px;padding:18px 0}
+.teams{display:grid;grid-template-columns:1fr 1.15fr 1fr;align-items:center;text-align:center;padding:24px 14px 20px;gap:8px}.team{min-width:0}.badge{width:76px;height:76px;border-radius:50%;background:var(--panel2);border:2px solid var(--line);display:grid;place-items:center;margin:auto;font-size:30px}.teamname{font-size:clamp(17px,4vw,25px);font-weight:800;margin-top:10px;word-break:break-word}.score{font-size:clamp(48px,13vw,82px);font-weight:900;line-height:1}.status{margin-top:9px;color:var(--muted);font-size:13px}.clock{font-size:clamp(24px,7vw,42px);font-weight:800;margin-top:9px}.controls{display:grid;grid-template-columns:1fr 1fr;gap:10px;padding:0 14px 14px}.controls button,.actions button{min-height:52px;border:0;border-radius:14px;font-size:17px;font-weight:800;background:var(--panel2);color:var(--txt);border:1px solid var(--line);cursor:pointer}.controls button:active,.actions button:active{transform:scale(.98)}.primary{background:var(--accent)!important;color:#06120a!important;border-color:transparent!important}.secondary{background:#263745!important}.actions{display:grid;grid-template-columns:repeat(3,1fr);gap:10px;padding:14px;border-top:1px solid var(--line);background:#151f27}.section{margin-top:14px;background:var(--panel);border:1px solid var(--line);border-radius:18px;padding:16px}.section h2{font-size:18px;margin:0 0 12px}.grid{display:grid;grid-template-columns:1fr 1fr;gap:10px}.field{background:var(--panel2);border:1px solid var(--line);border-radius:12px;padding:11px}.field label{display:block;color:var(--muted);font-size:12px;margin-bottom:5px}.field input{width:100%;background:transparent;border:0;outline:0;color:var(--txt);font-size:17px;font-weight:700}.hidden{display:none!important}.footer{text-align:center;color:var(--muted);font-size:12px;padding:18px 0}.homeMenu{display:grid;grid-template-columns:repeat(2,1fr);gap:10px;margin-top:14px}.homeMenu button{min-height:58px;border:1px solid var(--line);border-radius:14px;background:var(--panel);color:var(--txt);font-size:16px;font-weight:800;cursor:pointer}.homeMenu button:active{transform:scale(.98)}.homeMenu small{display:block;color:var(--muted);font-size:11px;font-weight:400;margin-top:3px}.page{display:none}.page.active{display:block}.back{margin-bottom:12px;width:100%;min-height:48px;border:1px solid var(--line);border-radius:12px;background:var(--panel2);color:var(--txt);font-weight:800;font-size:16px}
 @media(max-width:560px){body{padding:8px}.teams{padding-top:18px}.badge{width:62px;height:62px}.actions{grid-template-columns:1fr 1fr}.grid{grid-template-columns:1fr}.top{padding-bottom:8px}}
  .player{display:flex;align-items:center;gap:8px;margin:6px 0}.num{width:32px;height:32px;border-radius:8px;background:#263745;display:grid;place-items:center;font-weight:800}.player input{min-width:0;flex:1;background:#202e39;border:1px solid #334553;border-radius:9px;color:#fff;padding:8px;font-size:14px}.captain{font-size:12px;color:#aab7c2}  .subbox{margin-top:10px;padding:12px;background:#202e39;border:1px solid #334553;border-radius:12px}.subbox h3{margin:0 0 8px;font-size:14px}.subrow{display:grid;grid-template-columns:1fr 1fr;gap:8px;margin-top:8px}.subrow select{width:100%;background:#18232d;color:#fff;border:1px solid #334553;border-radius:9px;padding:10px;font-size:14px}.subrow button{border:0;border-radius:9px;padding:10px;font-weight:800;background:#35c759;color:#06120a} .capt{display:flex;gap:8px;align-items:center;margin-top:8px;color:#aab7c2;font-size:13px}.capt select{flex:1;background:#18232d;color:#fff;border:1px solid #334553;border-radius:9px;padding:9px}  .eventbox{margin-top:10px}.eventrow{display:grid;grid-template-columns:80px 1fr 110px;gap:8px;margin:8px 0}.eventrow select,.eventrow input{width:100%;background:#18232d;color:#fff;border:1px solid #334553;border-radius:9px;padding:10px;font-size:14px}.eventrow button{border:0;border-radius:9px;background:#35c759;color:#06120a;font-weight:800}.event{display:flex;gap:8px;align-items:center;padding:8px 0;border-bottom:1px solid #334553;font-size:14px}.event:last-child{border-bottom:0}.tag{padding:3px 7px;border-radius:7px;background:#263745;font-weight:800} </style>
 </head>
@@ -76,6 +76,27 @@ body{padding:12px}.app{width:min(1100px,100%);margin:auto}.top{display:flex;just
 </section>
 
 <section class="section">
+<h2>Accès rapide</h2>
+<div class="homeMenu">
+<button data-page="compositions">👥 Compositions<small>Titulaires et remplaçants</small></button>
+<button data-page="changes">🔄 Changements<small>Entrées et sorties</small></button>
+<button data-page="events">⚽ Buts & cartons<small>Événements du match</small></button>
+<button data-page="clock">⏱️ Chronomètre<small>Temps de jeu</small></button>
+<button data-page="sheet">📋 Feuille de match<small>Résumé officiel</small></button>
+<button data-page="settings">⚙️ Match<small>Équipes, stade, compétition</small></button>
+</div>
+</section>
+
+<div id="subPages">
+<section class="section page" id="page-compositions"><button class="back" data-home>← Retour au score</button><h2>Compositions</h2><div class="grid"><div><h3>Équipe A</h3><div id="rosterA"></div></div><div><h3>Équipe B</h3><div id="rosterB"></div></div></div></section>
+<section class="section page" id="page-changes"><button class="back" data-home>← Retour au score</button><h2>Changements</h2><p>Les changements seront gérés ici pendant le match.</p></section>
+<section class="section page" id="page-events"><button class="back" data-home>← Retour au score</button><h2>Buts et cartons</h2><div id="eventsPage"></div></section>
+<section class="section page" id="page-clock"><button class="back" data-home>← Retour au score</button><h2>Chronomètre</h2><div class="clock" style="text-align:center" id="clockPage">00:00</div><div class="row" style="margin-top:12px"><button id="startPage">▶ Démarrer</button><button id="pausePage">⏸ Pause</button></div></section>
+<section class="section page" id="page-sheet"><button class="back" data-home>← Retour au score</button><h2>Feuille de match</h2><p>Le résumé du match sera affiché ici.</p></section>
+<section class="section page" id="page-settings"><button class="back" data-home>← Retour au score</button><h2>Informations du match</h2><div class="grid"><div class="field"><label>Compétition</label><input id="competitionPage" value="Match de football"></div><div class="field"><label>Stade</label><input id="venuePage"></div><div class="field"><label>Équipe A</label><input id="teamAPage" value="Équipe A"></div><div class="field"><label>Équipe B</label><input id="teamBPage" value="Équipe B"></div></div></section>
+</div>
+
+<section class="section">
 <h2>Prochaine étape</h2>
 <div class="grid">
 <div class="field"><label>Phase</label><strong>1re mi-temps</strong></div>
@@ -137,6 +158,17 @@ function pauseTimer(){state.running=false;clearInterval(timer);timer=null;$("sta
 function resetMatch(){pauseTimer();state.a=0;state.b=0;state.seconds=0;$("start").textContent="▶ Démarrer";$("period").textContent="Avant-match";render();}
 $("goalA").onclick=()=>{state.a++;render()};$("goalB").onclick=()=>{state.b++;render()};$("start").onclick=startTimer;$("pause").onclick=pauseTimer;$("reset").onclick=resetMatch;
 function sync(){ $("teamA").textContent=$("teamAInput").value||"Équipe A";$("teamB").textContent=$("teamBInput").value||"Équipe B";$("compDisplay").textContent=$("competition").value||"MATCH DE FOOTBALL";$("venueDisplay").textContent=$("venue").value||"Stade • à définir"; }
+function showPage(name){
+ document.querySelectorAll(".page").forEach(p=>p.classList.remove("active"));
+ document.querySelectorAll(".homeMenu").forEach(m=>m.parentElement.classList.toggle("hidden",!!name));
+ if(name){const p=$("page-"+name);if(p)p.classList.add("active");}
+ if(name==="compositions"){drawRoster("A");drawRoster("B")}
+ if(name==="events"){renderEvents()}
+ if(name==="clock"){$("clockPage").textContent=$("clock").textContent}
+}
+document.querySelectorAll("[data-page]").forEach(b=>b.onclick=()=>showPage(b.dataset.page));
+document.querySelectorAll("[data-home]").forEach(b=>b.onclick=()=>showPage(null));
+$("startPage").onclick=startTimer;$("pausePage").onclick=pauseTimer;
 render();sync();
 if("serviceWorker" in navigator){window.addEventListener("load",()=>navigator.serviceWorker.register("./sw.js").catch(()=>{}))}
 </script>
