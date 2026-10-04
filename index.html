@@ -94,77 +94,68 @@ img.onload=function(){resolve(img);};
 img.onerror=reject;
 img.src=reader.result;
 };
-reader.onerror=reject;
-reader.readAsDataURL(file);
+reader.onerror=reject;reader.readAsDataURL(file);
 });
 }
-function makeNameRowCanvas(img,side,row){
+function makeTeamNameCanvas(img,side){
 var w=img.naturalWidth||img.width,h=img.naturalHeight||img.height;
-// La feuille officielle comporte 14 lignes numérotées. On lit uniquement la cellule Nom/Prénom.
+// Une seule zone OCR par équipe, uniquement la colonne Nom/Prénom.
 var x0=side==="A"?0.145:0.565;
 var x1=side==="A"?0.485:0.895;
-var y0=0.300;
-var rowH=0.0200;
-var yTop=y0+row*rowH;
-var padY=0.0035;
-var sx=Math.floor(w*x0),sy=Math.floor(h*(yTop-padY));
-var sw=Math.max(1,Math.floor(w*(x1-x0))),sh=Math.max(1,Math.floor(h*(rowH+padY*2)));
-var scale=4,canvas=document.createElement("canvas");
+var y0=0.27,y1=0.94;
+var sx=Math.floor(w*x0),sy=Math.floor(h*y0);
+var sw=Math.max(1,Math.floor(w*(x1-x0))),sh=Math.max(1,Math.floor(h*(y1-y0)));
+var scale=2.5,canvas=document.createElement("canvas");
 canvas.width=Math.floor(sw*scale);canvas.height=Math.floor(sh*scale);
 var ctx=canvas.getContext("2d",{willReadFrequently:true});
 ctx.drawImage(img,sx,sy,sw,sh,0,0,canvas.width,canvas.height);
 var data=ctx.getImageData(0,0,canvas.width,canvas.height),d=data.data;
 for(var i=0;i<d.length;i+=4){
 var v=0.299*d[i]+0.587*d[i+1]+0.114*d[i+2];
-v=Math.max(0,Math.min(255,(v-145)*1.7+145));
+v=Math.max(0,Math.min(255,(v-140)*1.55+140));
 d[i]=d[i+1]=d[i+2]=v;
 }
 ctx.putImageData(data,0,0);
 return canvas;
 }
-function cleanLineOcrName(text){
-var s=cleanOcrName(text||"");
-s=s.replace(/[^A-Za-zÀ-ÿ' .-]/g," ");
-s=s.replace(/\s+/g," ").trim();
-s=s.replace(/^(nom\s*[/\\-]?\s*pr[ée]nom|pr[ée]nom)$/i,"");
-if(s.length<3||s.length>45)return "";
-return s;
+function extractNameColumn(text){
+var lines=text.split(/\r?\n/).map(normalizeOcrLine).filter(Boolean),out=[];
+lines.forEach(function(line){
+var name=cleanOcrName(line||"");
+name=name.replace(/[^A-Za-zÀ-ÿ' .-]/g," ").replace(/\s+/g," ").trim();
+if(!name||name.length<3||name.length>45)return;
+if(/^(nom\s*[/\\-]?\s*pr[ée]nom|pr[ée]nom|composition|joueurs?|equipe|équipe)$/i.test(name))return;
+if(/^[-_ .:;]+$/.test(name))return;
+out.push(name);
+});
+var unique=[];
+out.forEach(function(name){
+if(!unique.some(function(x){return x.toUpperCase()===name.toUpperCase();}))unique.push(name);
+});
+return unique.slice(0,14);
 }
-function ocrOneName(canvas){
+function recognizeTeamFast(img,status,side,label){
+status.textContent="⏳ "+label+" · reconnaissance…";
+var canvas=makeTeamNameCanvas(img,side);
 return Tesseract.recognize(canvas,"fra+eng",{
-tessedit_pageseg_mode:"7"
+logger:function(m){
+if(m.status==="recognizing text")status.textContent="⏳ "+label+" · "+Math.round((m.progress||0)*100)+" %";
+},
+tessedit_pageseg_mode:"6"
 }).then(function(r){
-var name=cleanLineOcrName(r.data.text||"");
-if(name)return name;
-return Tesseract.recognize(canvas,"fra+eng",{tessedit_pageseg_mode:"13"}).then(function(r2){
-return cleanLineOcrName(r2.data.text||"");
+var names=extractNameColumn(r.data.text||[]);
+return names.map(function(name,i){return {number:i+1,name:name};});
 });
-});
-}
-function recognizeTeamRows(img,status,side,label){
-var rows=[],chain=Promise.resolve();
-for(let row=0;row<14;row++){
-(function(rowIndex){
-chain=chain.then(function(){
-status.textContent="⏳ "+label+" · joueur "+(rowIndex+1)+"/14…";
-var canvas=makeNameRowCanvas(img,side,rowIndex);
-return ocrOneName(canvas).then(function(name){
-if(name)rows.push({number:rowIndex+1,name:name});
-});
-});
-})(row);
-}
-return chain.then(function(){return rows;});
 }
 function scanMatchSheet(file){
 if(!file)return;
 var status=el("scanStatus"),review=el("scanReview");
 if(review){review.style.display="none";review.innerHTML="";}
-status.textContent="⏳ Préparation de la feuille complète…";
+status.textContent="⏳ Préparation de la feuille…";
 if(!window.Tesseract){status.textContent="❌ Le moteur OCR n’est pas disponible.";return;}
 loadImageFile(file).then(function(img){
-return recognizeTeamRows(img,status,"A","Équipe A · GAUCHE").then(function(rowsA){
-return recognizeTeamRows(img,status,"B","Équipe B · DROITE").then(function(rowsB){
+return recognizeTeamFast(img,status,"A","Équipe A · GAUCHE").then(function(rowsA){
+return recognizeTeamFast(img,status,"B","Équipe B · DROITE").then(function(rowsB){
 if(!rowsA.length&&!rowsB.length){
 status.textContent="⚠️ Aucun nom reconnu. Prenez la feuille bien de face et assez près.";
 return;
