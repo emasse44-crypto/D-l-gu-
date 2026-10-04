@@ -354,35 +354,58 @@ if((x.role||"").length>(same.role||"").length)same.role=x.role;
 }
 });
 names.sort(function(a,b){return a.y-b.y;});
-var lic=(licenses||[]).slice().sort(function(a,b){return a.y-b.y;}),out=[],used=[];
+
+// Les deux lectures OCR des licences (PSM 6 et PSM 11) peuvent
+// reconnaître deux fois exactement la même licence. On les fusionne
+// avant d'associer les licences aux lignes de joueurs.
+var rawLic=(licenses||[]).slice().sort(function(a,b){return a.y-b.y;}),lic=[];
+rawLic.forEach(function(x){
+var same=null;
+for(var i=0;i<lic.length;i++){
+if(lic[i].license===x.license && Math.abs(lic[i].y-x.y)<55){same=lic[i];break;}
+}
+if(!same)lic.push({y:x.y,license:x.license||""});
+});
+var out=[],usedNames=[];
 lic.forEach(function(x,idx){
 var best=-1,bestDist=9999;
 for(var i=0;i<names.length;i++){
-if(used[i])continue;
+if(usedNames[i])continue;
 var d=Math.abs(names[i].y-x.y);
 if(d<bestDist){bestDist=d;best=i;}
 }
 var item={y:x.y,name:"",license:x.license||"",number:idx<14?idx+1:0,role:""};
-if(best>=0&&bestDist<=55){
+if(best>=0&&bestDist<=65){
 item.name=names[best].name||"";
 item.role=names[best].role||"";
-used[best]=true;
+if(names[best].number>=1&&names[best].number<=14)item.number=names[best].number;
+usedNames[best]=true;
 }
 out.push(item);
 });
 names.forEach(function(x,i){
-if(used[i])return;
+if(usedNames[i])return;
 var near=false;
 for(var j=0;j<out.length;j++){if(Math.abs(out[j].y-x.y)<45){near=true;break;}}
-if(!near&&x.name)out.push({y:x.y,name:x.name,license:x.license||"",number:0,role:x.role||""});
+if(!near&&x.name)out.push({y:x.y,name:x.name,license:x.license||"",number:x.number||0,role:x.role||""});
 });
-(roles||[]).forEach(function(x){
+
+// Même principe pour les rôles, car ils sont lus deux fois.
+var rawRoles=(roles||[]).slice().sort(function(a,b){return a.y-b.y;}),roleList=[];
+rawRoles.forEach(function(x){
+var same=null;
+for(var i=0;i<roleList.length;i++){
+if(roleList[i].role===x.role && Math.abs(roleList[i].y-x.y)<55){same=roleList[i];break;}
+}
+if(!same)roleList.push({y:x.y,role:x.role||""});
+});
+roleList.forEach(function(x){
 var same=null,bestDist=9999;
 for(var i=0;i<out.length;i++){
 var d=Math.abs(out[i].y-x.y);
 if(d<bestDist){bestDist=d;same=out[i];}
 }
-if(same&&bestDist<=55){
+if(same&&bestDist<=65){
 if((x.role||"").length>(same.role||"").length)same.role=x.role;
 }else if(x.role){
 out.push({y:x.y,name:"",license:"",number:0,role:x.role});
@@ -392,9 +415,6 @@ out.sort(function(a,b){return a.y-b.y;});
 out=out.filter(function(x){
 x.name=cleanRecognizedName(x.name);
 return !!x.name||!!x.license||!!x.role;
-});
-out.forEach(function(x,i){
-if(!x.number&&i<14&&x.license)x.number=i+1;
 });
 return out.slice(0,30);
 }
