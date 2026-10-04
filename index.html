@@ -341,29 +341,62 @@ rows.sort(function(a,b){return a.y-b.y;});
 return rows;
 }
 function mergeScanRows(a,b,licenses,roles){
-var all=a.concat(b).sort(function(x,y){return x.y-y.y;}),out=[];
-all.forEach(function(x){
-var same=null;for(var i=0;i<out.length;i++){if(Math.abs(out[i].y-x.y)<32){same=out[i];break;}}
-if(!same){out.push({y:x.y,name:x.name||"",license:x.license||"",number:x.number||0,role:x.role||""});return;}
-if((x.license||"").length>(same.license||"").length)same.license=x.license;
+var allNames=a.concat(b).sort(function(x,y){return x.y-y.y;}),names=[];
+allNames.forEach(function(x){
+var same=null;
+for(var i=0;i<names.length;i++){if(Math.abs(names[i].y-x.y)<28){same=names[i];break;}}
+if(!same){names.push({y:x.y,name:x.name||"",license:x.license||"",number:x.number||0,role:x.role||""});}
+else{
 if((x.name||"").length>(same.name||"").length)same.name=x.name;
+if((x.license||"").length>(same.license||"").length)same.license=x.license;
 if(x.number&&!same.number)same.number=x.number;
 if((x.role||"").length>(same.role||"").length)same.role=x.role;
+}
 });
-(licenses||[]).forEach(function(x){
-var same=null;for(var i=0;i<out.length;i++){if(Math.abs(out[i].y-x.y)<34){same=out[i];break;}}
-if(!same){out.push({y:x.y,name:"",license:x.license,number:0,role:""});}
-else if((x.license||"").length>(same.license||"").length)same.license=x.license;
+names.sort(function(a,b){return a.y-b.y;});
+var lic=(licenses||[]).slice().sort(function(a,b){return a.y-b.y;}),out=[],used=[];
+lic.forEach(function(x,idx){
+var best=-1,bestDist=9999;
+for(var i=0;i<names.length;i++){
+if(used[i])continue;
+var d=Math.abs(names[i].y-x.y);
+if(d<bestDist){bestDist=d;best=i;}
+}
+var item={y:x.y,name:"",license:x.license||"",number:idx<14?idx+1:0,role:""};
+if(best>=0&&bestDist<=55){
+item.name=names[best].name||"";
+item.role=names[best].role||"";
+used[best]=true;
+}
+out.push(item);
+});
+names.forEach(function(x,i){
+if(used[i])return;
+var near=false;
+for(var j=0;j<out.length;j++){if(Math.abs(out[j].y-x.y)<45){near=true;break;}}
+if(!near&&x.name)out.push({y:x.y,name:x.name,license:x.license||"",number:0,role:x.role||""});
 });
 (roles||[]).forEach(function(x){
-var same=null;for(var i=0;i<out.length;i++){if(Math.abs(out[i].y-x.y)<34){same=out[i];break;}}
-if(!same){out.push({y:x.y,name:"",license:"",number:0,role:x.role||""});}
-else if((x.role||"").length>(same.role||"").length)same.role=x.role;
+var same=null,bestDist=9999;
+for(var i=0;i<out.length;i++){
+var d=Math.abs(out[i].y-x.y);
+if(d<bestDist){bestDist=d;same=out[i];}
+}
+if(same&&bestDist<=55){
+if((x.role||"").length>(same.role||"").length)same.role=x.role;
+}else if(x.role){
+out.push({y:x.y,name:"",license:"",number:0,role:x.role});
+}
 });
 out.sort(function(a,b){return a.y-b.y;});
-out=out.filter(function(x){x.name=cleanRecognizedName(x.name);return !!x.name||!!x.license||!!x.role;}).slice(0,24);
-out.forEach(function(x,i){x.name=cleanRecognizedName(x.name);if(!x.number&&i<14)x.number=i+1;});
-return out;
+out=out.filter(function(x){
+x.name=cleanRecognizedName(x.name);
+return !!x.name||!!x.license||!!x.role;
+});
+out.forEach(function(x,i){
+if(!x.number&&i<14&&x.license)x.number=i+1;
+});
+return out.slice(0,30);
 }
 function scanMatchSheet(file){
 if(!file)return;
@@ -415,7 +448,7 @@ function escapeHtmlAttr(v){return String(v==null?"":v).replace(/&/g,"&amp;").rep
 window.showFullScanReview=function(rows,hint){
 var box=el("scanReview");if(!box)return;
 var players=rows.filter(function(x){return x.number>=1&&x.number<=14;}).slice(0,14);
-var staff=rows.filter(function(x){return x.number===0||x.number>14;}).slice(0,5);
+var staff=rows.filter(function(x){return x.number===0||x.number>14;}).slice(0,10);
 var html='<div class="scan-review"><h4>🔎 Vérification de la composition</h4><div class="note">Les joueurs 1 à 14 sont récupérés dans la composition. Les membres d’encadrement sont récupérés séparément dans la rubrique 👔 Staff, sans modifier votre saisie manuelle des n°15 et 16.</div>'+(hint?'<div class="note" style="margin-top:8px">✅ <strong>Équipe '+hint+' détectée automatiquement</strong>.</div>':'<label class="note">Équipe à remplir</label><select data-scan-team style="margin-top:6px"><option value="A">Équipe A</option><option value="B">Équipe B</option></select>')+'<div class="scan-team-review"><h4>Joueurs détectés</h4>';
 if(!players.length)html+='<div class="note">⚠️ Aucun joueur reconnu.</div>';
 players.forEach(function(x,i){
