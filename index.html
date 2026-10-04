@@ -102,6 +102,17 @@ img.src=reader.result;
 reader.onerror=reject;reader.readAsDataURL(file);
 });
 }
+function prepareFullScanImage(img){
+var w=img.naturalWidth||img.width,h=img.naturalHeight||img.height;
+if(h<=w)return img;
+var canvas=document.createElement("canvas");
+canvas.width=h;canvas.height=w;
+var ctx=canvas.getContext("2d");
+ctx.translate(h/2,w/2);
+ctx.rotate(Math.PI/2);
+ctx.drawImage(img,-w/2,-h/2);
+return canvas;
+}
 function makeTeamNameCanvas(img,side){
 var w=img.naturalWidth||img.width,h=img.naturalHeight||img.height;
 // Une seule zone OCR par équipe, uniquement la colonne Nom/Prénom.
@@ -234,14 +245,15 @@ if(review){review.style.display="none";review.innerHTML="";}
 status.textContent="⏳ Chargement de la photo…";
 if(!window.Tesseract){status.textContent="❌ Le moteur OCR n’est pas disponible.";return;}
 loadImageFile(file).then(function(img){
-status.textContent="⏳ Préparation de la feuille…";
-var meta=makeFullNamesCanvas(img);
+status.textContent="⏳ Rotation automatique de la feuille…";
+var scanImg=prepareFullScanImage(img);
+var meta=makeFullNamesCanvas(scanImg);
 status.textContent="⏳ Lecture de la feuille : une seule analyse OCR…";
 return Tesseract.recognize(meta.canvas,"fra+eng",{
 logger:function(m){
 if(m.status==="recognizing text")status.textContent="⏳ Lecture OCR : "+Math.round((m.progress||0)*100)+" %";
 },
-tessedit_pageseg_mode:"11",preserve_interword_spaces:"1",user_defined_dpi:"300",load_system_dawg:"0",load_freq_dawg:"0"
+rotateAuto:true,tessedit_pageseg_mode:"11",preserve_interword_spaces:"1",user_defined_dpi:"300",load_system_dawg:"0",load_freq_dawg:"0"
 }).then(function(result){
 var rows=extractBothTeamsFromOcr(result,meta);
 var rowsA=rows.A,rowsB=rows.B;
@@ -269,7 +281,7 @@ html+='<div class="scan-row"><div class="scan-num">'+n+'</div><input type="text"
 });
 html+='</div>';return html;
 }
-var html='<div class="scan-review"><h4>🔎 Vérification des deux compositions</h4><div class="note">La feuille indique les joueurs par numéro. Les licences ne figurent pas sur la photo, elles restent à saisir manuellement. Vérifiez bien les noms avant validation.</div><div class="scan-columns">'+sideHtml("A","Équipe A · GAUCHE",rowsA)+sideHtml("B","Équipe B · DROITE",rowsB)+'</div><button class="green" id="confirmScanReview" style="width:100%;margin-top:12px">✅ Valider les deux compositions</button><button id="cancelScanReview" style="width:100%;margin-top:8px">Annuler</button></div>';
+var html='<div class="scan-review"><h4>🔎 Vérification des deux compositions</h4><div class="note">La photo est automatiquement remise à l’endroit avant lecture. Les noms sont récupérés par OCR ; vérifiez-les avant validation. Les licences peuvent être complétées dans les compositions.</div><div class="scan-columns">'+sideHtml("A","Équipe A · GAUCHE",rowsA)+sideHtml("B","Équipe B · DROITE",rowsB)+'</div><button class="green" id="confirmScanReview" style="width:100%;margin-top:12px">✅ Valider les deux compositions</button><button id="cancelScanReview" style="width:100%;margin-top:8px">Annuler</button></div>';
 box.innerHTML=html;box.style.display="block";
 box.querySelector("#confirmScanReview").onclick=function(){
 function applySide(team,key){
