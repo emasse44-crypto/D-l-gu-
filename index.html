@@ -159,7 +159,7 @@ return {canvas:canvas,scale:scale,xOffset:x0*w,yOffset:y0*h,origWidth:w};
 }
 function cleanRecognizedName(text){
 var s=cleanOcrName(text||"");
-s=s.replace(/[^A-Za-zÀ-ÿ' .-]/g," ").replace(/\s+/g," ").trim();
+s=s.replace(/\bcapitaine\b/gi," ").replace(/\bnet\s+aye\b/gi," ").replace(/\bset\s+cr\b/gi," ").replace(/\bkill\b/gi," ").replace(/\blea\b/gi," ").replace(/[^A-Za-zÀ-ÿ' .-]/g," ").replace(/\s+/g," ").trim();
 if(/^(nom\s*[/\\-]?\s*pr[ée]nom|pr[ée]nom|composition|joueurs?|equipe|équipe)$/i.test(s))return "";
 if(s.length<3||s.length>45)return "";
 return s;
@@ -297,7 +297,7 @@ parts.push(t);
 var name=cleanRecognizedName(parts.join(" "));
 var letters=(name.match(/[A-Za-zÀ-ÿ]/g)||[]).length;
 if(letters<3)return;
-if(/^(le poire|vie|vfv|516561|512163|position)$/i.test(name))return;
+if(/^(le poire|vie|vfv|516561|512163|position)$/i.test(name)||/le\s+poire.*(vie|vf)/i.test(name))return;
 out.push({y:row.y,name:name,license:license,number:number});
 });
 return out;
