@@ -136,9 +136,9 @@ return unique.slice(0,14);
 }
 function makeFullNamesCanvas(img){
 var w=img.naturalWidth||img.width,h=img.naturalHeight||img.height;
-var x0=0.12,x1=0.92,y0=0.27,y1=0.94;
+var x0=0.08,x1=0.95,y0=0.24,y1=0.97;
 var sx=Math.floor(w*x0),sy=Math.floor(h*y0),sw=Math.floor(w*(x1-x0)),sh=Math.floor(h*(y1-y0));
-var scale=2,canvas=document.createElement("canvas");
+var scale=2.5,canvas=document.createElement("canvas");
 canvas.width=Math.floor(sw*scale);canvas.height=Math.floor(sh*scale);
 var ctx=canvas.getContext("2d",{willReadFrequently:true});
 ctx.drawImage(img,sx,sy,sw,sh,0,0,canvas.width,canvas.height);
@@ -236,7 +236,7 @@ return Tesseract.recognize(meta.canvas,"fra+eng",{
 logger:function(m){
 if(m.status==="recognizing text")status.textContent="⏳ Lecture OCR : "+Math.round((m.progress||0)*100)+" %";
 },
-tessedit_pageseg_mode:"6"
+tessedit_pageseg_mode:"11",preserve_interword_spaces:"1",user_defined_dpi:"300",load_system_dawg:"0",load_freq_dawg:"0"
 }).then(function(result){
 var rows=extractBothTeamsFromOcr(result,meta);
 var rowsA=rows.A,rowsB=rows.B;
