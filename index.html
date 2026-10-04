@@ -284,7 +284,7 @@ row.words.sort(function(a,b){return a.x-b.x;});
 var license="",licenseX=Infinity,number=0;
 row.words.forEach(function(w){
 var d=scanLicense(w.text);if(d&&d.length>license.length){license=d;licenseX=w.x;}
-var n=String(w.text).replace(/\D/g,"");if(w.x<100&&n.length<=2&&Number(n)>=1&&Number(n)<=16)number=Number(n);
+var n=String(w.text).replace(/\D/g,"");if(w.x<Math.max(140,row.words.length?row.words[0].x+120:140)&&n.length<=2&&Number(n)>=1&&Number(n)<=16)number=Number(n);
 });
 var parts=[];
 row.words.forEach(function(w){
@@ -360,6 +360,13 @@ else if((x.role||"").length>(same.role||"").length)same.role=x.role;
 out.sort(function(a,b){return a.y-b.y;});
 out=out.filter(function(x){x.name=cleanRecognizedName(x.name);return !!x.name||!!x.license||!!x.role;}).slice(0,24);
 out.forEach(function(x,i){x.name=cleanRecognizedName(x.name);if(!x.number&&i<14)x.number=i+1;});
+// Sur les feuilles sans colonne licence, l'OCR peut perdre les numéros à gauche.
+// L'ordre des lignes reste fiable : on renumérote uniquement les lignes sans numéro.
+var next=1;
+out.forEach(function(x){
+if(x.number>=1&&x.number<=14){next=Math.max(next,x.number+1);}
+else if(next<=14){x.number=next++;}
+});
 return out;
 }
 function scanMatchSheet(file){
@@ -387,6 +394,11 @@ status.textContent="⏳ Lecture des joueurs et des licences…";
 var namesCanvas=document.createElement("canvas"),nctx=namesCanvas.getContext("2d");
 namesCanvas.width=Math.round(crop.canvas.width*.64);namesCanvas.height=crop.canvas.height;
 nctx.drawImage(crop.canvas,0,0,namesCanvas.width,namesCanvas.height,0,0,namesCanvas.width,namesCanvas.height);
+// Lecture large supplémentaire : certaines feuilles n'ont pas de colonne licence.
+// Dans ce cas les noms occupent une largeur beaucoup plus grande.
+var wideNamesCanvas=document.createElement("canvas"),wnctx=wideNamesCanvas.getContext("2d");
+wideNamesCanvas.width=Math.round(crop.canvas.width*.96);wideNamesCanvas.height=crop.canvas.height;
+wnctx.drawImage(crop.canvas,0,0,wideNamesCanvas.width,wideNamesCanvas.height,0,0,wideNamesCanvas.width,wideNamesCanvas.height);
 var right=document.createElement("canvas"),rctx=right.getContext("2d"),rx=Math.round(crop.canvas.width*.56);
 right.width=crop.canvas.width-rx;right.height=crop.canvas.height;
 rctx.drawImage(crop.canvas,rx,0,right.width,right.height,0,0,right.width,right.height);
@@ -397,12 +409,14 @@ status.textContent="⏳ Lecture séparée des noms, licences et fonctions…";
 return Promise.all([
 Tesseract.recognize(namesCanvas,"fra+eng",{tessedit_pageseg_mode:"6",preserve_interword_spaces:"1",user_defined_dpi:"300",load_system_dawg:"0",load_freq_dawg:"0"}),
 Tesseract.recognize(namesCanvas,"fra+eng",{tessedit_pageseg_mode:"11",preserve_interword_spaces:"1",user_defined_dpi:"300",load_system_dawg:"0",load_freq_dawg:"0"}),
+Tesseract.recognize(wideNamesCanvas,"fra+eng",{tessedit_pageseg_mode:"6",preserve_interword_spaces:"1",user_defined_dpi:"300",load_system_dawg:"0",load_freq_dawg:"0"}),
+Tesseract.recognize(wideNamesCanvas,"fra+eng",{tessedit_pageseg_mode:"11",preserve_interword_spaces:"1",user_defined_dpi:"300",load_system_dawg:"0",load_freq_dawg:"0"}),
 Tesseract.recognize(right,"eng",{tessedit_pageseg_mode:"6",tessedit_char_whitelist:"0123456789",preserve_interword_spaces:"1",user_defined_dpi:"300",load_system_dawg:"0",load_freq_dawg:"0"}),
 Tesseract.recognize(right,"eng",{tessedit_pageseg_mode:"11",tessedit_char_whitelist:"0123456789",preserve_interword_spaces:"1",user_defined_dpi:"300",load_system_dawg:"0",load_freq_dawg:"0"}),
 Tesseract.recognize(roleCanvas,"fra+eng",{tessedit_pageseg_mode:"6",preserve_interword_spaces:"1",user_defined_dpi:"300",load_system_dawg:"0",load_freq_dawg:"0"}),
 Tesseract.recognize(roleCanvas,"fra+eng",{tessedit_pageseg_mode:"11",preserve_interword_spaces:"1",user_defined_dpi:"300",load_system_dawg:"0",load_freq_dawg:"0"})
 ]).then(function(r){
-var rows=mergeScanRows(extractScanRows(r[0]),extractScanRows(r[1]),extractScanLicenseRows(r[2]).concat(extractScanLicenseRows(r[3])),extractScanRoleRows(r[4]).concat(extractScanRoleRows(r[5])));
+var rows=mergeScanRows(extractScanRows(r[0]),extractScanRows(r[1]).concat(extractScanRows(r[2]),extractScanRows(r[3])),extractScanLicenseRows(r[4]).concat(extractScanLicenseRows(r[5])),extractScanRoleRows(r[6]).concat(extractScanRoleRows(r[7])));
 window.showFullScanReview(rows,hint);
 status.textContent="✅ "+rows.length+" ligne(s) détectée(s). Vérifiez noms, licences et équipe.";
 });
