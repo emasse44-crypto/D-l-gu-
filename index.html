@@ -114,7 +114,7 @@ if(!reviewRows.length){box.style.display="none";return;}
 var html='<div class="scan-review"><h4>🔎 Vérification avant enregistrement</h4><div class="note">La feuille montre 14 joueurs numérotés. Les licences ne figurent pas sur cette feuille, elles restent à saisir manuellement.</div>';
 reviewRows.forEach(function(x,i){
 var n=x.number&&x.number>=1&&x.number<=14?x.number:i+1;
-html+='<div class="scan-row"><div class="scan-num">'+n+'</div><input type="text" value="'+escapeHtmlAttr(x.name)+'" data-scan-name="'+i+'" placeholder="Nom / prénom"><input type="text" value="" data-scan-license="'+i+'" placeholder="N° licence"></div>';
+html+='<div class="scan-row"><div class="scan-num">'+n+'</div><input type="text" value="'+escapeHtmlAttr(x.name)+'" data-scan-name="'+i+'" data-scan-number="'+n+'" placeholder="Nom / prénom"><input type="text" value="" data-scan-license="'+i+'" placeholder="N° licence"></div>';
 });
 html+='<button class="green" id="confirmScanReview" style="width:100%;margin-top:12px">✅ Valider cette composition</button><button id="cancelScanReview" style="width:100%;margin-top:8px">Annuler</button></div>';
 box.innerHTML=html;box.style.display="block";
@@ -122,12 +122,19 @@ box.querySelector("#confirmScanReview").onclick=function(){
 var target=teamKey==="B"?playersB:playersA;
 var names=box.querySelectorAll("input[data-scan-name]"),licenses=box.querySelectorAll("input[data-scan-license]");
 for(var i=0;i<target.length;i++){if(i<14){target[i].name="";target[i].license="";target[i].active=i<11;}}
-names.forEach(function(input,i){target[i].name=input.value.trim();target[i].active=i<11;});
-licenses.forEach(function(input,i){target[i].license=input.value.trim();});
+var used={};
+names.forEach(function(input,i){
+var n=Number(input.getAttribute("data-scan-number"))||i+1;
+if(n>=1&&n<=16&&!used[n]){
+target[n-1].name=input.value.trim();
+target[n-1].license=licenses[i]?licenses[i].value.trim():"";
+target[n-1].active=n<=11;
+used[n]=true;
+}
+});
 renderAllPlayers();saveState();box.style.display="none";box.innerHTML="";
 el("scanStatus").textContent="✅ Composition validée pour l’équipe "+teamKey+".";
 };
-box.querySelector("#cancelScanReview").onclick=function(){box.style.display="none";box.innerHTML="";el("scanStatus").textContent="Lecture annulée. Rien n’a été modifié.";};
 }
 function escapeHtmlAttr(s){return String(s||"").replace(/&/g,"&amp;").replace(/"/g,"&quot;").replace(/</g,"&lt;").replace(/>/g,"&gt;");}
 function scanMatchSheet(file){
@@ -218,12 +225,3 @@ el("scanStaffBtn").onclick=function(){el("staffSheetPhoto").click();};el("staffS
 el("saveStaff").onclick=function(){readStaff(staffA,"staffA");readStaff(staffB,"staffB");renderStaff(staffA,"staffA");renderStaff(staffB,"staffB");saveState();alert("Staff enregistré.");};
 el("staffYellowA").onclick=function(){setupStaffCard(staffA,"Équipe A","🟨 Jaune");};el("staffYellowB").onclick=function(){setupStaffCard(staffB,"Équipe B","🟨 Jaune");};
 el("staffRedA").onclick=function(){setupStaffCard(staffA,"Équipe A","🟥 Rouge");};el("staffRedB").onclick=function(){setupStaffCard(staffB,"Équipe B","🟥 Rouge");};
-el("staffWhiteA").onclick=function(){setupStaffCard(staffA,"Équipe A","⚪ Blanc");};el("staffWhiteB").onclick=function(){setupStaffCard(staffB,"Équipe B","⚪ Blanc");};
-el("confirmStaffCard").onclick=confirmStaffCard;el("printSheet").onclick=function(){renderSheet();window.print();};
-loadState();playersA.forEach(function(p,i){if(typeof p.active!=="boolean")p.active=i<11;});playersB.forEach(function(p,i){if(typeof p.active!=="boolean")p.active=i<11;});
-if("serviceWorker" in navigator){window.addEventListener("load",function(){navigator.serviceWorker.getRegistrations().then(function(regs){regs.forEach(function(reg){reg.unregister();});}).catch(function(){});});}
-renderAllPlayers();update();
-})();
-</script>
-</body>
-</html>
