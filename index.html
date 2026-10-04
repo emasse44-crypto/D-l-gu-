@@ -134,15 +134,21 @@ if(!unique.some(function(x){return x.toUpperCase()===name.toUpperCase();}))uniqu
 });
 return unique.slice(0,14);
 }
-function recognizeTeamFast(img,status,side,label){
-status.textContent="⏳ "+label+" · reconnaissance…";
-var canvas=makeTeamNameCanvas(img,side);
-return Tesseract.recognize(canvas,"fra+eng",{
+var ocrWorker=null,ocrWorkerPromise=null;
+function getOcrWorker(status){
+if(ocrWorker)return Promise.resolve(ocrWorker);
+if(ocrWorkerPromise)return ocrWorkerPromise;
+ocrWorkerPromise=Tesseract.createWorker("fra+eng",1,{
 logger:function(m){
-if(m.status==="recognizing text")status.textContent="⏳ "+label+" · "+Math.round((m.progress||0)*100)+" %";
-},
-tessedit_pageseg_mode:"6"
-}).then(function(r){
+if(m.status==="recognizing text")status.textContent="⏳ OCR : "+Math.round((m.progress||0)*100)+" %";
+}
+}).then(function(w){ocrWorker=w;return w;});
+return ocrWorkerPromise;
+}
+function recognizeTeamFast(img,status,side,label,worker){
+status.textContent="⏳ "+label+" · analyse…";
+var canvas=makeTeamNameCanvas(img,side);
+return worker.recognize(canvas,{tessedit_pageseg_mode:"6"}).then(function(r){
 var names=extractNameColumn(r.data.text||[]);
 return names.map(function(name,i){return {number:i+1,name:name};});
 });
@@ -151,11 +157,12 @@ function scanMatchSheet(file){
 if(!file)return;
 var status=el("scanStatus"),review=el("scanReview");
 if(review){review.style.display="none";review.innerHTML="";}
-status.textContent="⏳ Préparation de la feuille…";
+status.textContent="⏳ Chargement du moteur OCR…";
 if(!window.Tesseract){status.textContent="❌ Le moteur OCR n’est pas disponible.";return;}
 loadImageFile(file).then(function(img){
-return recognizeTeamFast(img,status,"A","Équipe A · GAUCHE").then(function(rowsA){
-return recognizeTeamFast(img,status,"B","Équipe B · DROITE").then(function(rowsB){
+return getOcrWorker(status).then(function(worker){
+return recognizeTeamFast(img,status,"A","Équipe A · GAUCHE",worker).then(function(rowsA){
+return recognizeTeamFast(img,status,"B","Équipe B · DROITE",worker).then(function(rowsB){
 if(!rowsA.length&&!rowsB.length){
 status.textContent="⚠️ Aucun nom reconnu. Prenez la feuille bien de face et assez près.";
 return;
@@ -164,66 +171,11 @@ showFullScanReview(rowsA,rowsB);
 status.textContent="✅ Lecture terminée : "+rowsA.length+"/14 à gauche, "+rowsB.length+"/14 à droite. Vérifiez avant validation.";
 });
 });
+});
 }).catch(function(err){
 console.error(err);
 status.textContent="❌ La lecture de la feuille a échoué. Recommencez avec une photo nette et bien cadrée.";
 });
-}
-
-function showFullScanReview(rowsA,rowsB){
-var box=el("scanReview");if(!box)return;
-function sideHtml(key,title,rows){
-var html='<div class="scan-team-review"><h4>'+title+'</h4>';
-if(!rows.length){html+='<div class="note">⚠️ Aucun joueur reconnu sur cette moitié.</div>';}
-rows.slice(0,14).forEach(function(x,i){
-var n=i+1;
-html+='<div class="scan-row"><div class="scan-num">'+n+'</div><input type="text" value="'+escapeHtmlAttr(x.name)+'" data-scan-name="'+key+'-'+i+'" data-scan-number="'+n+'" placeholder="Nom / prénom"><input type="text" value="" data-scan-license="'+key+'-'+i+'" placeholder="N° licence"></div>';
-});
-html+='</div>';return html;
-}
-var html='<div class="scan-review"><h4>🔎 Vérification des deux compositions</h4><div class="note">La feuille indique les joueurs par numéro. Les licences ne figurent pas sur la photo, elles restent à saisir manuellement. Vérifiez bien les noms avant validation.</div><div class="scan-columns">'+sideHtml("A","Équipe A · GAUCHE",rowsA)+sideHtml("B","Équipe B · DROITE",rowsB)+'</div><button class="green" id="confirmScanReview" style="width:100%;margin-top:12px">✅ Valider les deux compositions</button><button id="cancelScanReview" style="width:100%;margin-top:8px">Annuler</button></div>';
-box.innerHTML=html;box.style.display="block";
-box.querySelector("#confirmScanReview").onclick=function(){
-function applySide(team,key){
-for(var i=0;i<14;i++){team[i].name="";team[i].license="";team[i].active=i<11;}
-var names=box.querySelectorAll('input[data-scan-name^="'+key+'-"]');
-var used={};
-names.forEach(function(input){
-var n=Number(input.getAttribute("data-scan-number"));
-var license=box.querySelector('input[data-scan-license="'+key+'-'+input.getAttribute("data-scan-name").split("-")[1]+'"]');
-if(n>=1&&n<=16&&!used[n]){
-team[n-1].name=input.value.trim();
-team[n-1].license=license?license.value.trim():"";
-team[n-1].active=n<=11;
-used[n]=true;
-}
-});
-}
-applySide(playersA,"A");applySide(playersB,"B");
-renderAllPlayers();saveState();box.style.display="none";box.innerHTML="";
-el("scanStatus").textContent="✅ Les deux compositions ont été récupérées. Vérifiez aussi les licences dans les tableaux.";
-};
-box.querySelector("#cancelScanReview").onclick=function(){box.style.display="none";box.innerHTML="";el("scanStatus").textContent="Lecture annulée.";};
-}
-function escapeHtmlAttr(s){return String(s||"").replace(/&/g,"&amp;").replace(/"/g,"&quot;").replace(/</g,"&lt;").replace(/>/g,"&gt;");}
-function scanMatchSheet(file){
-if(!file)return;
-var status=el("scanStatus"),review=el("scanReview");if(review){review.style.display="none";review.innerHTML="";}
-status.textContent="⏳ Préparation de la feuille complète…";
-if(!window.Tesseract){status.textContent="❌ Le moteur OCR n’est pas disponible.";return;}
-preprocessTeamImage(file,"A").then(function(canvasA){
-status.textContent="⏳ Lecture Équipe A · GAUCHE…";
-return recognizeTeamCrop(canvasA,status,"Équipe A · GAUCHE").then(function(rowsA){
-status.textContent="⏳ Lecture Équipe B · DROITE…";
-return preprocessTeamImage(file,"B").then(function(canvasB){
-return recognizeTeamCrop(canvasB,status,"Équipe B · DROITE").then(function(rowsB){
-if(!rowsA.length&&!rowsB.length){status.textContent="⚠️ Aucun joueur reconnu. Prenez la feuille bien de face, sans couper les colonnes.";return;}
-showFullScanReview(rowsA,rowsB);
-status.textContent="✅ Détection terminée : "+Math.min(rowsA.length,14)+" joueur(s) à gauche, "+Math.min(rowsB.length,14)+" à droite. Vérifiez avant validation.";
-});
-});
-});
-}).catch(function(err){console.error(err);status.textContent="❌ La lecture de la feuille a échoué. Recommencez avec une photo nette et bien cadrée.";});
 }
 
 function downloadText(filename,text){var blob=new Blob([text],{type:"text/plain;charset=utf-8"});var url=URL.createObjectURL(blob);var a=document.createElement("a");a.href=url;a.download=filename;document.body.appendChild(a);a.click();a.remove();setTimeout(function(){URL.revokeObjectURL(url);},1000);}function teamDownloadText(team,name){readPlayers(team,team===playersA?"playersA":"playersB");var lines=[name,"==============================","CAPITAINE : "+(function(){var i=team.findIndex(function(p){return p.captain;});return i>=0?playerLabel(team[i],i):"Non renseigné";})(),"","TITULAIRES"];team.slice(0,11).forEach(function(p,i){lines.push((i+1)+". "+(p.name||"Non renseigné")+" · Licence : "+playerLicense(p));});lines.push("","REMPLAÇANTS");team.slice(11,16).forEach(function(p,i){lines.push((i+12)+". "+(p.name||"Non renseigné")+" · Licence : "+playerLicense(p));});return lines.join("\n");}function downloadTeam(team,name,file){downloadText(file,teamDownloadText(team,name));}function playerLabel(p,i){return (p.name||("Joueur "+(i+1)))+" (n°"+(i+1)+")";} function playerLicense(p){return p.license||"Non renseigné";}
