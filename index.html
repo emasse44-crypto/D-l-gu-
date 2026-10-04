@@ -204,7 +204,7 @@ if(!rowsA.length&&!rowsB.length){
 status.textContent="⚠️ Aucun nom reconnu. Vérifiez que toute la feuille est visible.";
 return;
 }
-showFullScanReview(rowsA,rowsB);
+window.showFullScanReview(rowsA,rowsB);
 status.textContent="✅ Lecture terminée : "+rowsA.length+"/14 à gauche, "+rowsB.length+"/14 à droite. Vérifiez avant validation.";
 });
 }).catch(function(err){
@@ -213,7 +213,7 @@ status.textContent="❌ Erreur OCR : "+(err&&err.message?err.message:"lecture im
 });
 }
 
-function showFullScanReview(rowsA,rowsB){
+window.showFullScanReview=function(rowsA,rowsB){
 var box=el("scanReview");if(!box)return;
 function sideHtml(key,title,rows){
 var html='<div class="scan-team-review"><h4>'+title+'</h4>';
