@@ -213,6 +213,38 @@ status.textContent="❌ Erreur OCR : "+(err&&err.message?err.message:"lecture im
 });
 }
 
+function showFullScanReview(rowsA,rowsB){
+var box=el("scanReview");if(!box)return;
+function sideHtml(key,title,rows){
+var html='<div class="scan-team-review"><h4>'+title+'</h4>';
+if(!rows.length){html+='<div class="note">⚠️ Aucun joueur reconnu sur cette moitié.</div>';}
+rows.slice(0,14).forEach(function(x,i){
+var n=i+1;
+html+='<div class="scan-row"><div class="scan-num">'+n+'</div><input type="text" value="'+escapeHtmlAttr(x.name)+'" data-scan-name="'+key+'-'+i+'" data-scan-number="'+n+'" placeholder="Nom / prénom"><input type="text" value="" data-scan-license="'+key+'-'+i+'" placeholder="N° licence"></div>';
+});
+html+='</div>';return html;
+}
+var html='<div class="scan-review"><h4>🔎 Vérification des deux compositions</h4><div class="note">La feuille indique les joueurs par numéro. Les licences ne figurent pas sur la photo, elles restent à saisir manuellement. Vérifiez bien les noms avant validation.</div><div class="scan-columns">'+sideHtml("A","Équipe A · GAUCHE",rowsA)+sideHtml("B","Équipe B · DROITE",rowsB)+'</div><button class="green" id="confirmScanReview" style="width:100%;margin-top:12px">✅ Valider les deux compositions</button><button id="cancelScanReview" style="width:100%;margin-top:8px">Annuler</button></div>';
+box.innerHTML=html;box.style.display="block";
+box.querySelector("#confirmScanReview").onclick=function(){
+function applySide(team,key){
+for(var i=0;i<16;i++){team[i].name="";team[i].license="";team[i].active=i<11;}
+var names=box.querySelectorAll('input[data-scan-name^="'+key+'-"]');
+names.forEach(function(input){
+var idx=input.getAttribute("data-scan-name").split("-")[1];
+var n=Number(input.getAttribute("data-scan-number"));
+var lic=box.querySelector('input[data-scan-license="'+key+'-'+idx+'"]');
+if(n>=1&&n<=16){team[n-1].name=input.value.trim();team[n-1].license=lic?lic.value.trim():"";team[n-1].active=n<=11;}
+});
+}
+applySide(playersA,"A");applySide(playersB,"B");
+renderAllPlayers();saveState();box.style.display="none";box.innerHTML="";
+el("scanStatus").textContent="✅ Les deux compositions ont été récupérées. Vérifiez aussi les licences dans les tableaux.";
+};
+box.querySelector("#cancelScanReview").onclick=function(){box.style.display="none";box.innerHTML="";el("scanStatus").textContent="Lecture annulée.";};
+}
+function escapeHtmlAttr(s){return String(s||"").replace(/&/g,"&amp;").replace(/"/g,"&quot;").replace(/</g,"&lt;").replace(/>/g,"&gt;");}
+
 function downloadText(filename,text){var blob=new Blob([text],{type:"text/plain;charset=utf-8"});var url=URL.createObjectURL(blob);var a=document.createElement("a");a.href=url;a.download=filename;document.body.appendChild(a);a.click();a.remove();setTimeout(function(){URL.revokeObjectURL(url);},1000);}function teamDownloadText(team,name){readPlayers(team,team===playersA?"playersA":"playersB");var lines=[name,"==============================","CAPITAINE : "+(function(){var i=team.findIndex(function(p){return p.captain;});return i>=0?playerLabel(team[i],i):"Non renseigné";})(),"","TITULAIRES"];team.slice(0,11).forEach(function(p,i){lines.push((i+1)+". "+(p.name||"Non renseigné")+" · Licence : "+playerLicense(p));});lines.push("","REMPLAÇANTS");team.slice(11,16).forEach(function(p,i){lines.push((i+12)+". "+(p.name||"Non renseigné")+" · Licence : "+playerLicense(p));});return lines.join("\n");}function downloadTeam(team,name,file){downloadText(file,teamDownloadText(team,name));}function playerLabel(p,i){return (p.name||("Joueur "+(i+1)))+" (n°"+(i+1)+")";} function playerLicense(p){return p.license||"Non renseigné";}
 function setupChange(team,label){readPlayers(team,team===playersA?"playersA":"playersB");el("changeTeamLabel").textContent=label;var out=el("playerOut"),inn=el("playerIn");out.innerHTML="";inn.innerHTML="";team.forEach(function(p,i){if(p.active){var o=document.createElement("option");o.value=i;o.textContent=playerLabel(p,i);out.appendChild(o);}if(!p.active&&i>=11){var q=document.createElement("option");q.value=i;q.textContent=playerLabel(p,i);inn.appendChild(q);}});el("changeForm").style.display="block";el("changeForm").dataset.team=team===playersA?"A":"B";if(!inn.options.length){inn.innerHTML="<option value=''>Aucun remplaçant disponible</option>";}}
 function confirmChange(){var team=el("changeForm").dataset.team==="A"?playersA:playersB;var outIndex=Number(el("playerOut").value),inIndex=Number(el("playerIn").value);if(!Number.isInteger(outIndex)||!Number.isInteger(inIndex)||!team[inIndex]){alert("Choisissez un joueur sortant et un remplaçant.");return;}var outPlayer=team[outIndex],inPlayer=team[inIndex];if(!outPlayer.active||inPlayer.active||inIndex<11){alert("Changement impossible.");return;}outPlayer.active=false;inPlayer.active=true;changes.push({team:el("changeForm").dataset.team,out:playerLabel(outPlayer,outIndex),in:playerLabel(inPlayer,inIndex),minute:Math.floor(seconds/60)+":"+String(seconds%60).padStart(2,"0")});el("changeForm").style.display="none";renderChanges();saveState();}
