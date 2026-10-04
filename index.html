@@ -346,7 +346,7 @@ status.textContent="✅ "+rows.length+" ligne(s) détectée(s). Vérifiez noms, 
 }
 window.showFullScanReview=function(rows,hint){
 var box=el("scanReview");if(!box)return;
-var html='<div class="scan-review"><h4>🔎 Vérification de la composition</h4><div class="note">Les lignes bleues sont atténuées et deux lectures OCR sont croisées. Rien n’est enregistré avant votre validation.</div><label class="note">Équipe à remplir</label><select data-scan-team style="margin-top:6px"><option value="A" '+(hint==="A"?"selected":"")+'>Équipe A</option><option value="B" '+(hint==="B"?"selected":"")+'>Équipe B</option></select><div class="scan-team-review"><h4>Joueurs détectés</h4>';
+var html='<div class="scan-review"><h4>🔎 Vérification de la composition</h4><div class="note">Les lignes bleues sont atténuées et deux lectures OCR sont croisées. Rien n’est enregistré avant votre validation.</div>'+(hint?'<div class="note" style="margin-top:8px">✅ <strong>Équipe '+hint+' détectée automatiquement</strong>.</div>':'<label class="note">Équipe à remplir</label><select data-scan-team style="margin-top:6px"><option value="A">Équipe A</option><option value="B">Équipe B</option></select>')+'<div class="scan-team-review"><h4>Joueurs détectés</h4>';
 if(!rows.length)html+='<div class="note">⚠️ Aucun joueur reconnu.</div>';
 rows.forEach(function(x,i){
 var n=x.number||i+1;html+='<div class="scan-row"><div class="scan-num">'+n+'</div><input type="text" value="'+escapeHtmlAttr(x.name)+'" data-scan-name="'+i+'" data-scan-number="'+n+'" placeholder="Nom / prénom"><input type="text" value="'+escapeHtmlAttr(x.license||"")+'" data-scan-license="'+i+'" placeholder="N° licence"></div><label class="scan-captain"><input type="checkbox" '+(/capitaine/i.test(x.name)?"checked":"")+' data-scan-cap="'+i+'"> Capitaine</label>';
@@ -354,7 +354,7 @@ var n=x.number||i+1;html+='<div class="scan-row"><div class="scan-num">'+n+'</di
 html+='</div><button class="green" id="confirmScanReview" style="width:100%;margin-top:12px">✅ Valider la composition</button><button id="cancelScanReview" style="width:100%;margin-top:8px">Annuler</button></div>';
 box.innerHTML=html;box.style.display="block";
 box.querySelector("#confirmScanReview").onclick=function(){
-var side=box.querySelector("select[data-scan-team]").value,team=side==="B"?playersB:playersA;
+var selector=box.querySelector("select[data-scan-team]"),side=hint||(selector?selector.value:"A"),team=side==="B"?playersB:playersA;
 for(var i=0;i<16;i++){team[i].name="";team[i].license="";team[i].captain=false;team[i].active=i<11;}
 box.querySelectorAll("input[data-scan-name]").forEach(function(input){
 var i=Number(input.getAttribute("data-scan-name")),n=Number(input.getAttribute("data-scan-number")),lic=box.querySelector('input[data-scan-license="'+i+'"]'),cap=box.querySelector('input[data-scan-cap="'+i+'"]');
