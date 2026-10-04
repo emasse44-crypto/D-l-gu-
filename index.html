@@ -507,8 +507,39 @@ function renderCards(){var c=el("cardHistory");c.innerHTML="";if(!cards.length){
 function correctCard(index){var x=cards[index];var team=x.team==="A"?playersA:playersB;var match=x.player.match(/n°(\d+)/);var current=match?match[1]:"";var sel=prompt("Entrez le numéro du bon joueur (1 à 16) :",current);if(sel===null)return;var n=Number(sel);if(!Number.isInteger(n)||n<1||n>16||!team[n-1].active){alert("Choisissez le numéro d’un joueur actuellement actif.");return;}x.player=playerLabel(team[n-1],n-1);renderCards();saveState();}
 function renderGoalsPage(){el("goalsTeamA").textContent=el("teamA").textContent;el("goalsTeamB").textContent=el("teamB").textContent;el("goalsScoreA").textContent=scoreA;el("goalsScoreB").textContent=scoreB;el("goalsClock").textContent=formatMinute(seconds);renderGoals();}
 function setupGoal(team,label){readPlayers(team,team===playersA?"playersA":"playersB");el("goalTeamLabel").textContent=label;var sel=el("goalPlayer");sel.innerHTML="";team.forEach(function(p,i){if(p.active){var o=document.createElement("option");o.value=i;o.textContent=playerLabel(p,i);sel.appendChild(o);}});if(!sel.options.length){var o=document.createElement("option");o.value="";o.textContent="Aucun joueur actif";sel.appendChild(o);}el("goalForm").style.display="block";el("goalForm").dataset.team=team===playersA?"A":"B";} function confirmGoal(){var team=el("goalForm").dataset.team==="A"?playersA:playersB;var idx=Number(el("goalPlayer").value);if(!Number.isInteger(idx)||!team[idx]||!team[idx].active){alert("Choisissez le buteur.");return;}if(el("goalForm").dataset.team==="A"){scoreA++;}else{scoreB++;}goals.push({team:el("goalForm").dataset.team,player:playerLabel(team[idx],idx),minute:Math.floor(seconds/60)+":"+String(seconds%60).padStart(2,"0")});el("goalForm").style.display="none";renderGoals();update();saveState();} function renderGoals(){var c=el("goalHistory");c.innerHTML="";if(!goals.length){c.innerHTML="<p class='note'>Aucun but.</p>";return;}goals.forEach(function(x,i){var d=document.createElement("div");d.className="goal-entry"+(x.team==="B"?" team-b":"");var m=document.createElement("div");m.className="goal-minute";m.textContent=x.minute;d.appendChild(m);var info=document.createElement("div");info.className="goal-info";info.textContent="⚽ "+x.player+" · Équipe "+x.team+(x.cancelled?" · BUT ANNULÉ":"");d.appendChild(info);if(!x.cancelled){var actions=document.createElement("div");actions.className="goal-actions";var b=document.createElement("button");b.textContent="✏️";b.title="Corriger le buteur";b.onclick=function(){correctGoal(i);};actions.appendChild(b);var a=document.createElement("button");a.textContent="❌";a.title="Annuler le but";a.onclick=function(){cancelGoal(i);};actions.appendChild(a);d.appendChild(actions);}c.appendChild(d);});}
-function cancelGoal(index){var g=goals[index];if(g.cancelled)return;if(!confirm("Annuler ce but ? Le score sera retiré."))return;if(g.team==="A"){scoreA=Math.max(0,scoreA-1);}else{scoreB=Math.max(0,scoreB-1);}goals.splice(index,1);renderGoals();update();} function correctGoal(index){var g=goals[index];var team=g.team==="A"?playersA:playersB;var sel=prompt("Entrez le numéro du bon buteur (1 à 16) :",String(parseInt((g.player.match(/n°(\d+)/)||[])[1]||"")));if(sel===null)return;var n=Number(sel);if(!Number.isInteger(n)||n<1||n>16||!team[n-1].active){alert("Choisissez le numéro d’un joueur actuellement actif.");return;}g.player=playerLabel(team[n-1],n-1);renderGoals();saveState();} function renderStaff(team,id){var c=el(id);c.innerHTML="";team.forEach(function(name,i){var row=document.createElement("div");row.className="player-row";var n=document.createElement("div");n.className="player-number";n.textContent=i+1;var input=document.createElement("input");input.type="text";input.placeholder="Membre du staff";input.value=name;input.setAttribute("data-index",i);row.appendChild(n);row.appendChild(input);c.appendChild(row);});}
-function readStaff(team,id){el(id).querySelectorAll("input[data-index]").forEach(function(x){team[Number(x.getAttribute("data-index"))]=x.value.trim();});}function extractStaffLines(text){
+function cancelGoal(index){var g=goals[index];if(g.cancelled)return;if(!confirm("Annuler ce but ? Le score sera retiré."))return;if(g.team==="A"){scoreA=Math.max(0,scoreA-1);}else{scoreB=Math.max(0,scoreB-1);}goals.splice(index,1);renderGoals();update();} function correctGoal(index){var g=goals[index];var team=g.team==="A"?playersA:playersB;var sel=prompt("Entrez le numéro du bon buteur (1 à 16) :",String(parseInt((g.player.match(/n°(\d+)/)||[])[1]||"")));if(sel===null)return;var n=Number(sel);if(!Number.isInteger(n)||n<1||n>16||!team[n-1].active){alert("Choisissez le numéro d’un joueur actuellement actif.");return;}g.player=playerLabel(team[n-1],n-1);renderGoals();saveState();} function parseStaffEntry(value){
+var s=String(value||"").trim(),role="";
+var m=s.match(/^(.*?)(?:\\s*(?:·|-)\\s*)(E|M|A|D\\/DR|D)\\s*$/i);
+if(m){s=m[1].trim();role=m[2].toUpperCase();}
+return {name:s,role:role};
+}
+function renderStaff(team,id){
+var c=el(id);c.innerHTML="";
+team.forEach(function(value,i){
+var parsed=parseStaffEntry(value);
+var row=document.createElement("div");row.className="player-row";
+var n=document.createElement("div");n.className="player-number";n.textContent=i+1;row.appendChild(n);
+var input=document.createElement("input");input.type="text";input.placeholder="Membre du staff";input.value=parsed.name;input.setAttribute("data-index",i);input.style.flex="1";row.appendChild(input);
+var select=document.createElement("select");select.setAttribute("data-role-index",i);select.style.width="105px";
+["","E","M","A","D","D/DR"].forEach(function(role){
+var option=document.createElement("option");option.value=role;option.textContent=role||"Rôle";
+if(role===parsed.role)option.selected=true;select.appendChild(option);
+});
+row.appendChild(select);
+var del=document.createElement("button");del.type="button";del.textContent="🗑️";del.title="Supprimer ce membre du staff";del.className="red";del.style.width="48px";del.onclick=function(){
+team[i]="";renderStaff(team,id);saveState();
+};row.appendChild(del);
+c.appendChild(row);
+});
+}
+function readStaff(team,id){
+var box=el(id);if(!box)return;
+box.querySelectorAll("input[data-index]").forEach(function(x){
+var i=Number(x.getAttribute("data-index")),roleBox=box.querySelector('select[data-role-index="'+i+'"]');
+var name=x.value.trim(),role=roleBox?roleBox.value:"";
+team[i]=name+(name&&role?" - "+role:"");
+});
+}function extractStaffLines(text){
 var lines=text.split(/\r?\n/).map(normalizeOcrLine).filter(Boolean),found=[];
 lines.forEach(function(line){
 var m=line.match(/^(?:staff|entra[iî]neur|coach|adjoint|dirigeant|kin[eé]|m[eé]decin|pr[eé]parateur)?\s*[:\-]?\s*(.{3,})$/i);
