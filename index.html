@@ -158,6 +158,56 @@ if(/^(nom\s*[/\\-]?\s*pr[ée]nom|pr[ée]nom|composition|joueurs?|equipe|équipe)
 if(s.length<3||s.length>45)return "";
 return s;
 }
+function makeRightTeamCanvas(img){
+var w=img.naturalWidth||img.width,h=img.naturalHeight||img.height;
+var x0=0.585,x1=0.95,y0=0.305,y1=0.59,rows=14,scale=4,rowHeight=110,gap=18;
+var srcX=Math.floor(w*x0),srcW=Math.floor(w*(x1-x0));
+var canvas=document.createElement("canvas");
+canvas.width=Math.floor(srcW*scale);
+canvas.height=rows*rowHeight+(rows-1)*gap;
+var ctx=canvas.getContext("2d",{willReadFrequently:true});
+for(var r=0;r<rows;r++){
+var top=Math.floor(h*(y0+(y1-y0)*r/rows)+3);
+var bottom=Math.floor(h*(y0+(y1-y0)*(r+1)/rows)-3);
+var sh=Math.max(1,bottom-top);
+var temp=document.createElement("canvas");
+temp.width=canvas.width;
+temp.height=rowHeight;
+var tctx=temp.getContext("2d",{willReadFrequently:true});
+tctx.drawImage(img,srcX,top,srcW,sh,0,0,temp.width,temp.height);
+var data=tctx.getImageData(0,0,temp.width,temp.height),d=data.data;
+for(var i=0;i<d.length;i+=4){
+var v=0.299*d[i]+0.587*d[i+1]+0.114*d[i+2];
+v=Math.max(0,Math.min(255,(v-140)*1.45+140));
+d[i]=d[i+1]=d[i+2]=v;
+}
+tctx.putImageData(data,0,0);
+ctx.drawImage(temp,0,r*(rowHeight+gap));
+}
+return {canvas:canvas,rowStep:rowHeight+gap,rows:rows};
+}
+function extractRightTeamFromOcr(result,meta){
+var words=(result.data&&result.data.words)||[],rows=Array.from({length:meta.rows},function(){return [];});
+words.forEach(function(word){
+var raw=(word.text||"").trim();
+var bb=word.bbox||{};
+var x=Number(bb.x0)||0,y=Number(bb.y0)||0,y1=Number(bb.y1)||0;
+var conf=Number(word.confidence);
+if(!raw||(!isNaN(conf)&&conf<50))return;
+var row=Math.floor(((y+y1)/2)/meta.rowStep);
+if(row<0||row>=meta.rows)return;
+var token=cleanRecognizedName(raw);
+token=token.replace(/[^A-Za-zÀ-ÿ' .-]/g," ").replace(/\s+/g," ").trim();
+if(token.length<2)return;
+rows[row].push({text:token,x:x,confidence:conf});
+});
+return rows.map(function(group,i){
+group.sort(function(a,b){return a.x-b.x;});
+var name=cleanRecognizedName(group.map(function(w){return w.text;}).join(" "));
+if(!name||name.length<3||/^(nom|prenom|prénom|composition|joueurs?|joueur|equipe|équipe)$/i.test(name))return null;
+return {number:i+1,name:name};
+}).filter(Boolean);
+}
 function extractBothTeamsFromOcr(result,meta){
 var words=(result.data&&result.data.words)||[],A=[],B=[];
 words.forEach(function(word){
@@ -231,21 +281,30 @@ if(!window.Tesseract){status.textContent="❌ Le moteur OCR n’est pas disponib
 loadImageFile(file).then(function(img){
 status.textContent="⏳ Préparation de la feuille…";
 var meta=makeFullNamesCanvas(img);
-status.textContent="⏳ Lecture de la feuille : une seule analyse OCR…";
+status.textContent="⏳ Lecture OCR de la feuille…";
 return Tesseract.recognize(meta.canvas,"fra+eng",{
 logger:function(m){
-if(m.status==="recognizing text")status.textContent="⏳ Lecture OCR : "+Math.round((m.progress||0)*100)+" %";
+if(m.status==="recognizing text")status.textContent="⏳ Lecture équipe A : "+Math.round((m.progress||0)*100)+" %";
 },
 tessedit_pageseg_mode:"11",preserve_interword_spaces:"1",user_defined_dpi:"300",load_system_dawg:"0",load_freq_dawg:"0"
 }).then(function(result){
-var rows=extractBothTeamsFromOcr(result,meta);
-var rowsA=rows.A,rowsB=rows.B;
+var rows=extractBothTeamsFromOcr(result,meta),rowsA=rows.A;
+status.textContent="⏳ Lecture améliorée équipe B : zone des noms uniquement…";
+var rightMeta=makeRightTeamCanvas(img);
+return Tesseract.recognize(rightMeta.canvas,"fra+eng",{
+logger:function(m){
+if(m.status==="recognizing text")status.textContent="⏳ Lecture équipe B : "+Math.round((m.progress||0)*100)+" %";
+},
+tessedit_pageseg_mode:"11",preserve_interword_spaces:"1",user_defined_dpi:"300",load_system_dawg:"0",load_freq_dawg:"0"
+}).then(function(rightResult){
+var rowsB=extractRightTeamFromOcr(rightResult,rightMeta);
 if(!rowsA.length&&!rowsB.length){
 status.textContent="⚠️ Aucun nom reconnu. Vérifiez que toute la feuille est visible.";
 return;
 }
 window.showFullScanReview(rowsA,rowsB);
 status.textContent="✅ Lecture terminée : "+rowsA.length+"/14 à gauche, "+rowsB.length+"/14 à droite. Vérifiez avant validation.";
+});
 });
 }).catch(function(err){
 console.error("OCR",err);
