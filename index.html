@@ -160,65 +160,67 @@ return s;
 }
 function extractBothTeamsFromOcr(result,meta){
 var words=(result.data&&result.data.words)||[],A=[],B=[];
-if(words.length){
 words.forEach(function(word){
 var raw=(word.text||"").trim();
 if(!raw)return;
 var bb=word.bbox||{};
-var cx=((bb.x0||0)+(bb.x1||0))/2;
-var cy=((bb.y0||0)+(bb.y1||0))/2;
-var h=Math.max(1,(bb.y1||0)-(bb.y0||0));
+var x=Number(bb.x0)||0,y=Number(bb.y0)||0,x1=Number(bb.x1)||0,y1=Number(bb.y1)||0;
+var h=Math.max(1,y1-y);
 var conf=Number(word.confidence);
-if(h<8||(!isNaN(conf)&&conf<20))return;
-if(/^\d{1,2}[.)]?$/.test(raw))return;
+if(h<8||(!isNaN(conf)&&conf<15))return;
+if(/^\\d{1,2}[.)]?$/.test(raw))return;
 var token=cleanRecognizedName(raw);
 if(!token)return;
-var arr=cx<meta.canvas.width*0.50?A:B;
-arr.push({text:token,x:bb.x0||0,y:cy});
-});
-}
-function build(arr){
-arr.sort(function(a,b){return a.y-b.y||a.x-b.x;});
-var rows=[];
-arr.forEach(function(w){
+words._dummy=0;
 var row=null;
-for(var i=rows.length-1;i>=0;i--){
-if(Math.abs(rows[i].y-w.y)<28){row=rows[i];break;}
-if(rows[i].y<w.y-35)break;
+for(var i=A.length;i>=0;i--){break;}
+var allRows=extractBothTeamsFromOcr._rows||(extractBothTeamsFromOcr._rows=[]);
+var found=null;
+for(var j=allRows.length-1;j>=0;j--){
+if(Math.abs(allRows[j].y-y)<28){found=allRows[j];break;}
+if(allRows[j].y<y-35)break;
 }
-if(!row){row={y:w.y,words:[]};rows.push(row);}
-row.words.push(w);
+if(!found){found={y:y,words:[]};allRows.push(found);}
+found.words.push({text:token,x:x,x1:x1,cy:(y+y1)/2});
 });
+var rows=extractBothTeamsFromOcr._rows||[];
+extractBothTeamsFromOcr._rows=null;
 rows.sort(function(a,b){return a.y-b.y;});
-var out=[];
 rows.forEach(function(row){
 row.words.sort(function(a,b){return a.x-b.x;});
-var name=row.words.map(function(w){return w.text;}).join(" ");
-name=cleanRecognizedName(name);
-if(!name)return;
-if(/^(nom|prenom|prénom|composition|joueurs?|joueur|equipe|équipe)$/i.test(name))return;
-if(name.length<3)return;
-if(!out.some(function(x){return x.name.toUpperCase()===name.toUpperCase()||Math.abs(x.y-row.y)<22;})){
-out.push({name:name,y:row.y});
+if(!row.words.length)return;
+var split=-1,maxGap=0;
+for(var i=1;i<row.words.length;i++){
+var gap=row.words[i].x-row.words[i-1].x1;
+if(gap>maxGap){maxGap=gap;split=i;}
 }
+var groups=[];
+if(split>0&&maxGap>=Math.max(55,meta.canvas.width*0.035)){
+groups=[row.words.slice(0,split),row.words.slice(split)];
+}else{
+groups=[row.words];
+}
+groups.forEach(function(group){
+var name=cleanRecognizedName(group.map(function(w){return w.text;}).join(" "));
+if(!name||/^(nom|prenom|prénom|composition|joueurs?|joueur|equipe|équipe)$/i.test(name))return;
+var cx=group.reduce(function(s,w){return s+(w.x+w.x1)/2;},0)/group.length;
+var item={name:name,y:row.y};
+if(groups.length===1){
+if(cx<meta.canvas.width*0.50)A.push(item);else B.push(item);
+}else{
+if(group===groups[0])A.push(item);else B.push(item);
+}
+});
+});
+function uniqueAndLimit(arr){
+var out=[];
+arr.sort(function(a,b){return a.y-b.y;});
+arr.forEach(function(x){
+if(!out.some(function(y){return y.name.toUpperCase()===x.name.toUpperCase()||Math.abs(y.y-x.y)<18;}))out.push(x);
 });
 return out.slice(0,14).map(function(x,i){return {number:i+1,name:x.name};});
 }
-if(!A.length&&!B.length){
-var lines=(result.data&&result.data.lines)||[];
-lines.forEach(function(line){
-var name=cleanRecognizedName(line.text||"");
-if(!name)return;
-var bb=line.bbox||{};
-var cx=((bb.x0||0)+(bb.x1||0))/2;
-var cy=((bb.y0||0)+(bb.y1||0))/2;
-var h=Math.max(1,(bb.y1||0)-(bb.y0||0));
-if(h<8)return;
-var arr=cx<meta.canvas.width*0.50?A:B;
-arr.push({text:name,x:bb.x0||0,y:cy});
-});
-}
-return {A:build(A),B:build(B)};
+return {A:uniqueAndLimit(A),B:uniqueAndLimit(B)};
 }
 function scanMatchSheet(file){
 if(!file)return;
