@@ -302,16 +302,38 @@ out.push({y:row.y,name:name,license:license,number:number});
 });
 return out;
 }
-function mergeScanRows(a,b){
+function extractScanLicenseRows(result){
+var words=(result.data&&result.data.words)||[],rows=[];
+words.forEach(function(word){
+var raw=normalizeOcrLine(word.text||"");if(!raw)return;
+var d=scanLicense(raw);if(!d)return;
+var b=word.bbox||{},y=((Number(b.y0)||0)+(Number(b.y1)||0))/2;
+var row=null;
+for(var i=rows.length-1;i>=0;i--){if(Math.abs(rows[i].y-y)<=32){row=rows[i];break;}if(rows[i].y<y-45)break;}
+if(!row){row={y:y,license:d};rows.push(row);}
+else if(d.length>String(row.license||"").length)row.license=d;
+});
+rows.sort(function(a,b){return a.y-b.y;});
+return rows;
+}
+function mergeScanRows(a,b,licenses){
 var all=a.concat(b).sort(function(x,y){return x.y-y.y;}),out=[];
 all.forEach(function(x){
-var same=null;for(var i=0;i<out.length;i++){if(Math.abs(out[i].y-x.y)<28){same=out[i];break;}}
-if(!same){out.push({y:x.y,name:x.name,license:x.license,number:x.number});return;}
-if(x.license.length>(same.license||"").length)same.license=x.license;
-if(x.number)same.number=x.number;
-if(x.name.length>(same.name||"").length)same.name=x.name;
+var same=null;for(var i=0;i<out.length;i++){if(Math.abs(out[i].y-x.y)<32){same=out[i];break;}}
+if(!same){out.push({y:x.y,name:x.name||"",license:x.license||"",number:x.number||0});return;}
+if((x.license||"").length>(same.license||"").length)same.license=x.license;
+if((x.name||"").length>(same.name||"").length)same.name=x.name;
+if(x.number&&!same.number)same.number=x.number;
 });
-return out.slice(0,16);
+(licenses||[]).forEach(function(x){
+var same=null;for(var i=0;i<out.length;i++){if(Math.abs(out[i].y-x.y)<34){same=out[i];break;}}
+if(!same){out.push({y:x.y,name:"",license:x.license,number:0});}
+else if((x.license||"").length>(same.license||"").length)same.license=x.license;
+});
+out.sort(function(a,b){return a.y-b.y;});
+out=out.filter(function(x){return !!cleanRecognizedName(x.name)||!!x.license;}).slice(0,16);
+out.forEach(function(x,i){x.name=cleanRecognizedName(x.name);x.number=i+1;});
+return out;
 }
 function scanMatchSheet(file){
 if(!file)return;
@@ -337,8 +359,17 @@ var crop=cropScanComposition(base.canvas,base.result),hint=scanTeamHint((base.re
 status.textContent="⏳ Lecture des joueurs et des licences…";
 return Tesseract.recognize(crop.canvas,"fra+eng",{tessedit_pageseg_mode:"6",preserve_interword_spaces:"1",user_defined_dpi:"300",load_system_dawg:"0",load_freq_dawg:"0"}).then(function(a){
 return Tesseract.recognize(crop.canvas,"fra+eng",{tessedit_pageseg_mode:"11",preserve_interword_spaces:"1",user_defined_dpi:"300",load_system_dawg:"0",load_freq_dawg:"0"}).then(function(b){
-var rows=mergeScanRows(extractScanRows(a),extractScanRows(b));window.showFullScanReview(rows,hint);
+var right=document.createElement("canvas"),ctx=right.getContext("2d"),rw=Math.round(crop.canvas.width*.48);
+right.width=rw;right.height=crop.canvas.height;
+ctx.drawImage(crop.canvas,crop.canvas.width-rw,0,rw,crop.canvas.height,0,0,rw,crop.canvas.height);
+status.textContent="⏳ Vérification séparée des numéros de licence…";
+return Tesseract.recognize(right,"eng",{tessedit_pageseg_mode:"6",tessedit_char_whitelist:"0123456789",preserve_interword_spaces:"1",user_defined_dpi:"300",load_system_dawg:"0",load_freq_dawg:"0"}).then(function(licA){
+return Tesseract.recognize(right,"eng",{tessedit_pageseg_mode:"11",tessedit_char_whitelist:"0123456789",preserve_interword_spaces:"1",user_defined_dpi:"300",load_system_dawg:"0",load_freq_dawg:"0"}).then(function(licB){
+var rows=mergeScanRows(extractScanRows(a),extractScanRows(b),extractScanLicenseRows(licA).concat(extractScanLicenseRows(licB)));
+window.showFullScanReview(rows,hint);
 status.textContent="✅ "+rows.length+" ligne(s) détectée(s). Vérifiez noms, licences et équipe.";
+});
+});
 });
 });
 });
