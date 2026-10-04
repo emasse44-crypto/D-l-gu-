@@ -159,7 +159,53 @@ if(s.length<3||s.length>45)return "";
 return s;
 }
 function extractBothTeamsFromOcr(result,meta){
-var lines=(result.data&&result.data.lines)||[],A=[],B=[];
+var words=(result.data&&result.data.words)||[],A=[],B=[];
+if(words.length){
+words.forEach(function(word){
+var raw=(word.text||"").trim();
+if(!raw)return;
+var bb=word.bbox||{};
+var cx=((bb.x0||0)+(bb.x1||0))/2;
+var cy=((bb.y0||0)+(bb.y1||0))/2;
+var h=Math.max(1,(bb.y1||0)-(bb.y0||0));
+var conf=Number(word.confidence);
+if(h<8||(!isNaN(conf)&&conf<20))return;
+if(/^\d{1,2}[.)]?$/.test(raw))return;
+var token=cleanRecognizedName(raw);
+if(!token)return;
+var arr=cx<meta.canvas.width*0.50?A:B;
+arr.push({text:token,x:bb.x0||0,y:cy});
+});
+}
+function build(arr){
+arr.sort(function(a,b){return a.y-b.y||a.x-b.x;});
+var rows=[];
+arr.forEach(function(w){
+var row=null;
+for(var i=rows.length-1;i>=0;i--){
+if(Math.abs(rows[i].y-w.y)<28){row=rows[i];break;}
+if(rows[i].y<w.y-35)break;
+}
+if(!row){row={y:w.y,words:[]};rows.push(row);}
+row.words.push(w);
+});
+rows.sort(function(a,b){return a.y-b.y;});
+var out=[];
+rows.forEach(function(row){
+row.words.sort(function(a,b){return a.x-b.x;});
+var name=row.words.map(function(w){return w.text;}).join(" ");
+name=cleanRecognizedName(name);
+if(!name)return;
+if(/^(nom|prenom|prénom|composition|joueurs?|joueur|equipe|équipe)$/i.test(name))return;
+if(name.length<3)return;
+if(!out.some(function(x){return x.name.toUpperCase()===name.toUpperCase()||Math.abs(x.y-row.y)<22;})){
+out.push({name:name,y:row.y});
+}
+});
+return out.slice(0,14).map(function(x,i){return {number:i+1,name:x.name};});
+}
+if(!A.length&&!B.length){
+var lines=(result.data&&result.data.lines)||[];
 lines.forEach(function(line){
 var name=cleanRecognizedName(line.text||"");
 if(!name)return;
@@ -168,17 +214,9 @@ var cx=((bb.x0||0)+(bb.x1||0))/2;
 var cy=((bb.y0||0)+(bb.y1||0))/2;
 var h=Math.max(1,(bb.y1||0)-(bb.y0||0));
 if(h<8)return;
-var side=cx<meta.canvas.width*0.50?"A":"B";
-var arr=side==="A"?A:B;
-arr.push({name:name,y:cy});
+var arr=cx<meta.canvas.width*0.50?A:B;
+arr.push({text:name,x:bb.x0||0,y:cy});
 });
-function build(arr){
-arr.sort(function(a,b){return a.y-b.y;});
-var out=[];
-arr.forEach(function(x){
-if(!out.some(function(y){return Math.abs(y.y-x.y)<18;}))out.push(x);
-});
-return out.slice(0,14).map(function(x,i){return {number:i+1,name:x.name};});
 }
 return {A:build(A),B:build(B)};
 }
