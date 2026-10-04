@@ -260,9 +260,12 @@ words.forEach(function(x){
 var t=normalizeOcrLine(x.text||""),y=Number(x.bbox&&x.bbox.y0)||0;
 if(/^equipe$/i.test(t)||/^position$/i.test(t)){if(top===null||y<top)top=y;}
 if(/placants|remplaçants/i.test(t)){if(bottom===null||y<bottom)bottom=y;}
+if(/\bbanc\b|encadrement|technicien/i.test(t)){if(bottom===null||y<bottom)bottom=y;}
 });
 var y0=top===null?Math.round(h*.12):Math.max(0,top+65);
-var y1=bottom===null?Math.round(h*.84):Math.min(h,bottom+340);
+// Certaines feuilles ont plusieurs lignes d'encadrement sous les remplaçants.
+// On conserve plus de hauteur sans changer le reste du traitement OCR.
+var y1=bottom===null?Math.round(h*.84):Math.min(h,bottom+520);
 if(y1-y0<h*.20){y0=Math.round(h*.12);y1=Math.round(h*.68);}
 var c=document.createElement("canvas"),ctx=c.getContext("2d");c.width=w;c.height=y1-y0;ctx.drawImage(canvas,0,y0,w,c.height,0,0,w,c.height);
 return {canvas:c,offsetY:y0};
@@ -385,7 +388,7 @@ return {canvas:bestCanvas,result:best};
 var crop=cropScanComposition(base.canvas,base.result),hint=scanTeamHint((base.result.data&&base.result.data.text)||"");
 status.textContent="⏳ Lecture des joueurs et des licences…";
 var namesCanvas=document.createElement("canvas"),nctx=namesCanvas.getContext("2d");
-namesCanvas.width=Math.round(crop.canvas.width*.64);namesCanvas.height=crop.canvas.height;
+namesCanvas.width=Math.round(crop.canvas.width*.84);namesCanvas.height=crop.canvas.height;
 nctx.drawImage(crop.canvas,0,0,namesCanvas.width,namesCanvas.height,0,0,namesCanvas.width,namesCanvas.height);
 var right=document.createElement("canvas"),rctx=right.getContext("2d"),rx=Math.round(crop.canvas.width*.56);
 right.width=crop.canvas.width-rx;right.height=crop.canvas.height;
