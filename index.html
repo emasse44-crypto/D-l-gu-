@@ -63,22 +63,28 @@ return s;
 function extractPlayerRows(text){
 var lines=text.split(/\r?\n/).map(normalizeOcrLine).filter(Boolean),found=[];
 lines.forEach(function(line){
-var m=line.match(/^\s*(1[0-6]|[1-9])\s*[-.)/:]?\s*(.+?)\s*$/);
+line=line.replace(/^\s*[|Il!]+(?=\s*\d)/,"");
+var m=line.match(/^\s*(?:n[°o]?\s*)?(1[0-6]|[1-9])\s*[-.)/:|]?\s*(.{2,60})$/i);
+if(!m){
+var m2=line.match(/^\s*(1[0-6]|[1-9])\s*(?:[|Il!\]\[]\s*)?(.{2,60})$/i);
+if(m2)m=m2;
+}
 var number=m?Number(m[1]):null;
 var name=cleanOcrName(m?m[2]:line);
-if(!name||name.length<4)return;
-if(/^(equipe|recevante|visiteuse|nom|prenom|maillot|arbitre|central)$/i.test(name))return;
-if(/^(?:[A-Z]\s*){1,4}$/.test(name))return;
+name=name.replace(/^[\]|[|Il!\[]+\s*/,"").replace(/\s*[\[\]|]+$/,"").trim();
+if(!name||name.length<3)return;
+if(/^(equipe|recevante|visiteuse|nom|prenom|maillot|arbitre|central|joueurs?)$/i.test(name))return;
 if(/^[-_ .:;]+$/.test(name))return;
-var words=name.split(" ").filter(Boolean);
-if(words.length<2)return;
-if(name.length>40)return;
+if(name.length>55)return;
 found.push({number:number,name:name});
 });
 var unique=[];
-found.forEach(function(x){if(!unique.some(function(y){return y.name.toUpperCase()===x.name.toUpperCase()&&y.number===x.number;}))unique.push(x);});
+found.forEach(function(x){
+if(!unique.some(function(y){return y.name.toUpperCase()===x.name.toUpperCase()&&y.number===x.number;}))unique.push(x);
+});
 return unique;
 }
+
 function preprocessTeamImage(file,side){
 return new Promise(function(resolve,reject){
 var reader=new FileReader();
@@ -86,17 +92,17 @@ reader.onload=function(){
 var img=new Image();
 img.onload=function(){
 var w=img.naturalWidth||img.width,h=img.naturalHeight||img.height;
-var x0=side==="B"?0.50:0.03,x1=side==="B"?0.97:0.50;
-var y0=0.12,y1=0.82;
+var x0=side==="B"?0.50:0.02,x1=side==="B"?0.98:0.50;
+var y0=0.08,y1=0.94;
 var sx=Math.floor(w*x0),sy=Math.floor(h*y0),sw=Math.max(1,Math.floor(w*(x1-x0))),sh=Math.max(1,Math.floor(h*(y1-y0)));
-var scale=2.5,canvas=document.createElement("canvas");
+var scale=3,canvas=document.createElement("canvas");
 canvas.width=Math.floor(sw*scale);canvas.height=Math.floor(sh*scale);
 var ctx=canvas.getContext("2d",{willReadFrequently:true});
 ctx.drawImage(img,sx,sy,sw,sh,0,0,canvas.width,canvas.height);
 var data=ctx.getImageData(0,0,canvas.width,canvas.height),d=data.data;
 for(var i=0;i<d.length;i+=4){
 var v=(0.299*d[i]+0.587*d[i+1]+0.114*d[i+2]);
-v=v<145?Math.max(0,v-25):Math.min(255,v+25);
+v=Math.max(0,Math.min(255,(v-128)*1.45+128));
 d[i]=d[i+1]=d[i+2]=v;
 }
 ctx.putImageData(data,0,0);
@@ -107,6 +113,32 @@ img.onerror=reject;img.src=reader.result;
 reader.onerror=reject;reader.readAsDataURL(file);
 });
 }
+function mergeOcrRows(list){
+var byNumber={},unnumbered=[];
+list.forEach(function(x){
+if(x.number&&x.number>=1&&x.number<=16){
+var key=String(x.number),old=byNumber[key];
+if(!old||x.name.length>old.name.length)byNumber[key]=x;
+}else if(x.name&&x.name.length>=4)unnumbered.push(x);
+});
+var out=Object.keys(byNumber).sort(function(a,b){return Number(a)-Number(b);}).map(function(k){return byNumber[k];});
+unnumbered.forEach(function(x){if(!out.some(function(y){return y.name.toUpperCase()===x.name.toUpperCase();}))out.push(x);});
+return out;
+}
+function recognizeTeamCrop(canvas,status,label){
+var texts=[];
+return Tesseract.recognize(canvas,"fra+eng",{logger:function(m){if(m.status==="recognizing text")status.textContent="⏳ "+label+" · lecture 1/2 : "+Math.round((m.progress||0)*100)+" %";},tessedit_pageseg_mode:"6"})
+.then(function(r1){
+texts.push(r1.data.text||"");
+return Tesseract.recognize(canvas,"fra+eng",{logger:function(m){if(m.status==="recognizing text")status.textContent="⏳ "+label+" · lecture 2/2 : "+Math.round((m.progress||0)*100)+" %";},tessedit_pageseg_mode:"11"});
+}).then(function(r2){
+texts.push(r2.data.text||"");
+var rows=[];
+texts.forEach(function(t){rows=rows.concat(extractPlayerRows(t));});
+return mergeOcrRows(rows);
+});
+}
+
 function showFullScanReview(rowsA,rowsB){
 var box=el("scanReview");if(!box)return;
 function sideHtml(key,title,rows){
@@ -149,21 +181,18 @@ var status=el("scanStatus"),review=el("scanReview");if(review){review.style.disp
 status.textContent="⏳ Préparation de la feuille complète…";
 if(!window.Tesseract){status.textContent="❌ Le moteur OCR n’est pas disponible.";return;}
 preprocessTeamImage(file,"A").then(function(canvasA){
-status.textContent="⏳ Lecture de la zone Équipe A · GAUCHE…";
-return Tesseract.recognize(canvasA,"fra+eng",{logger:function(m){if(m.status==="recognizing text")status.textContent="⏳ Équipe A · GAUCHE : "+Math.round((m.progress||0)*100)+" %";},tessedit_pageseg_mode:"6"}).then(function(resultA){
-var rowsA=extractPlayerRows(resultA.data.text||[]);
-status.textContent="⏳ Préparation de la zone Équipe B · DROITE…";
+status.textContent="⏳ Lecture Équipe A · GAUCHE…";
+return recognizeTeamCrop(canvasA,status,"Équipe A · GAUCHE").then(function(rowsA){
+status.textContent="⏳ Lecture Équipe B · DROITE…";
 return preprocessTeamImage(file,"B").then(function(canvasB){
-status.textContent="⏳ Lecture de la zone Équipe B · DROITE…";
-return Tesseract.recognize(canvasB,"fra+eng",{logger:function(m){if(m.status==="recognizing text")status.textContent="⏳ Équipe B · DROITE : "+Math.round((m.progress||0)*100)+" %";},tessedit_pageseg_mode:"6"}).then(function(resultB){
-var rowsB=extractPlayerRows(resultB.data.text||[]);
-if(!rowsA.length&&!rowsB.length){status.textContent="⚠️ Aucun joueur reconnu. Prenez la feuille bien de face, avec les deux colonnes visibles.";return;}
+return recognizeTeamCrop(canvasB,status,"Équipe B · DROITE").then(function(rowsB){
+if(!rowsA.length&&!rowsB.length){status.textContent="⚠️ Aucun joueur reconnu. Prenez la feuille bien de face, sans couper les colonnes.";return;}
 showFullScanReview(rowsA,rowsB);
 status.textContent="✅ Détection terminée : "+Math.min(rowsA.length,14)+" joueur(s) à gauche, "+Math.min(rowsB.length,14)+" à droite. Vérifiez avant validation.";
 });
 });
 });
-}).catch(function(){status.textContent="❌ La lecture de la feuille a échoué. Recommencez avec une photo nette et bien cadrée.";});
+}).catch(function(err){console.error(err);status.textContent="❌ La lecture de la feuille a échoué. Recommencez avec une photo nette et bien cadrée.";});
 }
 
 function downloadText(filename,text){var blob=new Blob([text],{type:"text/plain;charset=utf-8"});var url=URL.createObjectURL(blob);var a=document.createElement("a");a.href=url;a.download=filename;document.body.appendChild(a);a.click();a.remove();setTimeout(function(){URL.revokeObjectURL(url);},1000);}function teamDownloadText(team,name){readPlayers(team,team===playersA?"playersA":"playersB");var lines=[name,"==============================","CAPITAINE : "+(function(){var i=team.findIndex(function(p){return p.captain;});return i>=0?playerLabel(team[i],i):"Non renseigné";})(),"","TITULAIRES"];team.slice(0,11).forEach(function(p,i){lines.push((i+1)+". "+(p.name||"Non renseigné")+" · Licence : "+playerLicense(p));});lines.push("","REMPLAÇANTS");team.slice(11,16).forEach(function(p,i){lines.push((i+12)+". "+(p.name||"Non renseigné")+" · Licence : "+playerLicense(p));});return lines.join("\n");}function downloadTeam(team,name,file){downloadText(file,teamDownloadText(team,name));}function playerLabel(p,i){return (p.name||("Joueur "+(i+1)))+" (n°"+(i+1)+")";} function playerLicense(p){return p.license||"Non renseigné";}
