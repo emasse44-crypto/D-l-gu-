@@ -149,12 +149,7 @@ v=Math.max(0,Math.min(255,(v-140)*1.45+140));
 d[i]=d[i+1]=d[i+2]=v;
 }
 ctx.putImageData(data,0,0);
-var rightCanvas=document.createElement("canvas");
-rightCanvas.width=Math.floor(canvas.width*0.43);
-rightCanvas.height=canvas.height;
-var rc=rightCanvas.getContext("2d",{willReadFrequently:true});
-rc.drawImage(canvas,Math.floor(canvas.width*0.57),0,Math.floor(canvas.width*0.43),canvas.height,0,0,rightCanvas.width,rightCanvas.height);
-return {canvas:canvas,rightCanvas:rightCanvas,scale:scale,xOffset:x0*w,yOffset:y0*h,origWidth:w};
+return {canvas:canvas,scale:scale,xOffset:x0*w,yOffset:y0*h,origWidth:w};
 }
 function cleanRecognizedName(text){
 var s=cleanOcrName(text||"");
@@ -227,15 +222,6 @@ return out.slice(0,14).map(function(x,i){return {number:i+1,name:x.name};});
 }
 return {A:uniqueAndLimit(A),B:uniqueAndLimit(B)};
 }
-function extractSingleColumnB(result){
-var lines=(result.data&&result.data.lines)||[],out=[];
-lines.forEach(function(line){
-var t=cleanRecognizedName(line.text||""); if(!t)return;
-var bb=line.bbox||{}, cy=((bb.y0||0)+(bb.y1||0))/2;
-if(!out.some(function(x){return Math.abs(x.y-cy)<18;})) out.push({name:t,y:cy});
-});
-return out.sort(function(a,b){return a.y-b.y;}).slice(0,14).map(function(x,i){return {number:i+1,name:x.name};});
-}
 function scanMatchSheet(file){
 if(!file)return;
 var status=el("scanStatus"),review=el("scanReview");
@@ -254,15 +240,6 @@ tessedit_pageseg_mode:"11",preserve_interword_spaces:"1",user_defined_dpi:"300",
 }).then(function(result){
 var rows=extractBothTeamsFromOcr(result,meta);
 var rowsA=rows.A,rowsB=rows.B;
-status.textContent="⏳ Affinage de la colonne Équipe B…";
-return Tesseract.recognize(meta.rightCanvas,"fra+eng",{
-logger:function(m){
-if(m.status==="recognizing text")status.textContent="⏳ Équipe B : "+Math.round((m.progress||0)*100)+" %";
-},
-tessedit_pageseg_mode:"4",preserve_interword_spaces:"1",user_defined_dpi:"300",load_system_dawg:"0",load_freq_dawg:"0"
-}).then(function(resultB){
-var b2=extractSingleColumnB(resultB);
-if(b2.length>=rowsB.length && b2.length>=10) rowsB=b2;
 if(!rowsA.length&&!rowsB.length){
 status.textContent="⚠️ Aucun nom reconnu. Vérifiez que toute la feuille est visible.";
 return;
