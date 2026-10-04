@@ -344,7 +344,7 @@ status.textContent="✅ "+rows.length+" ligne(s) détectée(s). Vérifiez noms, 
 });
 }).catch(function(err){console.error("OCR",err);status.textContent="❌ Erreur OCR : "+(err&&err.message?err.message:"lecture impossible");});
 }
-window.function escapeHtmlAttr(v){return String(v==null?"":v).replace(/&/g,"&amp;").replace(/"/g,"&quot;").replace(/</g,"&lt;").replace(/>/g,"&gt;").replace(/'/g,"&#39;");}
+function escapeHtmlAttr(v){return String(v==null?"":v).replace(/&/g,"&amp;").replace(/"/g,"&quot;").replace(/</g,"&lt;").replace(/>/g,"&gt;").replace(/'/g,"&#39;");}
 showFullScanReview=function(rows,hint){
 var box=el("scanReview");if(!box)return;
 var html='<div class="scan-review"><h4>🔎 Vérification de la composition</h4><div class="note">Les lignes bleues sont atténuées et deux lectures OCR sont croisées. Rien n’est enregistré avant votre validation.</div>'+(hint?'<div class="note" style="margin-top:8px">✅ <strong>Équipe '+hint+' détectée automatiquement</strong>.</div>':'<label class="note">Équipe à remplir</label><select data-scan-team style="margin-top:6px"><option value="A">Équipe A</option><option value="B">Équipe B</option></select>')+'<div class="scan-team-review"><h4>Joueurs détectés</h4>';
