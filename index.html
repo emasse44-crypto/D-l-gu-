@@ -225,3 +225,12 @@ el("scanStaffBtn").onclick=function(){el("staffSheetPhoto").click();};el("staffS
 el("saveStaff").onclick=function(){readStaff(staffA,"staffA");readStaff(staffB,"staffB");renderStaff(staffA,"staffA");renderStaff(staffB,"staffB");saveState();alert("Staff enregistré.");};
 el("staffYellowA").onclick=function(){setupStaffCard(staffA,"Équipe A","🟨 Jaune");};el("staffYellowB").onclick=function(){setupStaffCard(staffB,"Équipe B","🟨 Jaune");};
 el("staffRedA").onclick=function(){setupStaffCard(staffA,"Équipe A","🟥 Rouge");};el("staffRedB").onclick=function(){setupStaffCard(staffB,"Équipe B","🟥 Rouge");};
+el("staffWhiteA").onclick=function(){setupStaffCard(staffA,"Équipe A","⚪ Blanc");};el("staffWhiteB").onclick=function(){setupStaffCard(staffB,"Équipe B","⚪ Blanc");};
+el("confirmStaffCard").onclick=confirmStaffCard;el("printSheet").onclick=function(){renderSheet();window.print();};
+loadState();playersA.forEach(function(p,i){if(typeof p.active!=="boolean")p.active=i<11;});playersB.forEach(function(p,i){if(typeof p.active!=="boolean")p.active=i<11;});
+if("serviceWorker" in navigator){window.addEventListener("load",function(){navigator.serviceWorker.getRegistrations().then(function(regs){regs.forEach(function(reg){reg.unregister();});}).catch(function(){});});}
+renderAllPlayers();update();
+})();
+</script>
+</body>
+</html>
