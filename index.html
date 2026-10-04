@@ -6,7 +6,7 @@
 <meta name="theme-color" content="#111827">
 <title>Tableau des scores Football</title>
 <style>
-*{box-sizing:border-box}body{margin:0;background:#111827;color:white;font-family:Arial,sans-serif;padding:16px}.app{max-width:800px;margin:auto}h1{text-align:center;font-size:28px}.version{text-align:center;color:#9ca3af;font-size:13px;margin-bottom:18px}.card{background:#1f2937;border-radius:18px;padding:20px;margin-bottom:14px}.teams{display:grid;grid-template-columns:1fr 1fr 1fr;align-items:center;text-align:center;gap:10px}.team{font-size:22px;font-weight:bold}.score{font-size:64px;font-weight:bold}.clock{font-size:38px;font-weight:bold;text-align:center;margin:12px 0}button{border:0;border-radius:12px;padding:15px;font-size:17px;font-weight:bold;cursor:pointer;background:#374151;color:white}button:active{transform:scale(.97)}.green{background:#22c55e;color:#052e16}.red{background:#ef4444}.buttons{display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-top:12px}.mainbuttons{display:grid;grid-template-columns:1fr 1fr 1fr;gap:10px}.menu{display:grid;grid-template-columns:1fr 1fr;gap:10px}.page{display:none}.page.active{display:block}.back{width:100%;margin-bottom:12px}input,select{width:100%;padding:12px;border-radius:9px;border:1px solid #4b5563;background:#111827;color:white;font-size:16px}.composition-team{margin-top:18px}.player-row{display:grid;grid-template-columns:45px 1fr 1fr 130px;gap:8px;align-items:center;margin-bottom:8px}.player-number{font-weight:bold;text-align:center;background:#374151;border-radius:9px;padding:12px}.captain-button{padding:10px;font-size:14px}.captain-button.selected{background:#facc15;color:#422006}.change-grid{display:grid;grid-template-columns:1fr 1fr;gap:12px}.change-title{font-weight:bold;margin:6px 0 8px}.change-history{margin-top:18px}.change-item{background:#111827;border-radius:10px;padding:12px;margin-top:8px}.note{color:#9ca3af;font-size:14px}.scan-review{background:#111827;border-radius:12px;padding:12px}.scan-review h4{margin:0 0 8px}.scan-row{display:grid;grid-template-columns:48px 1fr 1fr;gap:8px;margin-top:7px}.scan-row input{min-width:0}.scan-num{display:flex;align-items:center;justify-content:center;background:#374151;border-radius:9px;font-weight:bold}@media(max-width:600px){.scan-row{grid-template-columns:42px 1fr;}.scan-row input:last-child{grid-column:2}}
+*{box-sizing:border-box}body{margin:0;background:#111827;color:white;font-family:Arial,sans-serif;padding:16px}.app{max-width:800px;margin:auto}h1{text-align:center;font-size:28px}.version{text-align:center;color:#9ca3af;font-size:13px;margin-bottom:18px}.card{background:#1f2937;border-radius:18px;padding:20px;margin-bottom:14px}.teams{display:grid;grid-template-columns:1fr 1fr 1fr;align-items:center;text-align:center;gap:10px}.team{font-size:22px;font-weight:bold}.score{font-size:64px;font-weight:bold}.clock{font-size:38px;font-weight:bold;text-align:center;margin:12px 0}button{border:0;border-radius:12px;padding:15px;font-size:17px;font-weight:bold;cursor:pointer;background:#374151;color:white}button:active{transform:scale(.97)}.green{background:#22c55e;color:#052e16}.red{background:#ef4444}.buttons{display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-top:12px}.mainbuttons{display:grid;grid-template-columns:1fr 1fr 1fr;gap:10px}.menu{display:grid;grid-template-columns:1fr 1fr;gap:10px}.page{display:none}.page.active{display:block}.back{width:100%;margin-bottom:12px}input,select{width:100%;padding:12px;border-radius:9px;border:1px solid #4b5563;background:#111827;color:white;font-size:16px}.composition-team{margin-top:18px}.player-row{display:grid;grid-template-columns:45px 1fr 1fr 130px;gap:8px;align-items:center;margin-bottom:8px}.player-number{font-weight:bold;text-align:center;background:#374151;border-radius:9px;padding:12px}.captain-button{padding:10px;font-size:14px}.captain-button.selected{background:#facc15;color:#422006}.change-grid{display:grid;grid-template-columns:1fr 1fr;gap:12px}.change-title{font-weight:bold;margin:6px 0 8px}.change-history{margin-top:18px}.change-item{background:#111827;border-radius:10px;padding:12px;margin-top:8px}.note{color:#9ca3af;font-size:14px}.scan-review{background:#111827;border-radius:12px;padding:12px}.scan-review h4{margin:0 0 8px}.scan-columns{display:grid;grid-template-columns:1fr 1fr;gap:12px;margin-top:10px}.scan-team-review{background:#1f2937;border-radius:10px;padding:10px}.scan-team-review h4{margin:0 0 8px}.scan-row{display:grid;grid-template-columns:42px 1fr 1fr;gap:7px;margin-top:7px}.scan-row input{min-width:0}.scan-num{display:flex;align-items:center;justify-content:center;background:#374151;border-radius:9px;font-weight:bold}@media(max-width:600px){.scan-columns{grid-template-columns:1fr}.scan-row{grid-template-columns:42px 1fr}.scan-row input:last-child{grid-column:2}}
 @media(max-width:600px){.score{font-size:50px}.team{font-size:18px}.mainbuttons{grid-template-columns:1fr}.menu{grid-template-columns:1fr}.player-row{grid-template-columns:38px 1fr 1fr 105px}.player-row input{min-width:0}.player-license{font-size:14px}.change-grid{grid-template-columns:1fr}}
 @media print{body{background:white;color:black;padding:0}.app{max-width:none}.app>h1,.version,#home,.back,#printSheet{display:none!important}.page{display:none!important}.page#sheet{display:block!important;background:white;color:black;padding:0;margin:0}.page#sheet .change-item{background:white;color:black;border:1px solid #ccc;border-radius:6px;page-break-inside:avoid}.page#sheet .note{color:#555}.page#sheet h2,.page#sheet h3{color:black}.page#sheet button{display:none}}</style>
 </head>
@@ -23,7 +23,7 @@
 <div class="card"><div class="mainbuttons"><button class="green" id="start">▶ Démarrer</button><button id="pause">⏸ Pause</button><button class="red" id="reset">↺ Nouveau match</button></div></div>
 <div class="card menu"><button data-page="compositions">👥 Compositions</button><button data-page="changes">🔄 Changements</button><button data-page="events">⚽ Buts & cartons</button><button data-page="sanctions">🛑 Sanctions</button><button data-page="chrono">⏱️ Chronomètre</button><button data-page="sheet">📋 Feuille de match</button><button data-page="staff">👔 Staff</button><button data-page="settings">⚙️ Match</button></div>
 </section>
-<section class="page card" id="compositions"><button class="back">← Retour</button><h2>Compositions</h2><p class="note">1 à 11 : titulaires · 12 à 16 : remplaçants. Le capitaine est sélectionnable.</p><div class="change-item"><strong>📷 Récupérer une composition par photo</strong><p class="note">Choisissez l’équipe à remplir, puis prenez une photo de la feuille. La reconnaissance OCR essaiera de récupérer les numéros et noms des joueurs. Vérifiez toujours le résultat avant d’enregistrer.</p><p style="margin-bottom:6px">Équipe à récupérer</p><select id="scanTeamSelect" style="margin-bottom:8px"><option value="A">Équipe A</option><option value="B">Équipe B</option></select><input id="matchSheetPhoto" type="file" accept="image/*" capture="environment" style="display:none"><button id="scanSheetBtn" style="width:100%;margin-top:8px">📷 Prendre / choisir une photo</button><div id="scanStatus" class="note" style="margin-top:8px"></div><div id="scanReview" style="display:none;margin-top:12px"></div></div><div class="composition-team"><h3>Équipe A</h3><div id="playersA"></div></div><div class="composition-team"><h3>Équipe B</h3><div id="playersB"></div></div><button class="green" id="saveCompositions" style="width:100%;margin-top:18px">Enregistrer les compositions</button><button class="red" id="resetComposition" style="width:100%;margin-top:10px">🗑️ Remise à zéro des compositions</button></section>
+<section class="page card" id="compositions"><button class="back">← Retour</button><h2>Compositions</h2><p class="note">1 à 11 : titulaires · 12 à 16 : remplaçants. Le capitaine est sélectionnable.</p><div class="change-item"><strong>📷 Récupérer les 2 compositions par une seule photo</strong><p class="note">La feuille complète est analysée en une fois : <strong>Équipe A à gauche</strong> et <strong>Équipe B à droite</strong>. Les joueurs détectés sont affichés pour vérification avant enregistrement.</p><input id="matchSheetPhoto" type="file" accept="image/*" capture="environment" style="display:none"><button id="scanSheetBtn" style="width:100%;margin-top:8px">📷 Prendre / choisir la feuille complète</button><div id="scanStatus" class="note" style="margin-top:8px"></div><div id="scanReview" style="display:none;margin-top:12px"></div></div><div class="composition-team"><h3>Équipe A</h3><div id="playersA"></div></div><div class="composition-team"><h3>Équipe B</h3><div id="playersB"></div></div><button class="green" id="saveCompositions" style="width:100%;margin-top:18px">Enregistrer les compositions</button><button class="red" id="resetComposition" style="width:100%;margin-top:10px">🗑️ Remise à zéro des compositions</button></section>
 <section class="page card" id="changes"><button class="back">← Retour</button><h2>Changements</h2><p class="note">Effectuez une sortie puis une entrée. Le numéro du joueur suffit, le nom est facultatif.</p><div class="change-grid"><div><div class="change-title">Équipe A</div><button id="changeA" style="width:100%">🔄 Faire un changement A</button></div><div><div class="change-title">Équipe B</div><button id="changeB" style="width:100%">🔄 Faire un changement B</button></div></div><div id="changeForm" style="display:none;margin-top:18px"><p id="changeTeamLabel" class="change-title"></p><p>Joueur qui sort</p><select id="playerOut"></select><p>Remplaçant qui entre</p><select id="playerIn"></select><button class="green" id="confirmChange" style="width:100%;margin-top:10px">Valider le changement</button></div><div class="change-history"><h3>Historique</h3><div id="changeHistory"><p class="note">Aucun changement.</p></div></div></section>
 <section class="page card" id="events"><button class="back">← Retour</button><h2>Buts & cartons</h2><p>Enregistrez les sanctions des joueurs actuellement sur le terrain.</p><div class="change-grid"><button id="yellowA">🟨 Jaune A</button><button id="yellowB">🟨 Jaune B</button><button id="redA" class="red">🟥 Rouge A</button><button id="redB" class="red">🟥 Rouge B</button><button id="whiteA">⚪ Blanc A</button><button id="whiteB">⚪ Blanc B</button></div><div id="cardForm" style="display:none;margin-top:18px"><p id="cardTeamLabel" class="change-title"></p><p>Joueur</p><select id="cardPlayer"></select><button class="green" id="confirmCard" style="width:100%;margin-top:10px">Valider la sanction</button></div><div class="change-history"><h3>Historique des sanctions</h3><div id="cardHistory"><p class="note">Aucune sanction.</p></div></div></section>
 <section class="page card" id="sanctions"><button class="back">← Retour</button><h2>Sanctions</h2><p>Cette partie sera ajoutée ensuite.</p></section>
@@ -107,53 +107,63 @@ img.onerror=reject;img.src=reader.result;
 reader.onerror=reject;reader.readAsDataURL(file);
 });
 }
-function showScanReview(teamKey,rows){
+function showFullScanReview(rowsA,rowsB){
 var box=el("scanReview");if(!box)return;
-var reviewRows=rows.slice(0,14);
-if(!reviewRows.length){box.style.display="none";return;}
-var html='<div class="scan-review"><h4>🔎 Vérification avant enregistrement</h4><div class="note">La feuille montre 14 joueurs numérotés. Les licences ne figurent pas sur cette feuille, elles restent à saisir manuellement.</div>';
-reviewRows.forEach(function(x,i){
-var n=x.number&&x.number>=1&&x.number<=14?x.number:i+1;
-html+='<div class="scan-row"><div class="scan-num">'+n+'</div><input type="text" value="'+escapeHtmlAttr(x.name)+'" data-scan-name="'+i+'" data-scan-number="'+n+'" placeholder="Nom / prénom"><input type="text" value="" data-scan-license="'+i+'" placeholder="N° licence"></div>';
+function sideHtml(key,title,rows){
+var html='<div class="scan-team-review"><h4>'+title+'</h4>';
+if(!rows.length){html+='<div class="note">⚠️ Aucun joueur reconnu sur cette moitié.</div>';}
+rows.slice(0,14).forEach(function(x,i){
+var n=x.number&&x.number>=1&&x.number<=16?x.number:i+1;
+html+='<div class="scan-row"><div class="scan-num">'+n+'</div><input type="text" value="'+escapeHtmlAttr(x.name)+'" data-scan-name="'+key+'-'+i+'" data-scan-number="'+n+'" placeholder="Nom / prénom"><input type="text" value="" data-scan-license="'+key+'-'+i+'" placeholder="N° licence"></div>';
 });
-html+='<button class="green" id="confirmScanReview" style="width:100%;margin-top:12px">✅ Valider cette composition</button><button id="cancelScanReview" style="width:100%;margin-top:8px">Annuler</button></div>';
+html+='</div>';return html;
+}
+var html='<div class="scan-review"><h4>🔎 Vérification des deux compositions</h4><div class="note">La feuille indique les joueurs par numéro. Les licences ne figurent pas sur la photo, elles restent à saisir manuellement. Vérifiez bien les noms avant validation.</div><div class="scan-columns">'+sideHtml("A","Équipe A · GAUCHE",rowsA)+sideHtml("B","Équipe B · DROITE",rowsB)+'</div><button class="green" id="confirmScanReview" style="width:100%;margin-top:12px">✅ Valider les deux compositions</button><button id="cancelScanReview" style="width:100%;margin-top:8px">Annuler</button></div>';
 box.innerHTML=html;box.style.display="block";
 box.querySelector("#confirmScanReview").onclick=function(){
-var target=teamKey==="B"?playersB:playersA;
-var names=box.querySelectorAll("input[data-scan-name]"),licenses=box.querySelectorAll("input[data-scan-license]");
-for(var i=0;i<target.length;i++){if(i<14){target[i].name="";target[i].license="";target[i].active=i<11;}}
+function applySide(team,key){
+for(var i=0;i<14;i++){team[i].name="";team[i].license="";team[i].active=i<11;}
+var names=box.querySelectorAll('input[data-scan-name^="'+key+'-"]');
 var used={};
-names.forEach(function(input,i){
-var n=Number(input.getAttribute("data-scan-number"))||i+1;
+names.forEach(function(input){
+var n=Number(input.getAttribute("data-scan-number"));
+var license=box.querySelector('input[data-scan-license="'+key+'-'+input.getAttribute("data-scan-name").split("-")[1]+'"]');
 if(n>=1&&n<=16&&!used[n]){
-target[n-1].name=input.value.trim();
-target[n-1].license=licenses[i]?licenses[i].value.trim():"";
-target[n-1].active=n<=11;
+team[n-1].name=input.value.trim();
+team[n-1].license=license?license.value.trim():"";
+team[n-1].active=n<=11;
 used[n]=true;
 }
 });
+}
+applySide(playersA,"A");applySide(playersB,"B");
 renderAllPlayers();saveState();box.style.display="none";box.innerHTML="";
-el("scanStatus").textContent="✅ Composition validée pour l’équipe "+teamKey+".";
+el("scanStatus").textContent="✅ Les deux compositions ont été récupérées. Vérifiez aussi les licences dans les tableaux.";
 };
+box.querySelector("#cancelScanReview").onclick=function(){box.style.display="none";box.innerHTML="";el("scanStatus").textContent="Lecture annulée.";};
 }
 function escapeHtmlAttr(s){return String(s||"").replace(/&/g,"&amp;").replace(/"/g,"&quot;").replace(/</g,"&lt;").replace(/>/g,"&gt;");}
 function scanMatchSheet(file){
 if(!file)return;
-var status=el("scanStatus"),side=el("scanTeamSelect").value;
-var review=el("scanReview");if(review){review.style.display="none";review.innerHTML="";}
-status.textContent="⏳ Préparation de la photo pour l’équipe "+side+"…";
+var status=el("scanStatus"),review=el("scanReview");if(review){review.style.display="none";review.innerHTML="";}
+status.textContent="⏳ Préparation de la feuille complète…";
 if(!window.Tesseract){status.textContent="❌ Le moteur OCR n’est pas disponible.";return;}
-preprocessTeamImage(file,side).then(function(canvas){
-status.textContent="⏳ Lecture de la zone de composition…";
-return Tesseract.recognize(canvas,"fra+eng",{logger:function(m){
-if(m.status==="recognizing text")status.textContent="⏳ Reconnaissance : "+Math.round((m.progress||0)*100)+" %";
-},tessedit_pageseg_mode:"6"});
-}).then(function(result){
-var rows=extractPlayerRows(result.data.text||"");
-if(!rows.length){status.textContent="⚠️ Aucun joueur reconnu. Prenez la feuille bien de face, avec les lignes visibles.";return;}
-showScanReview(side,rows);
-status.textContent="✅ "+Math.min(rows.length,14)+" joueur(s) détecté(s). Vérifiez avant validation.";
-}).catch(function(){status.textContent="❌ La lecture de la photo a échoué. Recommencez avec une photo nette et bien cadrée.";});
+preprocessTeamImage(file,"A").then(function(canvasA){
+status.textContent="⏳ Lecture de la zone Équipe A · GAUCHE…";
+return Tesseract.recognize(canvasA,"fra+eng",{logger:function(m){if(m.status==="recognizing text")status.textContent="⏳ Équipe A · GAUCHE : "+Math.round((m.progress||0)*100)+" %";},tessedit_pageseg_mode:"6"}).then(function(resultA){
+var rowsA=extractPlayerRows(resultA.data.text||[]);
+status.textContent="⏳ Préparation de la zone Équipe B · DROITE…";
+return preprocessTeamImage(file,"B").then(function(canvasB){
+status.textContent="⏳ Lecture de la zone Équipe B · DROITE…";
+return Tesseract.recognize(canvasB,"fra+eng",{logger:function(m){if(m.status==="recognizing text")status.textContent="⏳ Équipe B · DROITE : "+Math.round((m.progress||0)*100)+" %";},tessedit_pageseg_mode:"6"}).then(function(resultB){
+var rowsB=extractPlayerRows(resultB.data.text||[]);
+if(!rowsA.length&&!rowsB.length){status.textContent="⚠️ Aucun joueur reconnu. Prenez la feuille bien de face, avec les deux colonnes visibles.";return;}
+showFullScanReview(rowsA,rowsB);
+status.textContent="✅ Détection terminée : "+Math.min(rowsA.length,14)+" joueur(s) à gauche, "+Math.min(rowsB.length,14)+" à droite. Vérifiez avant validation.";
+});
+});
+});
+}).catch(function(){status.textContent="❌ La lecture de la feuille a échoué. Recommencez avec une photo nette et bien cadrée.";});
 }
 
 function downloadText(filename,text){var blob=new Blob([text],{type:"text/plain;charset=utf-8"});var url=URL.createObjectURL(blob);var a=document.createElement("a");a.href=url;a.download=filename;document.body.appendChild(a);a.click();a.remove();setTimeout(function(){URL.revokeObjectURL(url);},1000);}function teamDownloadText(team,name){readPlayers(team,team===playersA?"playersA":"playersB");var lines=[name,"==============================","CAPITAINE : "+(function(){var i=team.findIndex(function(p){return p.captain;});return i>=0?playerLabel(team[i],i):"Non renseigné";})(),"","TITULAIRES"];team.slice(0,11).forEach(function(p,i){lines.push((i+1)+". "+(p.name||"Non renseigné")+" · Licence : "+playerLicense(p));});lines.push("","REMPLAÇANTS");team.slice(11,16).forEach(function(p,i){lines.push((i+12)+". "+(p.name||"Non renseigné")+" · Licence : "+playerLicense(p));});return lines.join("\n");}function downloadTeam(team,name,file){downloadText(file,teamDownloadText(team,name));}function playerLabel(p,i){return (p.name||("Joueur "+(i+1)))+" (n°"+(i+1)+")";} function playerLicense(p){return p.license||"Non renseigné";}
