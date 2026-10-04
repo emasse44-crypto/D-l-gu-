@@ -291,13 +291,13 @@ row.words.forEach(function(w){
 if(w.x>=licenseX-8)return;
 var n=String(w.text).replace(/\D/g,"");if(n.length<=2&&Number(n)>=1&&Number(n)<=16)return;
 var t=w.text.replace(/[^A-Za-zÀ-ÿ' .-]/g," ").replace(/\s+/g," ").trim();if(t.length<2)return;
-if(/^(equipe|équipe|recevante|visiteuse|position|composition|joueurs?|placants|remplaçants?|maillot|arbitre|central)$/i.test(t))return;
+if(/^(equipe|équipe|recevante|visiteuse|position|composition|joueurs?|placants|remplaçants?|rempla|maillot|arbitre|central)$/i.test(t))return;
 parts.push(t);
 });
 var name=cleanRecognizedName(parts.join(" "));
 var letters=(name.match(/[A-Za-zÀ-ÿ]/g)||[]).length;
 if(letters<3)return;
-if(/^(le poire|vie|vfv|516561|512163|position)$/i.test(name)||/le\s+poire.*(vie|vf)/i.test(name))return;
+if(/^(le poire|vie|vfv|516561|512163|position|rempla|remplacants?|equipe|équipe)$/i.test(name)||/le\s+poire.*(vie|vf)/i.test(name)||(/\b(?:nv|la\s+roche|eso|vend[ée]e|poire|vie|vf)\b/i.test(name)&&name.split(/\s+/).length<=6))return;
 out.push({y:row.y,name:name,license:license,number:number});
 });
 return out;
@@ -331,8 +331,8 @@ if(!same){out.push({y:x.y,name:"",license:x.license,number:0});}
 else if((x.license||"").length>(same.license||"").length)same.license=x.license;
 });
 out.sort(function(a,b){return a.y-b.y;});
-out=out.filter(function(x){return !!cleanRecognizedName(x.name)||!!x.license;}).slice(0,16);
-out.forEach(function(x,i){x.name=cleanRecognizedName(x.name);x.number=i+1;});
+out=out.filter(function(x){x.name=cleanRecognizedName(x.name);return !!x.name||!!x.license;}).slice(0,16);
+out.forEach(function(x,i){x.name=cleanRecognizedName(x.name);if(!x.number)x.number=i+1;});
 return out;
 }
 function scanMatchSheet(file){
@@ -357,23 +357,24 @@ return {canvas:bestCanvas,result:best};
 }).then(function(base){
 var crop=cropScanComposition(base.canvas,base.result),hint=scanTeamHint((base.result.data&&base.result.data.text)||"");
 status.textContent="⏳ Lecture des joueurs et des licences…";
-return Tesseract.recognize(crop.canvas,"fra+eng",{tessedit_pageseg_mode:"6",preserve_interword_spaces:"1",user_defined_dpi:"300",load_system_dawg:"0",load_freq_dawg:"0"}).then(function(a){
-return Tesseract.recognize(crop.canvas,"fra+eng",{tessedit_pageseg_mode:"11",preserve_interword_spaces:"1",user_defined_dpi:"300",load_system_dawg:"0",load_freq_dawg:"0"}).then(function(b){
-var right=document.createElement("canvas"),ctx=right.getContext("2d"),rw=Math.round(crop.canvas.width*.48);
-right.width=rw;right.height=crop.canvas.height;
-ctx.drawImage(crop.canvas,crop.canvas.width-rw,0,rw,crop.canvas.height,0,0,rw,crop.canvas.height);
-status.textContent="⏳ Vérification séparée des numéros de licence…";
-return Tesseract.recognize(right,"eng",{tessedit_pageseg_mode:"6",tessedit_char_whitelist:"0123456789",preserve_interword_spaces:"1",user_defined_dpi:"300",load_system_dawg:"0",load_freq_dawg:"0"}).then(function(licA){
-return Tesseract.recognize(right,"eng",{tessedit_pageseg_mode:"11",tessedit_char_whitelist:"0123456789",preserve_interword_spaces:"1",user_defined_dpi:"300",load_system_dawg:"0",load_freq_dawg:"0"}).then(function(licB){
-var rows=mergeScanRows(extractScanRows(a),extractScanRows(b),extractScanLicenseRows(licA).concat(extractScanLicenseRows(licB)));
+var namesCanvas=document.createElement("canvas"),nctx=namesCanvas.getContext("2d");
+namesCanvas.width=Math.round(crop.canvas.width*.64);namesCanvas.height=crop.canvas.height;
+nctx.drawImage(crop.canvas,0,0,namesCanvas.width,namesCanvas.height,0,0,namesCanvas.width,namesCanvas.height);
+var right=document.createElement("canvas"),rctx=right.getContext("2d"),rx=Math.round(crop.canvas.width*.56);
+right.width=crop.canvas.width-rx;right.height=crop.canvas.height;
+rctx.drawImage(crop.canvas,rx,0,right.width,right.height,0,0,right.width,right.height);
+status.textContent="⏳ Lecture séparée des noms et des licences…";
+return Promise.all([
+Tesseract.recognize(namesCanvas,"fra+eng",{tessedit_pageseg_mode:"6",preserve_interword_spaces:"1",user_defined_dpi:"300",load_system_dawg:"0",load_freq_dawg:"0"}),
+Tesseract.recognize(namesCanvas,"fra+eng",{tessedit_pageseg_mode:"11",preserve_interword_spaces:"1",user_defined_dpi:"300",load_system_dawg:"0",load_freq_dawg:"0"}),
+Tesseract.recognize(right,"eng",{tessedit_pageseg_mode:"6",tessedit_char_whitelist:"0123456789",preserve_interword_spaces:"1",user_defined_dpi:"300",load_system_dawg:"0",load_freq_dawg:"0"}),
+Tesseract.recognize(right,"eng",{tessedit_pageseg_mode:"11",tessedit_char_whitelist:"0123456789",preserve_interword_spaces:"1",user_defined_dpi:"300",load_system_dawg:"0",load_freq_dawg:"0"})
+]).then(function(r){
+var rows=mergeScanRows(extractScanRows(r[0]),extractScanRows(r[1]),extractScanLicenseRows(r[2]).concat(extractScanLicenseRows(r[3])));
 window.showFullScanReview(rows,hint);
 status.textContent="✅ "+rows.length+" ligne(s) détectée(s). Vérifiez noms, licences et équipe.";
 });
-});
-});
-});
-});
-}).catch(function(err){console.error("OCR",err);status.textContent="❌ Erreur OCR : "+(err&&err.message?err.message:"lecture impossible");});
+});}).catch(function(err){console.error("OCR",err);status.textContent="❌ Erreur OCR : "+(err&&err.message?err.message:"lecture impossible");});
 }
 function escapeHtmlAttr(v){return String(v==null?"":v).replace(/&/g,"&amp;").replace(/"/g,"&quot;").replace(/</g,"&lt;").replace(/>/g,"&gt;").replace(/'/g,"&#39;");}
 window.showFullScanReview=function(rows,hint){
