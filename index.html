@@ -915,19 +915,38 @@ renderAllPlayers();update();updateGoalButtonLabels();
 (function(){
 "use strict";
 window.matchVoiceEnabled=false;
+window.matchVoiceUnlocked=false;
+function voiceEngine(){
+ return window.speechSynthesis&&window.SpeechSynthesisUtterance?window.speechSynthesis:null;
+}
+function unlockVoice(){
+ var synth=voiceEngine();if(!synth)return false;
+ try{
+   synth.cancel();
+   var warm=new SpeechSynthesisUtterance(" ");
+   warm.lang="fr-FR";warm.volume=0;
+   synth.speak(warm);
+   try{synth.resume();}catch(e){}
+   window.matchVoiceUnlocked=true;
+   return true;
+ }catch(e){return false;}
+}
 function speak(text,force){
  if(!force&&!window.matchVoiceEnabled)return;
- if(!window.speechSynthesis||!window.SpeechSynthesisUtterance)return;
- var synth=window.speechSynthesis;
- try{if(synth.paused)synth.resume();}catch(e){}
- if(synth.speaking||synth.pending){try{synth.cancel();}catch(e){}}
- var u=new SpeechSynthesisUtterance(String(text));
- u.lang="fr-FR";u.rate=0.9;u.volume=1;
- var voices=[];try{voices=synth.getVoices?synth.getVoices():[];}catch(e){voices=[];}
- for(var i=0;i<voices.length;i++){if(/^fr[-_]/i.test(voices[i].lang)){try{u.voice=voices[i];}catch(e){}break;}}
- u.onerror=function(){try{synth.cancel();}catch(e){}};
- synth.speak(u);
- try{synth.resume();}catch(e){}
+ var synth=voiceEngine();if(!synth)return;
+ try{
+   if(synth.paused)synth.resume();
+   synth.cancel();
+   var u=new SpeechSynthesisUtterance(String(text));
+   u.lang="fr-FR";u.rate=0.9;u.volume=1;
+   var voices=[];try{voices=synth.getVoices?synth.getVoices():[];}catch(e){}
+   for(var i=0;i<voices.length;i++){
+     if(/^fr[-_]/i.test(voices[i].lang)){try{u.voice=voices[i];}catch(e){}break;}
+   }
+   u.onerror=function(){try{synth.cancel();}catch(e){}};
+   synth.speak(u);
+   try{synth.resume();}catch(e){}
+ }catch(e){}
 }
 window.speakMatchEvent=function(text){speak(text,false);};
 window.testMatchVoice=function(){speak("Test vocal. Le système fonctionne.",true);};
@@ -937,10 +956,20 @@ function initVoice(){
  function update(){b.textContent=window.matchVoiceEnabled?"🔊 Vocal : ON":"🔇 Vocal : OFF";}
  b.onclick=function(){
    window.matchVoiceEnabled=!window.matchVoiceEnabled;
-   if(!window.matchVoiceEnabled&&window.speechSynthesis)window.speechSynthesis.cancel();
+   if(window.matchVoiceEnabled){
+     unlockVoice();
+     speak("Vocal activé.",true);
+   }else{
+     var synth=voiceEngine();if(synth)try{synth.cancel();}catch(e){}
+   }
    update();
  };
  t.onclick=function(){window.testMatchVoice();};
+ document.addEventListener("click",function(e){
+   if(!window.matchVoiceEnabled||window.matchVoiceUnlocked)return;
+   if(e.target===b||e.target===t)return;
+   unlockVoice();
+ },true);
  update();
 }
 if(document.readyState==="loading")document.addEventListener("DOMContentLoaded",initVoice);else initVoice();
