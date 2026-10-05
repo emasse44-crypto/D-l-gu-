@@ -509,16 +509,20 @@ readStaff(staff,side==="A"?"staffA":"staffB");
 el("cardTeamLabel").textContent=label+" · "+type;
 var sel=el("cardPlayer");sel.innerHTML="";
 team.forEach(function(p,i){
-if(i<16&&p.name&&(!p.role||i<14)){
-var o=document.createElement("option");o.value=i;o.textContent=playerLabel(p,i);
+if(i<16&&(!p.role||i<14)){
+var o=document.createElement("option");
+o.value=i;
+o.textContent=playerLabel(p,i);
 if(!p.active)o.textContent+=" · remplaçant / sorti";
 sel.appendChild(o);
 }
 });
+if(sel.options.length){
+var sep=document.createElement("option");sep.disabled=true;sep.textContent="──────── STAFF ────────";sel.appendChild(sep);
+}
 staff.forEach(function(name,i){
 if(name){
-var o=document.createElement("option");o.value="staff-"+i;o.textContent=name+" · STAFF";
-sel.appendChild(o);
+var o=document.createElement("option");o.value="staff-"+i;o.textContent=name+" · STAFF";sel.appendChild(o);
 }
 });
 if(!sel.options.length){var o=document.createElement("option");o.value="";o.textContent="Aucun joueur ou staff renseigné";sel.appendChild(o);}
@@ -556,7 +560,7 @@ el("cardForm").style.display="none";renderCards();renderStaffHistory();saveState
 }
 var team=side==="A"?playersA:playersB;
 var idx=Number(raw);
-if(!Number.isInteger(idx)||idx<0||idx>15||!team[idx]||!team[idx].name||team[idx].role){alert("Choisissez un joueur.");return;}
+if(!Number.isInteger(idx)||idx<0||idx>15||!team[idx]||team[idx].role){alert("Choisissez un joueur.");return;}
 var label=playerLabel(team[idx],idx);
 cards.push({team:side,type:type,player:label,number:idx+1,minute:minute});
 if(type==="⚪ Blanc"){
