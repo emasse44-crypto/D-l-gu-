@@ -910,7 +910,7 @@ renderAllPlayers();update();updateGoalButtonLabels();
 </script>
 <div id="voicePanel" style="position:fixed;right:18px;bottom:18px;z-index:9999;background:var(--card,#fff);border:1px solid #ccc;border-radius:12px;padding:10px;box-shadow:0 4px 16px rgba(0,0,0,.18);display:flex;gap:8px;align-items:center">
 <button id="voiceToggle" type="button">🔇 Vocal : OFF</button>
-<button id="voiceTest" type="button">🔊 Test</button>
+<button id="voiceTest" type="button">🔊 Test</button><span id="voiceLast" style="font-size:12px;color:#666;max-width:280px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap">Aucune annonce</span>
 </div><script>
 (function(){
 "use strict";
@@ -920,7 +920,6 @@ function speak(text,force){
  if(!force&&!window.matchVoiceEnabled)return;
  var s=synth();if(!s)return;
  try{
-  if(s.speaking||s.pending)s.cancel();
   var u=new SpeechSynthesisUtterance(String(text));
   u.lang="fr-FR";u.rate=0.9;u.volume=1;
   var v=s.getVoices?s.getVoices():[];
@@ -929,7 +928,12 @@ function speak(text,force){
   try{s.resume();}catch(e){}
  }catch(e){}
 }
-window.speakMatchEvent=function(text){speak(text,false);};
+window.speakMatchEvent=function(text){
+ var msg=String(text||"");
+ var status=document.getElementById("voiceLast");
+ if(status)status.textContent="Dernière annonce : "+msg;
+ speak(msg,false);
+};
 window.testMatchVoice=function(){speak("Test vocal. Le système fonctionne.",true);};
 function initVoice(){
  var b=document.getElementById("voiceToggle"),t=document.getElementById("voiceTest");if(!b||!t)return;
