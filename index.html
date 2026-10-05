@@ -879,7 +879,7 @@ el("addInjury").onclick=function(){var side=el("injuryTeam").value,idx=Number(el
 el("printReport").onclick=function(){renderReport();window.print();};
 loadState();playersA.forEach(function(p,i){if(typeof p.active!=="boolean")p.active=i<11;});playersB.forEach(function(p,i){if(typeof p.active!=="boolean")p.active=i<11;});
 if("serviceWorker" in navigator){window.addEventListener("load",function(){navigator.serviceWorker.getRegistrations().then(function(regs){regs.forEach(function(reg){reg.unregister();});}).catch(function(){});});}
-renderAllPlayers();update();
+renderAllPlayers();update();updateGoalButtonLabels();
 })();
 </script>
 </body>
