@@ -581,7 +581,7 @@ if(yellows.length>=2){
 staffCards.push({team:side,type:"🟥 Rouge (2 jaunes)",member:member,number:sidx+1,minute:minute,auto:true,sentOff:true});
 }
 }
-el("cardForm").style.display="none";renderCards();renderStaffHistory();saveState();return;
+if(window.speakMatchEvent){var staffTeamName=side==="A"?el("teamA").textContent:el("teamB").textContent;var staffSpeech=type==="🟨 Jaune"?"Carton jaune":type==="🟥 Rouge"?"Carton rouge":"Carton blanc";window.speakMatchEvent(staffSpeech+" pour le staff de "+staffTeamName+". "+member+".");}el("cardForm").style.display="none";renderCards();renderStaffHistory();saveState();return;
 }
 var team=side==="A"?playersA:playersB;
 var idx=Number(raw);
@@ -672,7 +672,7 @@ assist:assistIdx===null?"":playerLabel(team[assistIdx],assistIdx),
 assistNumber:assistIdx===null?null:assistIdx+1,
 goalType:goalType,
 minute:Math.floor(seconds/60)+":"+String(seconds%60).padStart(2,"0")
-});if(window.speakMatchEvent){var gn=el("teamA").textContent; if(side==="B")gn=el("teamB").textContent; window.speakMatchEvent("But pour "+gn+". "+playerLabel(team[idx],idx)+(assistIdx!==null?" . Passeur "+playerLabel(team[assistIdx],assistIdx):"")+". "+goalType+".");}
+});if(window.speakMatchEvent){var gn=side==="A"?el("teamA").textContent:el("teamB").textContent; window.speakMatchEvent("But pour "+gn+". Numéro "+(idx+1)+"."+(assistIdx!==null?" Passeur numéro "+(assistIdx+1)+".":"")+" "+goalType+".");}
 el("goalForm").style.display="none";
 renderGoals();update();saveState();
 }
@@ -791,6 +791,7 @@ staffCards.push({team:side,type:"🟥 Rouge (2 jaunes)",member:member,number:idx
 }else{
 staffCards.push({team:side,type:type,member:member,number:idx+1,minute:minute,sentOff:type==="🟥 Rouge"});
 }
+if(window.speakMatchEvent){var staffTeamName=side==="A"?el("teamA").textContent:el("teamB").textContent;var staffSpeech=type==="🟨 Jaune"?"Carton jaune":type==="🟥 Rouge"?"Carton rouge":"Carton blanc";window.speakMatchEvent(staffSpeech+" pour le staff de "+staffTeamName+". "+member+".");}
 el("staffForm").style.display="none";
 renderStaffHistory();
 saveState();
@@ -918,13 +919,15 @@ function speak(text,force){
  if(!force&&!window.matchVoiceEnabled)return;
  if(!window.speechSynthesis||!window.SpeechSynthesisUtterance)return;
  var synth=window.speechSynthesis;
+ try{if(synth.paused)synth.resume();}catch(e){}
+ if(synth.speaking||synth.pending){try{synth.cancel();}catch(e){}}
  var u=new SpeechSynthesisUtterance(String(text));
  u.lang="fr-FR";u.rate=0.9;u.volume=1;
- var voices=synth.getVoices?synth.getVoices():[];
- for(var i=0;i<voices.length;i++){if(/^fr[-_]/i.test(voices[i].lang)){u.voice=voices[i];break;}}
- if(synth.speaking||synth.pending)synth.cancel();
- if(synth.paused)synth.resume();
+ var voices=[];try{voices=synth.getVoices?synth.getVoices():[];}catch(e){voices=[];}
+ for(var i=0;i<voices.length;i++){if(/^fr[-_]/i.test(voices[i].lang)){try{u.voice=voices[i];}catch(e){}break;}}
+ u.onerror=function(){try{synth.cancel();}catch(e){}};
  synth.speak(u);
+ try{synth.resume();}catch(e){}
 }
 window.speakMatchEvent=function(text){speak(text,false);};
 window.testMatchVoice=function(){speak("Test vocal. Le système fonctionne.",true);};
