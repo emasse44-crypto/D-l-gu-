@@ -1,9 +1,9 @@
 {
-  "id": "/D-l-gu-/delegue/",
+  "id": "delegue-football-v2",
   "name": "Délégué Football",
   "short_name": "Délégué Football",
   "description": "Application de gestion de match pour délégué de football",
-  "start_url": "/D-l-gu-/delegue/",
+  "start_url": "/D-l-gu-/delegue/?app=delegue-football",
   "scope": "/D-l-gu-/delegue/",
   "display": "standalone",
   "orientation": "portrait",
@@ -23,5 +23,9 @@
       "type": "image/png",
       "purpose": "any maskable"
     }
-  ]
+  ],
+  "display_override": [
+    "standalone"
+  ],
+  "prefer_related_applications": false
 }
