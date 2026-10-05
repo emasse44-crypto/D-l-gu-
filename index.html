@@ -908,23 +908,37 @@ renderAllPlayers();update();updateGoalButtonLabels();
 })();
 </script>
 <div id="voicePanel" style="position:fixed;right:18px;bottom:18px;z-index:9999;background:var(--card,#fff);border:1px solid #ccc;border-radius:12px;padding:10px;box-shadow:0 4px 16px rgba(0,0,0,.18);display:flex;gap:8px;align-items:center">
-<button id="voiceToggle" type="button">🔊 Vocal : OFF</button>
+<button id="voiceToggle" type="button">🔇 Vocal : OFF</button>
 <button id="voiceTest" type="button">🔊 Test</button>
 </div><script>
 (function(){
-var voiceEnabled=false;
-window.speakMatchEvent=function(text){
- if(!voiceEnabled || !window.speechSynthesis)return;
+"use strict";
+window.matchVoiceEnabled=false;
+function speak(text,force){
+ if(!force&&!window.matchVoiceEnabled)return;
+ if(!window.speechSynthesis||!window.SpeechSynthesisUtterance)return;
+ var synth=window.speechSynthesis;
  var u=new SpeechSynthesisUtterance(String(text));
  u.lang="fr-FR";u.rate=0.9;u.volume=1;
- window.speechSynthesis.cancel();
- window.speechSynthesis.speak(u);
-};
+ var voices=synth.getVoices?synth.getVoices():[];
+ for(var i=0;i<voices.length;i++){if(/^fr[-_]/i.test(voices[i].lang)){u.voice=voices[i];break;}}
+ if(synth.speaking||synth.pending)synth.cancel();
+ if(synth.paused)synth.resume();
+ synth.speak(u);
+}
+window.speakMatchEvent=function(text){speak(text,false);};
+window.testMatchVoice=function(){speak("Test vocal. Le système fonctionne.",true);};
 function initVoice(){
  var b=document.getElementById("voiceToggle"),t=document.getElementById("voiceTest");
  if(!b||!t)return;
- b.onclick=function(){voiceEnabled=true;b.textContent="🔊 Vocal : ON";};
- t.onclick=function(){voiceEnabled=true;b.textContent="🔊 Vocal : ON";window.speechSynthesis.cancel();var u=new SpeechSynthesisUtterance("Test vocal. Le système fonctionne.");u.lang="fr-FR";u.rate=0.9;window.speechSynthesis.speak(u);};
+ function update(){b.textContent=window.matchVoiceEnabled?"🔊 Vocal : ON":"🔇 Vocal : OFF";}
+ b.onclick=function(){
+   window.matchVoiceEnabled=!window.matchVoiceEnabled;
+   if(!window.matchVoiceEnabled&&window.speechSynthesis)window.speechSynthesis.cancel();
+   update();
+ };
+ t.onclick=function(){window.testMatchVoice();};
+ update();
 }
 if(document.readyState==="loading")document.addEventListener("DOMContentLoaded",initVoice);else initVoice();
 })();
