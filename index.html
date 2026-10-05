@@ -901,30 +901,36 @@ renderAllPlayers();update();updateGoalButtonLabels();
 <button id="voiceTest" type="button">🔊 Test</button>
 </div><script>
 (function(){
-var voiceEnabled=false;
+var voiceEnabled=localStorage.getItem("score_voice_enabled")==="1";
 function speak(text){
- if(!("speechSynthesis" in window) || !("SpeechSynthesisUtterance" in window)){alert("La synthèse vocale n'est pas disponible dans ce navigateur.");return;}
- window.speechSynthesis.cancel();
- var u=new SpeechSynthesisUtterance(text);
- u.lang="fr-FR";
- u.rate=0.9;
- u.pitch=1;
- u.volume=1;
- window.speechSynthesis.speak(u);
+ if(!("speechSynthesis" in window))return;
+ var synth=window.speechSynthesis;
+ synth.cancel();
+ setTimeout(function(){
+  var u=new SpeechSynthesisUtterance(String(text));
+  u.lang="fr-FR";u.rate=0.9;u.pitch=1;u.volume=1;
+  synth.speak(u);
+ },80);
 }
-window.speakMatchEvent=function(text){if(voiceEnabled)speak(text);};
+window.speakMatchEvent=function(text){
+ if(voiceEnabled)speak(text);
+};
 function initVoice(){
  var b=document.getElementById("voiceToggle"),t=document.getElementById("voiceTest");
  if(!b||!t)return;
+ function refresh(){b.textContent=voiceEnabled?"🔊 Vocal : ON":"🔊 Vocal : OFF";}
+ refresh();
  b.onclick=function(){
-   voiceEnabled=!voiceEnabled;
-   b.textContent=voiceEnabled?"🔊 Vocal : ON":"🔊 Vocal : OFF";
-   if(voiceEnabled)speak("Vocal activé");
+  voiceEnabled=!voiceEnabled;
+  localStorage.setItem("score_voice_enabled",voiceEnabled?"1":"0");
+  refresh();
+  if(voiceEnabled)speak("Vocal activé");
  };
  t.onclick=function(){
-   voiceEnabled=true;
-   b.textContent="🔊 Vocal : ON";
-   speak("Test vocal. Le système fonctionne.");
+  voiceEnabled=true;
+  localStorage.setItem("score_voice_enabled","1");
+  refresh();
+  speak("Test vocal. Le système fonctionne.");
  };
 }
 if(document.readyState==="loading")document.addEventListener("DOMContentLoaded",initVoice);else initVoice();
