@@ -1,0 +1,13 @@
+{
+  "id": "/D-l-gu-/delegue-football/",
+  "name": "Délégué Football",
+  "short_name": "Délégué Football",
+  "description": "Application de gestion de match pour délégué de football",
+  "start_url": "/D-l-gu-/delegue-football/",
+  "scope": "/D-l-gu-/",
+  "display": "standalone",
+  "orientation": "portrait",
+  "theme_color": "#111827",
+  "background_color": "#111827",
+  "lang": "fr-FR"
+}
