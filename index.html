@@ -852,13 +852,6 @@ exclusionHtml=exclusions.map(function(x){return '<div style="margin-top:6px"><st
 }else exclusionHtml=empty("Aucune exclusion temporaire.");
 html+=section("⚪ EXCLUSIONS TEMPORAIRES",exclusionHtml);
 
-var incidentHtml=incidents.length?incidents.map(function(x){return '<div style="margin-top:6px"><strong>'+escapeHtml(x.minute)+'</strong> · '+escapeHtml(x.text)+'</div>';}).join(""):empty("Aucun incident.");
-html+=section("🚩 INCIDENTS",incidentHtml);
-
-var injuryHtml=injuries.length?injuries.map(function(x){return '<div style="margin-top:6px"><strong>'+escapeHtml(x.minute)+'</strong> · '+escapeHtml(teamName(x.team))+' · '+escapeHtml(x.player)+' · '+escapeHtml(x.note||"")+(x.out?' · sorti':'')+'</div>';}).join(""):empty("Aucune blessure.");
-html+=section("🚑 BLESSURES",injuryHtml);
-
-html+=section("📝 OBSERVATIONS",'<div>'+escapeHtml(matchInfo.observation||"Aucune observation.")+'</div>');
 box.innerHTML=html;
 }function renderChanges(){var c=el("changeHistory");c.innerHTML="";if(!changes.length){c.innerHTML="<p class='note'>Aucun changement.</p>";return;}changes.forEach(function(x){var d=document.createElement("div");d.className="change-item";d.textContent=x.minute+" · Équipe "+x.team+" : "+x.out+" → "+x.in;c.appendChild(d);});}
 function updateGoalButtonLabels(){
