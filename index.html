@@ -62,6 +62,7 @@ localStorage.removeItem(STORAGE_KEY);
 scoreA=0;scoreB=0;seconds=0;
 playersA=Array.from({length:16},function(){return {name:"",license:"",captain:false,active:false,role:""};});
 playersB=Array.from({length:16},function(){return {name:"",license:"",captain:false,active:false,role:""};});
+playersA.forEach(function(p,i){p.active=i<11;});playersB.forEach(function(p,i){p.active=i<11;});
 staffA=["","","","",""];staffB=["","","","",""];
 changes=[];goals=[];cards=[];exclusions=[];staffCards=[];staffExclusions=[];incidents=[];injuries=[];
 matchInfo={competition:"",date:"",kickoff:"",stadium:"",referee:"",assistant1:"",assistant2:"",delegate:"",commissioner:"",security:"",observation:""};
@@ -876,7 +877,7 @@ document.querySelectorAll("[data-page]").forEach(function(b){b.onclick=function(
 document.querySelectorAll(".back").forEach(function(b){b.onclick=function(){document.querySelectorAll(".page").forEach(function(p){p.classList.remove("active");});el("home").style.display="block";};});
 el("saveNames").onclick=saveMatchInfo;
 el("scanSheetBtn").onclick=function(){el("matchSheetPhoto").click();};el("matchSheetPhoto").onchange=function(){scanMatchSheet(this.files&&this.files[0]);this.value="";};
-el("saveCompositions").onclick=function(){readPlayers(playersA,"playersA");readPlayers(playersB,"playersB");renderAllPlayers();saveState();alert("Compositions enregistrées.");};el("resetComposition").onclick=function(){if(!confirm("Effacer les joueurs, licences et capitaines des deux équipes ?"))return;playersA=Array.from({length:16},function(){return {name:"",license:"",captain:false,active:false,role:""};});playersB=Array.from({length:16},function(){return {name:"",license:"",captain:false,active:false,role:""};});playersA.forEach(function(p,i){p.active=i<11;});playersB.forEach(function(p,i){p.active=i<11;});renderAllPlayers();saveState();alert("Les deux compositions ont été remises à zéro.");};
+el("saveCompositions").onclick=function(){readPlayers(playersA,"playersA");readPlayers(playersB,"playersB");playersA.forEach(function(p,i){p.active=i<11;});playersB.forEach(function(p,i){p.active=i<11;});renderAllPlayers();saveState();alert("Compositions enregistrées. Les n°1 à 11 sont titulaires, les n°12 à 14 sont remplaçants.");};el("resetComposition").onclick=function(){if(!confirm("Effacer les joueurs, licences et capitaines des deux équipes ?"))return;playersA=Array.from({length:16},function(){return {name:"",license:"",captain:false,active:false,role:""};});playersB=Array.from({length:16},function(){return {name:"",license:"",captain:false,active:false,role:""};});playersA.forEach(function(p,i){p.active=i<11;});playersB.forEach(function(p,i){p.active=i<11;});renderAllPlayers();saveState();alert("Les deux compositions ont été remises à zéro.");};
 el("changeA").onclick=function(){setupChange(playersA,"Changement Équipe A");};
 el("changeB").onclick=function(){setupChange(playersB,"Changement Équipe B");};
 el("confirmChange").onclick=confirmChange;
