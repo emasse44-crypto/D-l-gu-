@@ -906,11 +906,9 @@ function speak(text){
  if(!("speechSynthesis" in window))return;
  var synth=window.speechSynthesis;
  synth.cancel();
- setTimeout(function(){
   var u=new SpeechSynthesisUtterance(String(text));
   u.lang="fr-FR";u.rate=0.9;u.pitch=1;u.volume=1;
   synth.speak(u);
- },80);
 }
 window.speakMatchEvent=function(text){
  if(voiceEnabled)speak(text);
