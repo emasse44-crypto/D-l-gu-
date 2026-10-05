@@ -903,18 +903,31 @@ renderAllPlayers();update();updateGoalButtonLabels();
 (function(){
 var voiceEnabled=false;
 function speak(text){
-if(!voiceEnabled||!("speechSynthesis" in window))return;
-window.speechSynthesis.cancel();
-var u=new SpeechSynthesisUtterance(text);
-u.lang="fr-FR";u.rate=0.95;u.pitch=1;
-window.speechSynthesis.speak(u);
+ if(!("speechSynthesis" in window) || !("SpeechSynthesisUtterance" in window)){alert("La synthèse vocale n'est pas disponible dans ce navigateur.");return;}
+ window.speechSynthesis.cancel();
+ var u=new SpeechSynthesisUtterance(text);
+ u.lang="fr-FR";
+ u.rate=0.9;
+ u.pitch=1;
+ u.volume=1;
+ window.speechSynthesis.speak(u);
 }
-window.speakMatchEvent=speak;
-document.addEventListener("DOMContentLoaded",function(){
-var b=document.getElementById("voiceToggle"),t=document.getElementById("voiceTest");
-if(b)b.onclick=function(){voiceEnabled=!voiceEnabled;b.textContent=voiceEnabled?"🔊 Vocal : ON":"🔊 Vocal : OFF";if(voiceEnabled)speak("Vocal activé.");};
-if(t)t.onclick=function(){if(!voiceEnabled){voiceEnabled=true;b.textContent="🔊 Vocal : ON";}speak("Test vocal du tableau de score.");};
-});
+window.speakMatchEvent=function(text){if(voiceEnabled)speak(text);};
+function initVoice(){
+ var b=document.getElementById("voiceToggle"),t=document.getElementById("voiceTest");
+ if(!b||!t)return;
+ b.onclick=function(){
+   voiceEnabled=!voiceEnabled;
+   b.textContent=voiceEnabled?"🔊 Vocal : ON":"🔊 Vocal : OFF";
+   if(voiceEnabled)speak("Vocal activé");
+ };
+ t.onclick=function(){
+   voiceEnabled=true;
+   b.textContent="🔊 Vocal : ON";
+   speak("Test vocal. Le système fonctionne.");
+ };
+}
+if(document.readyState==="loading")document.addEventListener("DOMContentLoaded",initVoice);else initVoice();
 })();
 </script></body>
 </html>
