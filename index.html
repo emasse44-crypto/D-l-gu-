@@ -42,8 +42,8 @@
 (function(){
 "use strict";
 var scoreA=0,scoreB=0,seconds=0,running=false,timer=null;
-var playersA=Array.from({length:16},function(){return {name:"",license:"",captain:false,active:false,role:""};});
-var playersB=Array.from({length:16},function(){return {name:"",license:"",captain:false,active:false,role:""};});
+var playersA=Array.from({length:16},function(_,i){return {name:"",license:"",captain:false,active:i<11,role:""};});
+var playersB=Array.from({length:16},function(_,i){return {name:"",license:"",captain:false,active:i<11,role:""};});
 var staffA=["","","","",""],staffB=["","","","",""];
 var changes=[],goals=[],cards=[],exclusions=[],staffCards=[],staffExclusions=[];var incidents=[],injuries=[];var delegateChecklist=[false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false];var matchInfo={competition:"",date:"",kickoff:"",stadium:"",referee:"",assistant1:"",assistant2:"",delegate:"",commissioner:"",security:"",observation:""};var checklist=[false,false,false,false,false,false,false,false,false,false,false,false];
 function el(id){return document.getElementById(id);}var STORAGE_KEY="football_scoreboard_v1";
