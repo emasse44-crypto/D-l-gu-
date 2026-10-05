@@ -25,7 +25,7 @@
 </section>
 <section class="page card" id="compositions"><button class="back">← Retour</button><h2>Compositions</h2><p class="note">1 à 11 : titulaires · 12 à 14 : remplaçants · 15 et 16 : encadrement. Le capitaine est sélectionnable.</p><div class="change-item"><strong>📷 Scanner une composition</strong><p class="note">Prenez une photo d'une composition. Le scanner essaie de récupérer les numéros, noms, licences et le capitaine. Vérifiez toujours le résultat avant validation.</p><input id="matchSheetPhoto" type="file" accept="image/*" capture="environment" style="display:none"><button id="scanSheetBtn" style="width:100%;margin-top:8px">📷 Prendre / choisir une composition</button><div id="scanStatus" class="note" style="margin-top:8px"></div><div id="scanReview" style="display:none;margin-top:12px"></div></div><div class="composition-team"><h3>Équipe A</h3><div id="playersA"></div></div><div class="composition-team"><h3>Équipe B</h3><div id="playersB"></div></div><button class="green" id="saveCompositions" style="width:100%;margin-top:18px">Enregistrer les compositions</button><button class="red" id="resetComposition" style="width:100%;margin-top:10px">🗑️ Remise à zéro des compositions</button></section>
 <section class="page card" id="changes"><button class="back">← Retour</button><h2>Changements</h2><p class="note">Effectuez une sortie puis une entrée. Le numéro du joueur suffit, le nom est facultatif.</p><div class="change-grid"><div><div class="change-title">Équipe A</div><button id="changeA" style="width:100%">🔄 Faire un changement A</button></div><div><div class="change-title">Équipe B</div><button id="changeB" style="width:100%">🔄 Faire un changement B</button></div></div><div id="changeForm" style="display:none;margin-top:18px"><p id="changeTeamLabel" class="change-title"></p><p>Joueur qui sort</p><select id="playerOut"></select><p>Remplaçant qui entre</p><select id="playerIn"></select><button class="green" id="confirmChange" style="width:100%;margin-top:10px">Valider le changement</button></div><div class="change-history"><h3>Historique</h3><div id="changeHistory"><p class="note">Aucun changement.</p></div></div></section>
-<section class="page card" id="goals"><button class="back">← Retour</button><h2>⚽ Buts du match</h2><div class="teams" style="margin-bottom:14px"><div><div class="team" id="goalsTeamA">Équipe A</div><div class="score" id="goalsScoreA">0</div></div><div><div class="clock" id="goalsClock">00:00</div></div><div><div class="team" id="goalsTeamB">Équipe B</div><div class="score" id="goalsScoreB">0</div></div></div><div class="buttons"><button id="goalPageA">+ But A</button><button id="goalPageB">+ But B</button></div><div id="goalForm" style="display:none;margin-top:14px"><p id="goalTeamLabel" class="change-title"></p><p>Buteur</p><select id="goalPlayer"></select><button class="green" id="confirmGoal" style="width:100%;margin-top:10px">Valider le but</button></div><div style="margin-top:18px"><div class="change-title">Chronologie des buts</div><div id="goalHistory"><p class="note">Aucun but.</p></div></div></section>
+<section class="page card" id="goals"><button class="back">← Retour</button><h2>⚽ Buts du match</h2><div class="teams" style="margin-bottom:14px"><div><div class="team" id="goalsTeamA">Équipe A</div><div class="score" id="goalsScoreA">0</div></div><div><div class="clock" id="goalsClock">00:00</div></div><div><div class="team" id="goalsTeamB">Équipe B</div><div class="score" id="goalsScoreB">0</div></div></div><div class="buttons"><button id="goalPageA">+ But A</button><button id="goalPageB">+ But B</button></div><div id="goalForm" style="display:none;margin-top:14px"><p id="goalTeamLabel" class="change-title"></p><p>Buteur</p><select id="goalPlayer"></select><p style="margin-top:10px">Passeur</p><select id="goalAssist"><option value="">Aucun passeur</option></select><p style="margin-top:10px">Type de but</p><select id="goalType"><option value="Pied">👟 Pied</option><option value="Tête">🧠 Tête</option><option value="Penalty">⚽ Penalty</option></select><button class="green" id="confirmGoal" style="width:100%;margin-top:10px">Valider le but</button></div><div style="margin-top:18px"><div class="change-title">Chronologie des buts</div><div id="goalHistory"><p class="note">Aucun but.</p></div></div></section>
 <section class="page card" id="events"><button class="back">← Retour</button><h2>🟨 Cartons</h2><p>Enregistrez les sanctions des joueurs actuellement sur le terrain. <strong>2 cartons dans le même match, quelle que soit la couleur (jaune/blanc), entraînent automatiquement un carton rouge.</strong> Le carton blanc entraîne 10 minutes de jeu effectif d’exclusion.</p><div class="change-grid"><button id="yellowA">🟨 Jaune A</button><button id="yellowB">🟨 Jaune B</button><button id="redA" class="red">🟥 Rouge A</button><button id="redB" class="red">🟥 Rouge B</button><button id="whiteA">⚪ Blanc A</button><button id="whiteB">⚪ Blanc B</button></div><div id="cardForm" style="display:none;margin-top:18px"><p id="cardTeamLabel" class="change-title"></p><p>Joueur</p><select id="cardPlayer"></select><button class="green" id="confirmCard" style="width:100%;margin-top:10px">Valider la sanction</button></div><div class="change-history"><h3>Historique des sanctions</h3><div id="cardHistory"><p class="note">Aucune sanction.</p></div></div></section>
 <section class="page card" id="sanctions"><button class="back">← Retour</button><h2>Sanctions</h2><p>Cette partie sera ajoutée ensuite.</p></section>
 <section class="page card" id="chrono"><button class="back">← Retour</button><h2>Chronomètre</h2><div class="clock" id="clockPage">00:00</div><button class="green" id="startPage">▶ Démarrer</button><button id="pausePage">⏸ Pause</button></section>
@@ -610,7 +610,67 @@ x.player=playerLabel(team[n-1],n-1);x.number=n;
 renderCards();saveState();
 }
 function renderGoalsPage(){el("goalsTeamA").textContent=el("teamA").textContent;el("goalsTeamB").textContent=el("teamB").textContent;el("goalsScoreA").textContent=scoreA;el("goalsScoreB").textContent=scoreB;el("goalsClock").textContent=formatMinute(seconds);renderGoals();}
-function setupGoal(team,label){readPlayers(team,team===playersA?"playersA":"playersB");el("goalTeamLabel").textContent=label;var sel=el("goalPlayer");sel.innerHTML="";team.forEach(function(p,i){if(i<16&&(!p.role||i<14)){var o=document.createElement("option");o.value=i;o.textContent=playerLabel(p,i);if(!p.active)o.textContent+=" · remplaçant / sorti";sel.appendChild(o);}});if(!sel.options.length){var o=document.createElement("option");o.value="";o.textContent="Aucun joueur";sel.appendChild(o);}el("goalForm").style.display="block";el("goalForm").dataset.team=team===playersA?"A":"B";} function confirmGoal(){var team=el("goalForm").dataset.team==="A"?playersA:playersB;var idx=Number(el("goalPlayer").value);if(!Number.isInteger(idx)||!team[idx]||idx<0||idx>13){alert("Choisissez le buteur.");return;}if(el("goalForm").dataset.team==="A"){scoreA++;}else{scoreB++;}goals.push({team:el("goalForm").dataset.team,player:playerLabel(team[idx],idx),minute:Math.floor(seconds/60)+":"+String(seconds%60).padStart(2,"0")});el("goalForm").style.display="none";renderGoals();update();saveState();} function renderGoals(){var c=el("goalHistory");c.innerHTML="";if(!goals.length){c.innerHTML="<p class='note'>Aucun but.</p>";return;}goals.forEach(function(x,i){var d=document.createElement("div");d.className="goal-entry"+(x.team==="B"?" team-b":"");var m=document.createElement("div");m.className="goal-minute";m.textContent=x.minute;d.appendChild(m);var info=document.createElement("div");info.className="goal-info";info.textContent="⚽ "+x.player+" · Équipe "+x.team+(x.cancelled?" · BUT ANNULÉ":"");d.appendChild(info);if(!x.cancelled){var actions=document.createElement("div");actions.className="goal-actions";var b=document.createElement("button");b.textContent="✏️";b.title="Corriger le buteur";b.onclick=function(){correctGoal(i);};actions.appendChild(b);var a=document.createElement("button");a.textContent="❌";a.title="Annuler le but";a.onclick=function(){cancelGoal(i);};actions.appendChild(a);d.appendChild(actions);}c.appendChild(d);});}
+function setupGoal(team,label){
+readPlayers(team,team===playersA?"playersA":"playersB");
+el("goalTeamLabel").textContent=label;
+var sel=el("goalPlayer");sel.innerHTML="";
+var assist=el("goalAssist");assist.innerHTML='<option value="">Aucun passeur</option>';
+team.forEach(function(p,i){
+if(i<16&&(!p.role||i<14)){
+var o=document.createElement("option");o.value=i;o.textContent=playerLabel(p,i);
+if(!p.active)o.textContent+=" · remplaçant / sorti";
+sel.appendChild(o);
+var a=document.createElement("option");a.value=i;a.textContent=playerLabel(p,i);
+if(!p.active)a.textContent+=" · remplaçant / sorti";
+assist.appendChild(a);
+}
+});
+if(!sel.options.length){var o=document.createElement("option");o.value="";o.textContent="Aucun joueur";sel.appendChild(o);}
+el("goalForm").style.display="block";
+el("goalForm").dataset.team=team===playersA?"A":"B";
+}
+function confirmGoal(){
+var side=el("goalForm").dataset.team;
+var team=side==="A"?playersA:playersB;
+var idx=Number(el("goalPlayer").value);
+if(!Number.isInteger(idx)||!team[idx]||idx<0||idx>15||team[idx].role){alert("Choisissez le buteur.");return;}
+var assistValue=el("goalAssist").value;
+var assistIdx=assistValue===""?null:Number(assistValue);
+if(assistIdx!==null&&(!Number.isInteger(assistIdx)||!team[assistIdx]||assistIdx<0||assistIdx>15||team[assistIdx].role)){alert("Choisissez un passeur valide.");return;}
+var goalType=el("goalType").value||"Pied";
+if(side==="A"){scoreA++;}else{scoreB++;}
+goals.push({
+team:side,
+player:playerLabel(team[idx],idx),
+number:idx+1,
+assist:assistIdx===null?"":playerLabel(team[assistIdx],assistIdx),
+assistNumber:assistIdx===null?null:assistIdx+1,
+goalType:goalType,
+minute:Math.floor(seconds/60)+":"+String(seconds%60).padStart(2,"0")
+});
+el("goalForm").style.display="none";
+renderGoals();update();saveState();
+}
+function renderGoals(){
+var c=el("goalHistory");c.innerHTML="";
+if(!goals.length){c.innerHTML="<p class='note'>Aucun but.</p>";return;}
+goals.forEach(function(x,i){
+var d=document.createElement("div");d.className="goal-entry"+(x.team==="B"?" team-b":"");
+var m=document.createElement("div");m.className="goal-minute";m.textContent=x.minute;d.appendChild(m);
+var info=document.createElement("div");info.className="goal-info";
+var details="⚽ "+x.player+" · "+(x.goalType||"Pied");
+if(x.assist)details+=" · Passe : "+x.assist;
+details+=" · Équipe "+x.team;
+if(x.cancelled)details+=" · BUT ANNULÉ";
+info.textContent=details;d.appendChild(info);
+if(!x.cancelled){
+var actions=document.createElement("div");actions.className="goal-actions";
+var b=document.createElement("button");b.textContent="✏️";b.title="Corriger le buteur";b.onclick=function(){correctGoal(i);};actions.appendChild(b);
+var a=document.createElement("button");a.textContent="❌";a.title="Annuler le but";a.onclick=function(){cancelGoal(i);};actions.appendChild(a);d.appendChild(actions);
+}
+c.appendChild(d);
+});
+}
 function cancelGoal(index){var g=goals[index];if(g.cancelled)return;if(!confirm("Annuler ce but ? Le score sera retiré."))return;if(g.team==="A"){scoreA=Math.max(0,scoreA-1);}else{scoreB=Math.max(0,scoreB-1);}goals.splice(index,1);renderGoals();update();} function correctGoal(index){var g=goals[index];var team=g.team==="A"?playersA:playersB;var sel=prompt("Entrez le numéro du bon buteur (1 à 16) :",String(parseInt((g.player.match(/n°(\d+)/)||[])[1]||"")));if(sel===null)return;var n=Number(sel);if(!Number.isInteger(n)||n<1||n>16||!team[n-1].active){alert("Choisissez le numéro d’un joueur actuellement actif.");return;}g.player=playerLabel(team[n-1],n-1);renderGoals();saveState();} function parseStaffEntry(value){
 var s=String(value||"").trim(),role="";
 var m=s.match(/^(.*?)(?:\s*(?:·|-)\s*)(E|M|A|D\/DR|D)\s*$/i);
@@ -745,7 +805,7 @@ var html='<div class="change-item"><div class="report-title">Match</div><div><st
 
 var goalHtml="";
 if(goals.length){
-goalHtml=goals.map(function(x,i){return '<div style="margin-top:6px"><strong>'+escapeHtml(x.minute)+'</strong> · '+escapeHtml(teamName(x.team))+' · ⚽ <strong>'+escapeHtml(x.player)+'</strong>'+(x.cancelled?' · BUT ANNULÉ':'')+'</div>';}).join("");
+goalHtml=goals.map(function(x,i){return '<div style="margin-top:6px"><strong>'+escapeHtml(x.minute)+'</strong> · '+escapeHtml(teamName(x.team))+' · ⚽ <strong>'+escapeHtml(x.player)+'</strong> · '+escapeHtml(x.goalType||"Pied")+(x.assist?' · Passeur : <strong>'+escapeHtml(x.assist)+'</strong>':'')+(x.cancelled?' · BUT ANNULÉ':'')+'</div>';}).join("");
 }else goalHtml=empty("Aucun but enregistré.");
 html+=section("⚽ BUTEURS",goalHtml);
 
