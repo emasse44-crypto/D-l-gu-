@@ -514,18 +514,7 @@ box.querySelector("#cancelScanReview").onclick=function(){box.style.display="non
 }
 function downloadText(filename,text){var blob=new Blob([text],{type:"text/plain;charset=utf-8"});var url=URL.createObjectURL(blob);var a=document.createElement("a");a.href=url;a.download=filename;document.body.appendChild(a);a.click();a.remove();setTimeout(function(){URL.revokeObjectURL(url);},1000);}function teamDownloadText(team,name){readPlayers(team,team===playersA?"playersA":"playersB");var lines=[name,"==============================","CAPITAINE : "+(function(){var i=team.findIndex(function(p){return p.captain;});return i>=0?playerLabel(team[i],i):"Non renseigné";})(),"","TITULAIRES"];team.slice(0,11).forEach(function(p,i){lines.push((i+1)+". "+(p.name||"Non renseigné")+" · Licence : "+playerLicense(p));});lines.push("","REMPLAÇANTS");team.slice(11,14).forEach(function(p,i){lines.push((i+12)+". "+(p.name||"Non renseigné")+" · Licence : "+playerLicense(p));});team.slice(14,16).forEach(function(p,i){if(p.name||p.role)lines.push((i+15)+". "+(p.name||"Non renseigné")+" · "+(p.role==="E"?"Éducateur":p.role==="D"?"Dirigeant":"Rôle non renseigné")+" · Licence : "+playerLicense(p));});return lines.join("\n");}function downloadTeam(team,name,file){downloadText(file,teamDownloadText(team,name));}function playerLabel(p,i){return (p.name||("Joueur "+(i+1)))+" (n°"+(i+1)+")";} function playerLicense(p){return p.license||"Non renseigné";}
 function setupChange(team,label){readPlayers(team,team===playersA?"playersA":"playersB");el("changeTeamLabel").textContent=label;var out=el("playerOut"),inn=el("playerIn");out.innerHTML="";inn.innerHTML="";team.forEach(function(p,i){if(p.active){var o=document.createElement("option");o.value=i;o.textContent=playerLabel(p,i);out.appendChild(o);}if(!p.active&&i>=11){var q=document.createElement("option");q.value=i;q.textContent=playerLabel(p,i);inn.appendChild(q);}});el("changeForm").style.display="block";el("changeForm").dataset.team=team===playersA?"A":"B";if(!inn.options.length){inn.innerHTML="<option value=''>Aucun remplaçant disponible</option>";}}
-function confirmChange(){
-var side=el("changeForm").dataset.team;
-var team=side==="A"?playersA:playersB;
-var outIndex=Number(el("playerOut").value),inIndex=Number(el("playerIn").value);
-if(!Number.isInteger(outIndex)||!Number.isInteger(inIndex)||!team[inIndex]){alert("Choisissez un joueur sortant et un remplaçant.");return;}
-var outPlayer=team[outIndex],inPlayer=team[inIndex];
-if(!outPlayer.active||inPlayer.active||inIndex<11){alert("Changement impossible.");return;}
-changes.push({team:side,out:playerLabel(outPlayer,outIndex),in:playerLabel(inPlayer,inIndex),minute:Math.floor(seconds/60)+":"+String(seconds%60).padStart(2,"0")});
-outPlayer.active=false;inPlayer.active=true;
-window.speakMatchEvent("Changement pour "+(side==="A"?el("teamA").textContent:el("teamB").textContent)+". Numéro "+(outIndex+1)+" sort. Numéro "+(inIndex+1)+" entre.");
-el("changeForm").style.display="none";renderChanges();saveState();
-}
+function confirmChange(){var team=el("changeForm").dataset.team==="A"?playersA:playersB;var outIndex=Number(el("playerOut").value),inIndex=Number(el("playerIn").value);if(!Number.isInteger(outIndex)||!Number.isInteger(inIndex)||!team[inIndex]){alert("Choisissez un joueur sortant et un remplaçant.");return;}var outPlayer=team[outIndex],inPlayer=team[inIndex];if(!outPlayer.active||inPlayer.active||inIndex<11){alert("Changement impossible.");return;}outPlayer.active=false;inPlayer.active=true;changes.push({team:el("changeForm").dataset.team,out:playerLabel(outPlayer,outIndex),in:playerLabel(inPlayer,inIndex),minute:Math.floor(seconds/60)+":"+String(seconds%60).padStart(2,"0")});el("changeForm").style.display="none";renderChanges();saveState();}
 function setupCard(team,label,type){
 readPlayers(team,team===playersA?"playersA":"playersB");
 var side=team===playersA?"A":"B";
@@ -581,13 +570,13 @@ if(yellows.length>=2){
 staffCards.push({team:side,type:"🟥 Rouge (2 jaunes)",member:member,number:sidx+1,minute:minute,auto:true,sentOff:true});
 }
 }
-if(window.speakMatchEvent){var staffTeamName=side==="A"?el("teamA").textContent:el("teamB").textContent;var staffSpeech=type==="🟨 Jaune"?"Carton jaune":type==="🟥 Rouge"?"Carton rouge":"Carton blanc";window.speakMatchEvent(staffSpeech+" pour le staff de "+staffTeamName+". "+member+".");}el("cardForm").style.display="none";renderCards();renderStaffHistory();saveState();return;
+el("cardForm").style.display="none";renderCards();renderStaffHistory();saveState();return;
 }
 var team=side==="A"?playersA:playersB;
 var idx=Number(raw);
 if(!Number.isInteger(idx)||idx<0||idx>15||!team[idx]||team[idx].role){alert("Choisissez un joueur.");return;}
 var label=playerLabel(team[idx],idx);
-cards.push({team:side,type:type,player:label,number:idx+1,minute:minute});window.speakMatchEvent((type==="🟨 Jaune"?"Carton jaune":type==="🟥 Rouge"?"Carton rouge":"Carton blanc")+" pour "+(side==="A"?el("teamA").textContent:el("teamB").textContent)+". Numéro "+(idx+1)+".");
+cards.push({team:side,type:type,player:label,number:idx+1,minute:minute});
 if(type==="⚪ Blanc"){
 exclusions.push({team:side,number:idx+1,player:label,start:seconds,end:seconds+600,active:true});
 team[idx].active=false;
@@ -791,7 +780,6 @@ staffCards.push({team:side,type:"🟥 Rouge (2 jaunes)",member:member,number:idx
 }else{
 staffCards.push({team:side,type:type,member:member,number:idx+1,minute:minute,sentOff:type==="🟥 Rouge"});
 }
-if(window.speakMatchEvent){var staffTeamName=side==="A"?el("teamA").textContent:el("teamB").textContent;var staffSpeech=type==="🟨 Jaune"?"Carton jaune":type==="🟥 Rouge"?"Carton rouge":"Carton blanc";window.speakMatchEvent(staffSpeech+" pour le staff de "+staffTeamName+". "+member+".");}
 el("staffForm").style.display="none";
 renderStaffHistory();
 saveState();
@@ -883,7 +871,7 @@ if(el("goalsTeamA"))el("goalsTeamA").textContent=a;
 if(el("goalsTeamB"))el("goalsTeamB").textContent=b;
 }
 function openGoalsPage(side){el("home").style.display="none";document.querySelectorAll(".page").forEach(function(p){p.classList.remove("active");});el("goals").classList.add("active");renderGoalsPage();if(side==="A")setupGoal(playersA,"But "+el("teamA").textContent);else if(side==="B")setupGoal(playersB,"But "+el("teamB").textContent);}
-el("goalA").onclick=function(){openGoalsPage("A");};el("goalB").onclick=function(){openGoalsPage("B");};el("goalsPageBtn").onclick=function(){openGoalsPage();};el("goalPageA").onclick=function(){setupGoal(playersA,"But "+el("teamA").textContent);};el("goalPageB").onclick=function(){setupGoal(playersB,"But "+el("teamB").textContent);};el("confirmGoal").onclick=function(){var side=el("goalForm").dataset.team;var team=side==="A"?playersA:playersB;var idx=Number(el("goalPlayer").value);var av=el("goalAssist").value;var ai=av===""?null:Number(av);var gt=el("goalType").value||"Pied";if(Number.isInteger(idx)&&team[idx]&&!team[idx].role&&window.matchVoiceEnabled&&window.testMatchVoice){var tn=side==="A"?el("teamA").textContent:el("teamB").textContent;window.testMatchVoice("But pour "+tn+". Numéro "+(idx+1)+"."+(ai!==null&&team[ai]&&!team[ai].role?" Passeur numéro "+(ai+1)+".":"")+" "+gt+".");}confirmGoal();};el("yellowA").onclick=function(){setupCard(playersA,"Équipe A","🟨 Jaune");};el("yellowB").onclick=function(){setupCard(playersB,"Équipe B","🟨 Jaune");};el("redA").onclick=function(){setupCard(playersA,"Équipe A","🟥 Rouge");};el("redB").onclick=function(){setupCard(playersB,"Équipe B","🟥 Rouge");};el("whiteA").onclick=function(){setupCard(playersA,"Équipe A","⚪ Blanc");};el("whiteB").onclick=function(){setupCard(playersB,"Équipe B","⚪ Blanc");};el("confirmCard").onclick=confirmCard;el("start").onclick=start;el("pause").onclick=pause;el("reset").onclick=reset;el("startPage").onclick=start;el("pausePage").onclick=pause;
+el("goalA").onclick=function(){openGoalsPage("A");};el("goalB").onclick=function(){openGoalsPage("B");};el("goalsPageBtn").onclick=function(){openGoalsPage();};el("goalPageA").onclick=function(){setupGoal(playersA,"But "+el("teamA").textContent);};el("goalPageB").onclick=function(){setupGoal(playersB,"But "+el("teamB").textContent);};el("confirmGoal").onclick=confirmGoal;el("yellowA").onclick=function(){setupCard(playersA,"Équipe A","🟨 Jaune");};el("yellowB").onclick=function(){setupCard(playersB,"Équipe B","🟨 Jaune");};el("redA").onclick=function(){setupCard(playersA,"Équipe A","🟥 Rouge");};el("redB").onclick=function(){setupCard(playersB,"Équipe B","🟥 Rouge");};el("whiteA").onclick=function(){setupCard(playersA,"Équipe A","⚪ Blanc");};el("whiteB").onclick=function(){setupCard(playersB,"Équipe B","⚪ Blanc");};el("confirmCard").onclick=confirmCard;el("start").onclick=start;el("pause").onclick=pause;el("reset").onclick=reset;el("startPage").onclick=start;el("pausePage").onclick=pause;
 document.querySelectorAll("[data-page]").forEach(function(b){b.onclick=function(){var page=b.getAttribute("data-page");if(page==="compositions")renderAllPlayers();if(page==="changes")renderChanges();if(page==="goals"){renderGoalsPage();}if(page==="events"){renderCards();}if(page==="staff"){renderStaff(staffA,"staffA");renderStaff(staffB,"staffB");renderStaffHistory();}if(page==="sheet"){renderTimeline();renderSheet();}if(page==="checklist"){renderChecklist();}if(page==="delegateGuide"){renderDelegateChecklist();}if(page==="incidents"){renderIncidents();}if(page==="injuries"){renderInjuryPlayers();renderInjuries();}if(page==="report"){renderReport();}if(page==="settings"){fillMatchInfo();}el("home").style.display="none";document.querySelectorAll(".page").forEach(function(p){p.classList.remove("active");});el(page).classList.add("active");};});
 document.querySelectorAll(".back").forEach(function(b){b.onclick=function(){document.querySelectorAll(".page").forEach(function(p){p.classList.remove("active");});el("home").style.display="block";};});
 el("saveNames").onclick=saveMatchInfo;
@@ -908,47 +896,5 @@ if("serviceWorker" in navigator){window.addEventListener("load",function(){navig
 renderAllPlayers();update();updateGoalButtonLabels();
 })();
 </script>
-<div id="voicePanel" style="position:fixed;right:18px;bottom:18px;z-index:9999;background:var(--card,#fff);border:1px solid #ccc;border-radius:12px;padding:10px;box-shadow:0 4px 16px rgba(0,0,0,.18);display:flex;gap:8px;align-items:center">
-<button id="voiceToggle" type="button">🔇 Vocal : OFF</button>
-<button id="voiceTest" type="button">🔊 Test</button><span id="voiceLast" style="font-size:12px;color:#666;max-width:280px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap">Aucune annonce</span>
-</div><script>
-(function(){
-"use strict";
-window.matchVoiceEnabled=false;
-function synth(){return window.speechSynthesis&&window.SpeechSynthesisUtterance?window.speechSynthesis:null;}
-function speak(text,force){
- if(!force&&!window.matchVoiceEnabled)return;
- var s=synth();if(!s)return;
- try{
-  var u=new SpeechSynthesisUtterance(String(text));
-  u.lang="fr-FR";u.rate=0.9;u.volume=1;
-  var v=s.getVoices?s.getVoices():[];
-  for(var i=0;i<v.length;i++){if(/^fr[-_]/i.test(v[i].lang)){try{u.voice=v[i];}catch(e){}break;}}
-  s.speak(u);
-  try{s.resume();}catch(e){}
- }catch(e){}
-}
-window.speakMatchEvent=function(text){
- var msg=String(text||"");
- var status=document.getElementById("voiceLast");
- if(status)status.textContent="Dernière annonce : "+msg;
- if(window.matchVoiceEnabled)window.testMatchVoice(msg);
-};
-window.testMatchVoice=function(text){speak(text||"Test vocal. Le système fonctionne.",true);};
-function initVoice(){
- var b=document.getElementById("voiceToggle"),t=document.getElementById("voiceTest");if(!b||!t)return;
- function update(){b.textContent=window.matchVoiceEnabled?"🔊 Vocal : ON":"🔇 Vocal : OFF";}
- b.onclick=function(){
-  window.matchVoiceEnabled=!window.matchVoiceEnabled;
-  var s=synth();
-  if(!window.matchVoiceEnabled){if(s)try{s.cancel();}catch(e){}}
-  else{try{speak("Vocal activé.",true);}catch(e){}}
-  update();
- };
- t.onclick=function(){window.testMatchVoice();};
- update();
-}
-if(document.readyState==="loading")document.addEventListener("DOMContentLoaded",initVoice);else initVoice();
-})();
-</script></body>
+</body>
 </html>
