@@ -1,0 +1,29 @@
+{
+  "id": "/D-l-gu-/delegue/",
+  "name": "Délégué Football",
+  "short_name": "Délégué Football",
+  "description": "Application de gestion de match pour délégué de football",
+  "start_url": "/D-l-gu-/delegue/",
+  "scope": "/D-l-gu-/delegue/",
+  "display": "standalone",
+  "display_override": ["standalone"],
+  "orientation": "portrait",
+  "theme_color": "#111827",
+  "background_color": "#111827",
+  "lang": "fr-FR",
+  "icons": [
+    {
+      "src": "/D-l-gu-/delegue/icon-192.png",
+      "sizes": "192x192",
+      "type": "image/png",
+      "purpose": "any"
+    },
+    {
+      "src": "/D-l-gu-/delegue/icon-512.png",
+      "sizes": "512x512",
+      "type": "image/png",
+      "purpose": "any"
+    }
+  ],
+  "prefer_related_applications": false
+}
