@@ -684,6 +684,8 @@ function setupCard(side,label){
     var o=document.createElement("option");o.value="";o.textContent="Aucun joueur ou staff renseigné";sel.appendChild(o);
   }
   form.dataset.team=side;
+  el("cardSimplePanel").style.display="none";
+  form.style.display="block";
   el("cardPersonWrap").style.display="block";
 }
 function selectCardType(type){
