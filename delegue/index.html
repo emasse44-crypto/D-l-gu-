@@ -649,6 +649,7 @@ if(map[type])el(map[type]).classList.add("selected");
 function confirmCard(){
 var side=el("cardForm").dataset.team;
 var type=el("cardForm").dataset.type;
+if(!type){alert("Choisissez le type de carton.");return;}
 var minute=Math.floor(seconds/60)+":"+String(seconds%60).padStart(2,"0");
 var raw=el("cardPlayer").value;
 if(String(raw).indexOf("staff-")===0){
@@ -1008,7 +1009,7 @@ if(el("goalsTeamB"))el("goalsTeamB").textContent=b;
 }
 function openGoalsPage(side){el("home").style.display="none";document.querySelectorAll(".page").forEach(function(p){p.classList.remove("active");});el("goals").classList.add("active");renderGoalsPage();if(side==="A")setupGoal(playersA,"But "+el("teamA").textContent);else if(side==="B")setupGoal(playersB,"But "+el("teamB").textContent);}
 el("quickChange").onclick=function(){document.querySelectorAll(".page").forEach(function(p){p.classList.remove("active");p.style.display="none";});el("home").style.display="none";el("changes").classList.add("active");el("changes").style.display="block";renderChanges();};el("quickCard").onclick=function(){document.querySelectorAll(".page").forEach(function(p){p.classList.remove("active");p.style.display="none";});el("home").style.display="none";el("events").classList.add("active");el("events").style.display="block";renderCards();};el("startQuick").onclick=start;
-el("secondHalf").onclick=secondHalf;el("goalA").onclick=function(){openGoalsPage("A");};el("goalB").onclick=function(){openGoalsPage("B");};el("goalPageA").onclick=function(){setupGoal(playersA,"But "+el("teamA").textContent);};el("goalPageB").onclick=function(){setupGoal(playersB,"But "+el("teamB").textContent);};el("confirmGoal").onclick=confirmGoal;el("yellowA").onclick=function(){setupCard(playersA,"Équipe A","🟨 Jaune");};el("yellowB").onclick=function(){setupCard(playersB,"Équipe B","🟨 Jaune");};el("redA").onclick=function(){setupCard(playersA,"Équipe A","🟥 Rouge");};el("redB").onclick=function(){setupCard(playersB,"Équipe B","🟥 Rouge");};el("whiteA").onclick=function(){setupCard(playersA,"Équipe A","⚪ Blanc");};el("whiteB").onclick=function(){setupCard(playersB,"Équipe B","⚪ Blanc");};el("confirmCard").onclick=confirmCard;el("pause").onclick=pause;el("reset").onclick=reset;el("startPage").onclick=start;el("pausePage").onclick=pause;
+el("secondHalf").onclick=secondHalf;el("goalA").onclick=function(){openGoalsPage("A");};el("goalB").onclick=function(){openGoalsPage("B");};el("goalPageA").onclick=function(){setupGoal(playersA,"But "+el("teamA").textContent);};el("goalPageB").onclick=function(){setupGoal(playersB,"But "+el("teamB").textContent);};el("confirmGoal").onclick=confirmGoal;el("confirmCard").onclick=confirmCard;el("pause").onclick=pause;el("reset").onclick=reset;el("startPage").onclick=start;el("pausePage").onclick=pause;
 el("cardTeamA").onclick=function(){setupCard(playersA,el("teamA").textContent);};
 el("cardTeamB").onclick=function(){setupCard(playersB,el("teamB").textContent);};
 el("cardTypeYellow").onclick=function(){selectCardType("🟨 Jaune");};
