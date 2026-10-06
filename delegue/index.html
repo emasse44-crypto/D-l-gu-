@@ -683,7 +683,7 @@ if(yellows.length>=2){
 staffCards.push({team:side,type:"🟥 Rouge (2 jaunes)",member:member,number:sidx+1,minute:minute,auto:true,sentOff:true});
 }
 }
-el("cardForm").style.display="none";goHome();renderCards();renderStaffHistory();saveState();update();return;
+el("cardForm").style.display="none";try{renderCards();renderStaffHistory();saveState();update();}finally{goHome();setTimeout(goHome,0);}return;
 }
 var team=side==="A"?playersA:playersB;
 var idx=Number(raw);
@@ -702,7 +702,7 @@ cards.push({team:side,type:"🟥 Rouge (2 jaunes)",player:label,number:idx+1,min
 team[idx].active=false;
 }
 }
-el("cardForm").style.display="none";goHome();renderCards();saveState();update();
+el("cardForm").style.display="none";try{renderCards();saveState();update();}finally{goHome();setTimeout(goHome,0);}
 }
 function renderCards(){
  var c=el("cardHistory");c.innerHTML="";
@@ -994,7 +994,7 @@ exclusionHtml=exclusions.map(function(x){return '<div style="margin-top:6px"><st
 html+=section("⚪ EXCLUSIONS TEMPORAIRES",exclusionHtml);
 
 box.innerHTML=html;
-}function goHome(){document.querySelectorAll(".page").forEach(function(p){p.classList.remove("active");p.style.display="none";});el("home").style.display="block";}function showPageDirect(pageId){var pages=document.querySelectorAll(".page");pages.forEach(function(p){p.classList.remove("active");p.style.display="none";});var home=document.getElementById("home");if(home)home.style.display="none";var page=document.getElementById(pageId);if(!page)return;page.classList.add("active");page.style.display="block";if(pageId==="changes")renderChanges();if(pageId==="events")renderCards();}
+}function goHome(){var pages=document.querySelectorAll(".page");pages.forEach(function(p){p.classList.remove("active");p.style.removeProperty("display");});var home=el("home");home.style.display="block";home.hidden=false;window.scrollTo(0,0);}function showPageDirect(pageId){var pages=document.querySelectorAll(".page");pages.forEach(function(p){p.classList.remove("active");p.style.display="none";});var home=document.getElementById("home");if(home)home.style.display="none";var page=document.getElementById(pageId);if(!page)return;page.classList.add("active");page.style.display="block";if(pageId==="changes")renderChanges();if(pageId==="events")renderCards();}
 function renderChanges(){var c=el("changeHistory");c.innerHTML="";if(!changes.length){c.innerHTML="<p class='note'>Aucun changement.</p>";return;}changes.forEach(function(x){var d=document.createElement("div");d.className="change-item";d.textContent=x.minute+" · Équipe "+x.team+" : "+x.out+" → "+x.in;c.appendChild(d);});}
 function updateGoalButtonLabels(){
 var a=el("teamA")?el("teamA").textContent:"Équipe A";
@@ -1029,7 +1029,7 @@ el("injuryTeam").onchange=renderInjuryPlayers;
 el("addInjury").onclick=function(){var side=el("injuryTeam").value,idx=Number(el("injuryPlayer").value),team=side==="A"?playersA:playersB;if(!Number.isInteger(idx)||!team[idx]){alert("Choisissez un joueur.");return;}var note=el("injuryText").value.trim();var out=el("injuryOut").checked;injuries.push({team:side,player:playerLabel(team[idx],idx),number:idx+1,minute:formatMinute(seconds),note:note,out:out});el("injuryText").value="";el("injuryOut").checked=false;renderInjuries();saveState();};
 el("printReport").onclick=function(){renderReport();window.print();};
 loadState();playersA.forEach(function(p,i){if(typeof p.active!=="boolean")p.active=i<11;});playersB.forEach(function(p,i){if(typeof p.active!=="boolean")p.active=i<11;});if(running&&typeof chronoStartedAt==="number"){startChronoRefresh();syncChrono();}
-if("serviceWorker" in navigator){window.addEventListener("load",function(){navigator.serviceWorker.register("sw.js?v=13").catch(function(){});});}
+if("serviceWorker" in navigator){window.addEventListener("load",function(){navigator.serviceWorker.register("sw.js?v=15").catch(function(){});});}
 renderAllPlayers();update();updateGoalButtonLabels();
 })();
 </script>
