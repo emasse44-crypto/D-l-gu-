@@ -135,7 +135,7 @@ input:focus,select:focus{border-color:#60a5fa;box-shadow:0 0 0 3px rgba(96,165,2
 <section class="page card" id="compositions"><button class="back">← Retour</button><h2>Compositions</h2><p class="note">1 à 11 : titulaires · 12 à 14 : remplaçants · 15 et 16 : encadrement. Le capitaine est sélectionnable.</p><div class="change-item"><strong>📷 Scanner une composition</strong><p class="note">Prenez une photo d'une composition. Le scanner essaie de récupérer les numéros, noms, licences et le capitaine. Vérifiez toujours le résultat avant validation.</p><input id="matchSheetPhoto" type="file" accept="image/*" capture="environment" style="display:none"><button id="scanSheetBtn" style="width:100%;margin-top:8px">📷 Prendre / choisir une composition</button><div id="scanStatus" class="note" style="margin-top:8px"></div><div id="scanReview" style="display:none;margin-top:12px"></div></div><div class="composition-team"><h3>Équipe A</h3><div id="playersA"></div></div><div class="composition-team"><h3>Équipe B</h3><div id="playersB"></div></div><button class="green" id="saveCompositions" style="width:100%;margin-top:18px">Enregistrer les compositions</button><button class="red" id="resetComposition" style="width:100%;margin-top:10px">🗑️ Remise à zéro des compositions</button></section>
 <section class="page card" id="changes"><button class="back">← Retour</button><h2>Changements</h2><p class="note">Effectuez une sortie puis une entrée. Le numéro du joueur suffit, le nom est facultatif.</p><div class="change-grid"><div><div class="change-title">Équipe A</div><button id="changeA" style="width:100%">🔄 Faire un changement A</button></div><div><div class="change-title">Équipe B</div><button id="changeB" style="width:100%">🔄 Faire un changement B</button></div></div><div id="changeForm" style="display:none;margin-top:18px"><p id="changeTeamLabel" class="change-title"></p><p>Joueur qui sort</p><select id="playerOut"></select><p>Remplaçant qui entre</p><select id="playerIn"></select><button class="green" id="confirmChange" style="width:100%;margin-top:10px">Valider le changement</button></div><div class="change-history"><h3>Historique</h3><div id="changeHistory"><p class="note">Aucun changement.</p></div></div></section>
 <section class="page card" id="goals"><button class="back">← Retour</button><h2>⚽ Buts du match</h2><div class="teams" style="margin-bottom:14px"><div><div class="team" id="goalsTeamA">Équipe A</div><div class="score" id="goalsScoreA">0</div></div><div><div class="clock" id="goalsClock">00:00</div></div><div><div class="team" id="goalsTeamB">Équipe B</div><div class="score" id="goalsScoreB">0</div></div></div><div class="buttons"><button id="goalPageA">+ But A</button><button id="goalPageB">+ But B</button></div><div id="goalForm" style="display:none;margin-top:14px"><p id="goalTeamLabel" class="change-title"></p><p>Buteur</p><select id="goalPlayer"></select><p style="margin-top:10px">Passeur</p><select id="goalAssist"><option value="">Aucun passeur</option></select><p style="margin-top:10px">Type de but</p><select id="goalType"><option value="Pied">👟 Pied</option><option value="Tête">🧠 Tête</option><option value="Penalty">⚽ Penalty</option></select><button class="green" id="confirmGoal" style="width:100%;margin-top:10px">Valider le but</button></div><div style="margin-top:18px"><div class="change-title">Chronologie des buts</div><div id="goalHistory"><p class="note">Aucun but.</p></div></div></section>
-<section class="page card" id="events"><button class="back">← Retour</button><h2>🟨 Cartons</h2><p>Enregistrez une sanction pour un joueur ou un membre du staff. 🟨 Jaune = avertissement · ⚪ Blanc = exclusion 10 min · 🟥 Rouge = expulsion. Pour une même personne, <strong>2 sanctions jaune/blanc, quelle que soit la combinaison, entraînent automatiquement un rouge</strong>. Si le blanc est donné au staff, c’est le capitaine qui sort 10 min, sans recevoir de sanction personnelle.</p><div class="change-grid"><button id="cardTeamA">Équipe A</button><button id="cardTeamB">Équipe B</button></div><div id="cardForm" style="display:none;margin-top:18px"><p id="cardTeamLabel" class="change-title"></p><div class="change-grid"><button type="button" id="cardTypeYellow">🟨 Jaune</button><button type="button" id="cardTypeWhite">⚪ Blanc</button><button type="button" id="cardTypeRed" class="red">🟥 Rouge</button></div><p style="margin-top:14px">Personne concernée</p><select id="cardPlayer"></select><button class="green" id="confirmCard" style="width:100%;margin-top:10px">Valider la sanction</button></div><div class="change-history"><h3>Historique des sanctions</h3><div id="cardHistory"><p class="note">Aucune sanction.</p></div></div></section>
+<section class="page card" id="events"><button class="back">← Retour</button><h2>🟨 Cartons</h2><p>Enregistrez une sanction pour un joueur ou un membre du staff. 🟨 Jaune = avertissement · ⚪ Blanc = exclusion 10 min · 🟥 Rouge = expulsion. Pour une même personne, <strong>2 sanctions jaune/blanc, quelle que soit la combinaison, entraînent automatiquement un rouge</strong>. Si le blanc est donné au staff, c’est le capitaine qui sort 10 min, sans recevoir de sanction personnelle.</p><div class="change-grid"><button type="button" id="cardTypeYellow">🟨 JAUNE</button><button type="button" id="cardTypeWhite">⚪ BLANC</button><button type="button" id="cardTypeRed" class="red">🟥 ROUGE</button></div><div id="cardForm" style="display:none;margin-top:18px"><p id="cardTypeLabel" class="change-title"></p><div class="change-grid"><button type="button" id="cardTeamA">Équipe A</button><button type="button" id="cardTeamB">Équipe B</button></div><div id="cardPersonWrap" style="display:none"><p style="margin-top:14px">Personne concernée</p><select id="cardPlayer"></select><button class="green" id="confirmCard" style="width:100%;margin-top:10px">Valider la sanction</button></div></div><div class="change-history"><h3>Historique des sanctions</h3><div id="cardHistory"><p class="note">Aucune sanction.</p></div></div></section>
 <section class="page card" id="sanctions"><button class="back">← Retour</button><h2>Sanctions</h2><p>Cette partie sera ajoutée ensuite.</p></section>
 <section class="page card" id="chrono"><button class="back">← Retour</button><h2>Chronomètre</h2><div class="clock" id="clockPage">00:00</div><button class="green" id="startPage">▶ Démarrer</button><button id="pausePage">⏸ Pause</button></section>
 <section class="page card" id="sheet"><button class="back">← Retour</button><h2>📋 Feuille de match</h2><div class="change-item" id="sheetHeaderInfo"><div><strong>Match officiel</strong></div><div id="sheetPrintedAt" style="margin-top:6px"></div></div><h3>⏱️ Chronologie du match</h3><div id="sheetTimeline"></div><div class="change-item"><strong id="sheetTeams">Équipe A 0 - 0 Équipe B</strong><div id="sheetTime" style="margin-top:6px">Durée : 00:00</div></div><div class="change-item"><h3>👥 Compositions</h3><div id="sheetCompositions"><p class="note">Aucune composition.</p></div></div><div class="change-item"><h3>👔 Staff</h3><div id="sheetStaffNames"><p class="note">Aucun staff renseigné.</p></div></div><div class="change-item"><h3>⚽ Buts</h3><div id="sheetGoals"><p class="note">Aucun but.</p></div></div><div class="change-item"><h3>🔄 Changements</h3><div id="sheetChanges"><p class="note">Aucun changement.</p></div></div><div class="change-item"><h3>🟨🟥⚪ Sanctions joueurs</h3><div id="sheetCards"><p class="note">Aucune sanction.</p></div></div><div class="change-item"><h3>👔 Sanctions staff</h3><div id="sheetStaff"><p class="note">Aucune sanction.</p></div></div><button class="green" id="printSheet" style="width:100%;margin-top:10px">🖨️ Imprimer la feuille</button></section>
@@ -629,22 +629,43 @@ function downloadText(filename,text){var blob=new Blob([text],{type:"text/plain;
 function setupChange(team,label){readPlayers(team,team===playersA?"playersA":"playersB");var hasActive=team.some(function(p){return p.active===true;});if(!hasActive){team.forEach(function(p,i){p.active=i<11;});saveState();}el("changeTeamLabel").textContent=label;var out=el("playerOut"),inn=el("playerIn");out.innerHTML="";inn.innerHTML="";team.forEach(function(p,i){if(p.active){var o=document.createElement("option");o.value=i;o.textContent=playerLabel(p,i);out.appendChild(o);}if(!p.active&&i>=11){var q=document.createElement("option");q.value=i;q.textContent=playerLabel(p,i);inn.appendChild(q);}});el("changeForm").style.display="block";el("changeForm").dataset.team=team===playersA?"A":"B";if(!inn.options.length){inn.innerHTML="<option value=''>Aucun remplaçant disponible</option>";}}
 function confirmChange(){var team=el("changeForm").dataset.team==="A"?playersA:playersB;var outIndex=Number(el("playerOut").value),inIndex=Number(el("playerIn").value);if(!Number.isInteger(outIndex)||!Number.isInteger(inIndex)||!team[inIndex]){alert("Choisissez un joueur sortant et un remplaçant.");return;}var outPlayer=team[outIndex],inPlayer=team[inIndex];if(!outPlayer.active||inPlayer.active||inIndex<11){alert("Changement impossible.");return;}outPlayer.active=false;inPlayer.active=true;changes.push({team:el("changeForm").dataset.team,out:playerLabel(outPlayer,outIndex),in:playerLabel(inPlayer,inIndex),minute:Math.floor(seconds/60)+":"+String(seconds%60).padStart(2,"0")});el("changeForm").style.display="none";renderChanges();saveState();}
 function setupCard(team,label){
-readPlayers(team,team===playersA?"playersA":"playersB");
-var side=team===playersA?"A":"B",staff=side==="A"?staffA:staffB;
-readStaff(staff,side==="A"?"staffA":"staffB");
-el("cardTeamLabel").textContent=label;
-var sel=el("cardPlayer");sel.innerHTML="";
-team.forEach(function(p,i){if(i<16&&(!p.role||i<14)){var o=document.createElement("option");o.value=i;o.textContent=playerLabel(p,i);if(!p.active)o.textContent+=" · remplaçant / sorti";sel.appendChild(o);}});
-if(sel.options.length){var sep=document.createElement("option");sep.disabled=true;sep.textContent="──────── STAFF ────────";sel.appendChild(sep);}
-staff.forEach(function(name,i){if(name){var o=document.createElement("option");o.value="staff-"+i;o.textContent=name+" · STAFF";sel.appendChild(o);}});
-if(!sel.options.length){var o=document.createElement("option");o.value="";o.textContent="Aucun joueur ou staff renseigné";sel.appendChild(o);}
-el("cardForm").style.display="block";el("cardForm").dataset.team=side;el("cardForm").dataset.type="";
+  var type=el("cardForm").dataset.type;
+  readPlayers(team,team===playersA?"playersA":"playersB");
+  var side=team===playersA?"A":"B",staff=side==="A"?staffA:staffB;
+  readStaff(staff,side==="A"?"staffA":"staffB");
+  el("cardTeamLabel").textContent=type+" · "+label;
+  var sel=el("cardPlayer");sel.innerHTML="";
+  team.forEach(function(p,i){
+    if(i<16&&(!p.role||i<14)){
+      var o=document.createElement("option");o.value=i;o.textContent=playerLabel(p,i);
+      if(!p.active)o.textContent+=" · remplaçant / sorti";
+      sel.appendChild(o);
+    }
+  });
+  if(sel.options.length){
+    var sep=document.createElement("option");sep.disabled=true;sep.textContent="──────── STAFF ────────";sel.appendChild(sep);
+  }
+  staff.forEach(function(name,i){
+    if(name){
+      var o=document.createElement("option");o.value="staff-"+i;o.textContent=name+" · STAFF";sel.appendChild(o);
+    }
+  });
+  if(!sel.options.length){
+    var o=document.createElement("option");o.value="";o.textContent="Aucun joueur ou staff renseigné";sel.appendChild(o);
+  }
+  el("cardPersonWrap").style.display="block";
+  el("cardForm").dataset.team=side;
 }
 function selectCardType(type){
-el("cardForm").dataset.type=type;
-["cardTypeYellow","cardTypeWhite","cardTypeRed"].forEach(function(id){el(id).classList.remove("selected");});
-var map={"🟨 Jaune":"cardTypeYellow","⚪ Blanc":"cardTypeWhite","🟥 Rouge":"cardTypeRed"};
-if(map[type])el(map[type]).classList.add("selected");
+  var form=el("cardForm");
+  form.dataset.type=type;
+  form.dataset.team="";
+  el("cardTypeLabel").textContent=type+" · Choisissez l'équipe";
+  el("cardPersonWrap").style.display="none";
+  form.style.display="block";
+  ["cardTypeYellow","cardTypeWhite","cardTypeRed"].forEach(function(id){el(id).classList.remove("selected");});
+  var map={"🟨 Jaune":"cardTypeYellow","⚪ Blanc":"cardTypeWhite","🟥 Rouge":"cardTypeRed"};
+  if(map[type])el(map[type]).classList.add("selected");
 }
 function confirmCard(){
 var side=el("cardForm").dataset.team;
@@ -1034,7 +1055,7 @@ el("injuryTeam").onchange=renderInjuryPlayers;
 el("addInjury").onclick=function(){var side=el("injuryTeam").value,idx=Number(el("injuryPlayer").value),team=side==="A"?playersA:playersB;if(!Number.isInteger(idx)||!team[idx]){alert("Choisissez un joueur.");return;}var note=el("injuryText").value.trim();var out=el("injuryOut").checked;injuries.push({team:side,player:playerLabel(team[idx],idx),number:idx+1,minute:formatMinute(seconds),note:note,out:out});el("injuryText").value="";el("injuryOut").checked=false;renderInjuries();saveState();};
 el("printReport").onclick=function(){renderReport();window.print();};
 loadState();playersA.forEach(function(p,i){if(typeof p.active!=="boolean")p.active=i<11;});playersB.forEach(function(p,i){if(typeof p.active!=="boolean")p.active=i<11;});if(running&&typeof chronoStartedAt==="number"){startChronoRefresh();syncChrono();}
-if("serviceWorker" in navigator){window.addEventListener("load",function(){navigator.serviceWorker.register("sw.js?v=19").catch(function(){});});}
+if("serviceWorker" in navigator){window.addEventListener("load",function(){navigator.serviceWorker.register("sw.js?v=20").catch(function(){});});}
 renderAllPlayers();update();updateGoalButtonLabels();
 })();
 </script>
