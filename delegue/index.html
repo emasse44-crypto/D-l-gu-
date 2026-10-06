@@ -1058,16 +1058,11 @@ if(el("goalsTeamB"))el("goalsTeamB").textContent=b;
 function openGoalsPage(side){el("home").style.display="none";document.querySelectorAll(".page").forEach(function(p){p.classList.remove("active");});el("goals").classList.add("active");renderGoalsPage();if(side==="A")setupGoal(playersA,"But "+el("teamA").textContent);else if(side==="B")setupGoal(playersB,"But "+el("teamB").textContent);}
 el("quickChange").onclick=function(){document.querySelectorAll(".page").forEach(function(p){p.classList.remove("active");p.style.display="none";});el("home").style.display="none";el("changes").classList.add("active");el("changes").style.display="block";renderChanges();};el("quickCard").onclick=function(){document.querySelectorAll(".page").forEach(function(p){p.classList.remove("active");p.style.display="none";});el("home").style.display="none";el("events").classList.add("active");el("events").style.display="block";renderCards();};el("startQuick").onclick=start;
 el("secondHalf").onclick=secondHalf;el("goalA").onclick=function(){openGoalsPage("A");};el("goalB").onclick=function(){openGoalsPage("B");};el("goalPageA").onclick=function(){setupGoal(playersA,"But "+el("teamA").textContent);};el("goalPageB").onclick=function(){setupGoal(playersB,"But "+el("teamB").textContent);};el("confirmGoal").onclick=confirmGoal;el("confirmCard").onclick=confirmCard;el("pause").onclick=pause;el("reset").onclick=reset;el("startPage").onclick=start;el("pausePage").onclick=pause;
-el("cardTeamA").onclick=function(e){e.preventDefault();e.stopPropagation();setupCard("A",el("teamA").textContent);};
-el("cardTeamB").onclick=function(e){e.preventDefault();e.stopPropagation();setupCard("B",el("teamB").textContent);};
-/* Secours tactile : les boutons Équipe restent fonctionnels même si un autre gestionnaire intervient. */
-document.addEventListener("click",function(e){
-  var b=e.target.closest("#cardTeamA,#cardTeamB");
-  if(!b)return;
-  e.preventDefault();
-  e.stopPropagation();
-  setupCard(b.id==="cardTeamA"?"A":"B",b.id==="cardTeamA"?el("teamA").textContent:el("teamB").textContent);
-},true);
+el("cardSimpleA").onclick=function(){setupCard("A",el("teamA").textContent);};
+el("cardSimpleB").onclick=function(){setupCard("B",el("teamB").textContent);};
+el("cardTypeYellow").onclick=function(){selectCardType("🟨 Jaune");};
+el("cardTypeWhite").onclick=function(){selectCardType("⚪ Blanc");};
+el("cardTypeRed").onclick=function(){selectCardType("🟥 Rouge");};
 el("cardTypeYellow").onclick=function(){selectCardType("🟨 Jaune");};
 el("cardTypeWhite").onclick=function(){selectCardType("⚪ Blanc");};
 el("cardTypeRed").onclick=function(){selectCardType("🟥 Rouge");};document.querySelectorAll("[data-page]").forEach(function(b){b.onclick=function(){var page=b.getAttribute("data-page");if(page==="compositions")renderAllPlayers();if(page==="changes")renderChanges();if(page==="goals"){renderGoalsPage();}if(page==="events"){renderCards();}if(page==="staff"){renderStaff(staffA,"staffA");renderStaff(staffB,"staffB");renderStaffHistory();}if(page==="sheet"){renderTimeline();renderSheet();}if(page==="checklist"){renderChecklist();}if(page==="delegateGuide"){renderDelegateChecklist();}if(page==="incidents"){renderIncidents();}if(page==="injuries"){renderInjuryPlayers();renderInjuries();}if(page==="report"){renderReport();}if(page==="settings"){fillMatchInfo();}el("home").style.display="none";document.querySelectorAll(".page").forEach(function(p){p.classList.remove("active");});el(page).classList.add("active");};});
