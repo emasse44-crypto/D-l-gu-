@@ -1047,7 +1047,7 @@ html+=section("⚪ EXCLUSIONS TEMPORAIRES",exclusionHtml);
 
 box.innerHTML=html;
 }function goHome(){var pages=document.querySelectorAll(".page");pages.forEach(function(p){p.classList.remove("active");p.style.removeProperty("display");});var home=el("home");home.style.display="block";home.hidden=false;window.scrollTo(0,0);}function showPageDirect(pageId){var pages=document.querySelectorAll(".page");pages.forEach(function(p){p.classList.remove("active");p.style.display="none";});var home=document.getElementById("home");if(home)home.style.display="none";var page=document.getElementById(pageId);if(!page)return;page.classList.add("active");page.style.display="block";if(pageId==="changes")renderChanges();if(pageId==="events")renderCards();}
-function renderChanges(){var c=el("changeHistory");c.innerHTML="";if(!changes.length){c.innerHTML="<p class='note'>Aucun changement.</p>";return;}changes.forEach(function(x){var d=document.createElement("div");d.className="change-item";d.textContent=x.minute+" · Équipe "+x.team+" : "+x.out+" → "+x.in;addMinuteButton(d,changes,i,renderChanges);c.appendChild(d);});}
+function renderChanges(){var c=el("changeHistory");c.innerHTML="";if(!changes.length){c.innerHTML="<p class='note'>Aucun changement.</p>";return;}changes.forEach(function(x,i){var d=document.createElement("div");d.className="change-item";var line=document.createElement("div");line.textContent=x.minute+" · Équipe "+x.team+" : "+x.out+" → "+x.in;d.appendChild(line);addMinuteButton(d,changes,i,renderChanges);c.appendChild(d);});}
 function updateGoalButtonLabels(){
 var a=el("teamA")?el("teamA").textContent:"Équipe A";
 var b=el("teamB")?el("teamB").textContent:"Équipe B";
