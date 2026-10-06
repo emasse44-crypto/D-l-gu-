@@ -1047,7 +1047,8 @@ html+=section("⚪ EXCLUSIONS TEMPORAIRES",exclusionHtml);
 
 box.innerHTML=html;
 }function goHome(){var pages=document.querySelectorAll(".page");pages.forEach(function(p){p.classList.remove("active");p.style.removeProperty("display");});var home=el("home");home.style.display="block";home.hidden=false;window.scrollTo(0,0);}function showPageDirect(pageId){var pages=document.querySelectorAll(".page");pages.forEach(function(p){p.classList.remove("active");p.style.display="none";});var home=document.getElementById("home");if(home)home.style.display="none";var page=document.getElementById(pageId);if(!page)return;page.classList.add("active");page.style.display="block";if(pageId==="changes")renderChanges();if(pageId==="events")renderCards();}
-function renderChanges(){var c=el("changeHistory");c.innerHTML="";if(!changes.length){c.innerHTML="<p class='note'>Aucun changement.</p>";return;}changes.forEach(function(x,i){var d=document.createElement("div");d.className="change-item";var line=document.createElement("div");line.textContent=x.minute+" · Équipe "+x.team+" : "+x.out+" → "+x.in;d.appendChild(line);addMinuteButton(d,changes,i,renderChanges);c.appendChild(d);});}
+function deleteChange(index){var x=changes[index];if(!x)return;if(!confirm("Supprimer ce changement ?"))return;var team=x.team==="A"?playersA:playersB;var outMatch=String(x.out||"").match(/n°(\d+)/i);var inMatch=String(x.in||"").match(/n°(\d+)/i);var outIndex=outMatch?Number(outMatch[1])-1:-1;var inIndex=inMatch?Number(inMatch[1])-1:-1;if(outIndex>=0&&outIndex<team.length)team[outIndex].active=true;if(inIndex>=0&&inIndex<team.length)team[inIndex].active=false;changes.splice(index,1);saveState();renderAllPlayers();renderChanges();update();}
+function renderChanges(){var c=el("changeHistory");c.innerHTML="";if(!changes.length){c.innerHTML="<p class='note'>Aucun changement.</p>";return;}changes.forEach(function(x,i){var d=document.createElement("div");d.className="change-item";var line=document.createElement("div");line.textContent=x.minute+" · Équipe "+x.team+" : "+x.out+" → "+x.in;d.appendChild(line);var actions=document.createElement("div");actions.style.display="flex";actions.style.gap="8px";actions.style.marginTop="8px";var del=document.createElement("button");del.type="button";del.textContent="🗑️ Supprimer";del.className="red";del.onclick=function(){deleteChange(i);};actions.appendChild(del);d.appendChild(actions);addMinuteButton(d,changes,i,renderChanges);c.appendChild(d);});}
 function updateGoalButtonLabels(){
 var a=el("teamA")?el("teamA").textContent:"Équipe A";
 var b=el("teamB")?el("teamB").textContent:"Équipe B";
@@ -1204,7 +1205,7 @@ var _renderStaffHistoryMinute=renderStaffHistory;
 renderStaffHistory=function(){_renderStaffHistoryMinute();refreshStaffCardMinuteEditor();};
 
 loadState();playersA.forEach(function(p,i){if(typeof p.active!=="boolean")p.active=i<11;});playersB.forEach(function(p,i){if(typeof p.active!=="boolean")p.active=i<11;});if(running&&typeof chronoStartedAt==="number"){startChronoRefresh();syncChrono();}
-if("serviceWorker" in navigator){window.addEventListener("load",function(){navigator.serviceWorker.register("sw.js?v=32").catch(function(){});});}
+if("serviceWorker" in navigator){window.addEventListener("load",function(){navigator.serviceWorker.register("sw.js?v=34").catch(function(){});});}
 renderAllPlayers();update();updateGoalButtonLabels();
 })();
 </script>
