@@ -769,7 +769,7 @@ setTimeout(goHome,0);
  }else{
  var note=document.createElement("span");note.textContent="Automatique";note.className="note";note.style.alignSelf="center";actions.appendChild(note);
  }
- d.appendChild(actions);c.appendChild(d);
+ addMinuteButton(actions,cards,i,renderCards);d.appendChild(actions);c.appendChild(d);
  });
  if(exclusions.length){
  var h=document.createElement("div");h.className="change-item";h.style.marginTop="12px";h.innerHTML="<strong>⚪ Exclusions temporaires</strong>";
@@ -874,7 +874,7 @@ info.textContent=details;d.appendChild(info);
 if(!x.cancelled){
 var actions=document.createElement("div");actions.className="goal-actions";
 var b=document.createElement("button");b.textContent="✏️";b.title="Corriger le buteur";b.onclick=function(){correctGoal(i);};actions.appendChild(b);
-var a=document.createElement("button");a.textContent="❌";a.title="Annuler le but";a.onclick=function(){cancelGoal(i);};actions.appendChild(a);d.appendChild(actions);
+var a=document.createElement("button");a.textContent="❌";a.title="Annuler le but";a.onclick=function(){cancelGoal(i);};actions.appendChild(a);addMinuteButton(actions,goals,i,renderGoals);d.appendChild(actions);
 }
 c.appendChild(d);
 });
@@ -1047,7 +1047,7 @@ html+=section("⚪ EXCLUSIONS TEMPORAIRES",exclusionHtml);
 
 box.innerHTML=html;
 }function goHome(){var pages=document.querySelectorAll(".page");pages.forEach(function(p){p.classList.remove("active");p.style.removeProperty("display");});var home=el("home");home.style.display="block";home.hidden=false;window.scrollTo(0,0);}function showPageDirect(pageId){var pages=document.querySelectorAll(".page");pages.forEach(function(p){p.classList.remove("active");p.style.display="none";});var home=document.getElementById("home");if(home)home.style.display="none";var page=document.getElementById(pageId);if(!page)return;page.classList.add("active");page.style.display="block";if(pageId==="changes")renderChanges();if(pageId==="events")renderCards();}
-function renderChanges(){var c=el("changeHistory");c.innerHTML="";if(!changes.length){c.innerHTML="<p class='note'>Aucun changement.</p>";return;}changes.forEach(function(x){var d=document.createElement("div");d.className="change-item";d.textContent=x.minute+" · Équipe "+x.team+" : "+x.out+" → "+x.in;c.appendChild(d);});}
+function renderChanges(){var c=el("changeHistory");c.innerHTML="";if(!changes.length){c.innerHTML="<p class='note'>Aucun changement.</p>";return;}changes.forEach(function(x){var d=document.createElement("div");d.className="change-item";d.textContent=x.minute+" · Équipe "+x.team+" : "+x.out+" → "+x.in;addMinuteButton(d,changes,i,renderChanges);c.appendChild(d);});}
 function updateGoalButtonLabels(){
 var a=el("teamA")?el("teamA").textContent:"Équipe A";
 var b=el("teamB")?el("teamB").textContent:"Équipe B";
@@ -1085,8 +1085,126 @@ el("addIncident").onclick=function(){var txt=el("incidentText").value.trim();if(
 el("injuryTeam").onchange=renderInjuryPlayers;
 el("addInjury").onclick=function(){var side=el("injuryTeam").value,idx=Number(el("injuryPlayer").value),team=side==="A"?playersA:playersB;if(!Number.isInteger(idx)||!team[idx]){alert("Choisissez un joueur.");return;}var note=el("injuryText").value.trim();var out=el("injuryOut").checked;injuries.push({team:side,player:playerLabel(team[idx],idx),number:idx+1,minute:formatMinute(seconds),note:note,out:out});el("injuryText").value="";el("injuryOut").checked=false;renderInjuries();saveState();};
 el("printReport").onclick=function(){renderReport();window.print();};
+
+/* ===== CORRECTION DIRECTE DES MINUTES ===== */
+function editEventMinute(items,index,renderFn){
+  var item=items[index];
+  if(!item)return;
+  var current=item.minute||"";
+  var v=prompt("Modifier la minute de cet événement.\nExemples : 15, 45+2, 90+4",current);
+  if(v===null)return;
+  v=String(v).trim();
+  if(!/^(?:\d{1,3})(?:\+\d{1,2})?$/.test(v)){
+    alert("Minute invalide. Exemple : 15, 45+2 ou 90+4.");
+    return;
+  }
+  item.minute=v;
+  saveState();
+  renderFn();
+  update();
+}
+function addMinuteButton(parent,items,index,renderFn){
+  var b=document.createElement("button");
+  b.type="button";
+  b.textContent="✏️ Minute";
+  b.style.marginTop="8px";
+  b.onclick=function(){editEventMinute(items,index,renderFn);};
+  parent.appendChild(b);
+}
+
+/* ===== CORRECTION DES MINUTES - VERSION DEVELOP ===== */
+function minuteEditorValue(v){return v==null?"":String(v);}
+function normalizeEditedMinute(v){
+  v=String(v||"").trim();
+  if(!v)return null;
+  if(!/^(?:\d{1,3})(?:\+\d{1,2})?$/.test(v)){
+    alert("Minute invalide. Exemple : 37, 45+2 ou 90+4.");
+    return null;
+  }
+  return v;
+}
+function renderMinuteEditor(boxId,title,items,labelFn,saveFn){
+  var box=el(boxId); if(!box)return;
+  var old=el(boxId+"MinuteEditor"); if(old)old.remove();
+  if(!items||!items.length)return;
+  var wrap=document.createElement("div");
+  wrap.id=boxId+"MinuteEditor";
+  wrap.className="change-item";
+  wrap.style.marginTop="12px";
+  var h=document.createElement("div");
+  h.className="change-title";
+  h.textContent="✏️ Corriger les minutes";
+  wrap.appendChild(h);
+  var note=document.createElement("div");
+  note.className="note";
+  note.textContent=title;
+  note.style.marginBottom="8px";
+  wrap.appendChild(note);
+  items.forEach(function(item,i){
+    var row=document.createElement("div");
+    row.style.display="grid";
+    row.style.gridTemplateColumns="1fr 86px auto";
+    row.style.gap="7px";
+    row.style.alignItems="center";
+    row.style.marginTop="7px";
+    var lab=document.createElement("span");
+    lab.textContent=labelFn(item,i);
+    lab.style.fontSize="14px";
+    var inp=document.createElement("input");
+    inp.type="text";
+    inp.inputMode="text";
+    inp.value=minuteEditorValue(item.minute);
+    inp.placeholder="ex. 45+2";
+    var btn=document.createElement("button");
+    btn.type="button";
+    btn.textContent="Enregistrer";
+    btn.style.padding="10px 8px";
+    btn.onclick=function(){
+      var v=normalizeEditedMinute(inp.value);
+      if(v===null)return;
+      saveFn(item,i,v);
+      saveState();
+      alert("Minute corrigée : "+v);
+      if(typeof renderReport==="function")renderReport();
+      if(typeof renderSheet==="function")renderSheet();
+      renderMinuteEditor(boxId,title,items,labelFn,saveFn);
+    };
+    row.appendChild(lab);row.appendChild(inp);row.appendChild(btn);
+    wrap.appendChild(row);
+  });
+  box.appendChild(wrap);
+}
+function refreshGoalMinuteEditor(){
+  renderMinuteEditor("goalHistory","Modifiez uniquement la minute de l'événement.",goals,
+    function(x,i){return (i+1)+". ⚽ "+(x.team==="A"?el("teamA").textContent:el("teamB").textContent)+" · "+(x.player||"Buteur");},
+    function(x,i,v){x.minute=v;});
+}
+function refreshChangeMinuteEditor(){
+  renderMinuteEditor("changeHistory","La correction ne modifie pas le chronomètre du match.",changes,
+    function(x,i){return (i+1)+". 🔄 "+(x.team==="A"?el("teamA").textContent:el("teamB").textContent)+" · "+(x.out||"Sortie")+" → "+(x.in||"Entrée");},
+    function(x,i,v){x.minute=v;});
+}
+function refreshCardMinuteEditor(){
+  renderMinuteEditor("cardHistory","La correction modifie seulement la minute affichée dans l'événement.",cards,
+    function(x,i){return (i+1)+". "+(x.type||"Carton")+" · "+(x.player||"Personne");},
+    function(x,i,v){x.minute=v;});
+}
+function refreshStaffCardMinuteEditor(){
+  renderMinuteEditor("staffHistory","Correction de la minute d'une sanction du staff.",staffCards,
+    function(x,i){return (i+1)+". "+(x.type||"Carton")+" · "+(x.member||"Staff");},
+    function(x,i,v){x.minute=v;});
+}
+var _renderGoalsPageMinute=renderGoalsPage;
+renderGoalsPage=function(){_renderGoalsPageMinute();refreshGoalMinuteEditor();};
+var _renderChangesMinute=renderChanges;
+renderChanges=function(){_renderChangesMinute();refreshChangeMinuteEditor();};
+var _renderCardsMinute=renderCards;
+renderCards=function(){_renderCardsMinute();refreshCardMinuteEditor();};
+var _renderStaffHistoryMinute=renderStaffHistory;
+renderStaffHistory=function(){_renderStaffHistoryMinute();refreshStaffCardMinuteEditor();};
+
 loadState();playersA.forEach(function(p,i){if(typeof p.active!=="boolean")p.active=i<11;});playersB.forEach(function(p,i){if(typeof p.active!=="boolean")p.active=i<11;});if(running&&typeof chronoStartedAt==="number"){startChronoRefresh();syncChrono();}
-if("serviceWorker" in navigator){window.addEventListener("load",function(){navigator.serviceWorker.register("sw.js?v=25").catch(function(){});});}
+if("serviceWorker" in navigator){window.addEventListener("load",function(){navigator.serviceWorker.register("sw.js?v=32").catch(function(){});});}
 renderAllPlayers();update();updateGoalButtonLabels();
 })();
 </script>
