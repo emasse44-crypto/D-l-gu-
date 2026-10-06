@@ -683,7 +683,7 @@ if(yellows.length>=2){
 staffCards.push({team:side,type:"🟥 Rouge (2 jaunes)",member:member,number:sidx+1,minute:minute,auto:true,sentOff:true});
 }
 }
-el("cardForm").style.display="none";renderCards();renderStaffHistory();saveState();goHome();return;
+el("cardForm").style.display="none";goHome();renderCards();renderStaffHistory();saveState();update();return;
 }
 var team=side==="A"?playersA:playersB;
 var idx=Number(raw);
@@ -702,7 +702,7 @@ cards.push({team:side,type:"🟥 Rouge (2 jaunes)",player:label,number:idx+1,min
 team[idx].active=false;
 }
 }
-el("cardForm").style.display="none";renderCards();saveState();goHome();
+el("cardForm").style.display="none";goHome();renderCards();saveState();update();
 }
 function renderCards(){
  var c=el("cardHistory");c.innerHTML="";
