@@ -1,10 +1,9 @@
-const CACHE_NAME = "delegue-v23";
+const CACHE_NAME = "delegue-v24";
 const APP_SHELL = [
   "./",
   "./index.html",
   "./manifest.webmanifest",
-  "./icon-192.png",
-  "./icon-512.png"
+  "./icon.svg"
 ];
 
 self.addEventListener("install", event => {
