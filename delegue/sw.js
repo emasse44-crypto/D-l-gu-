@@ -30,6 +30,19 @@ self.addEventListener("activate", event => {
 self.addEventListener("fetch", event => {
   if (event.request.method !== "GET") return;
 
+  const url = new URL(event.request.url);
+  const isAppHtml = url.pathname.endsWith("/index.html") || url.pathname.endsWith("/delegue/") || url.pathname.endsWith("/delegue");
+  const isServiceWorker = url.pathname.endsWith("/sw.js");
+
+  if (isAppHtml || isServiceWorker) {
+    event.respondWith(fetch(event.request).then(response => {
+      const copy = response.clone();
+      caches.open(CACHE_NAME).then(cache => cache.put(event.request, copy));
+      return response;
+    }).catch(() => caches.match(event.request).then(cached => cached || caches.match("./index.html"))));
+    return;
+  }
+
   event.respondWith(
     caches.match(event.request).then(cached => {
       return cached || fetch(event.request).then(response => {
