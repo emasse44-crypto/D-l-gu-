@@ -690,9 +690,10 @@ function selectCardType(type){
   var form=el("cardForm");
   form.dataset.type=type;
   form.dataset.team="";
-  el("cardTypeLabel").textContent=type+" · Choisissez l'équipe";
+  el("cardSimpleLabel").textContent=type+" · Choisissez l'équipe";
+  el("cardSimplePanel").style.display="block";
   el("cardPersonWrap").style.display="none";
-  form.style.display="block";
+  form.style.display="none";
 }
 function confirmCard(){
 var side=el("cardForm").dataset.team;
