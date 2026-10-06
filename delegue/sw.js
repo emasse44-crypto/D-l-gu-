@@ -1,4 +1,4 @@
-const CACHE_NAME = "delegue-v26";
+const CACHE_NAME = "delegue-officiel-v32";
 const APP_SHELL = [
   "./",
   "./index.html",
@@ -30,7 +30,7 @@ self.addEventListener("fetch", event => {
   if (event.request.method !== "GET") return;
 
   const url = new URL(event.request.url);
-  const isAppHtml = url.pathname.endsWith("/index.html") || url.pathname.endsWith("/delegue/") || url.pathname.endsWith("/delegue");
+  const isAppHtml = url.pathname.endsWith("/index.html") || url.pathname.endsWith("/D-l-gu-/") || url.pathname.endsWith("/delegue");
   const isServiceWorker = url.pathname.endsWith("/sw.js");
 
   if (isAppHtml || isServiceWorker) {
