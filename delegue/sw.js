@@ -1,4 +1,4 @@
-const CACHE_NAME = "delegue-football-v5";
+const CACHE_NAME = "delegue-v6";
 const APP_SHELL = [
   "./",
   "./index.html",
