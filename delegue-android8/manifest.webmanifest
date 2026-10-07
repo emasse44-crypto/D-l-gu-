@@ -1,0 +1,22 @@
+{
+  "id": "/D-l-gu-/delegue-android8/",
+  "name": "Délégué Football Android 8",
+  "short_name": "Délégué Football",
+  "description": "Version compatible avec les anciennes tablettes Android 8",
+  "start_url": "./",
+  "scope": "./",
+  "display": "standalone",
+  "orientation": "portrait",
+  "theme_color": "#111827",
+  "background_color": "#111827",
+  "lang": "fr-FR",
+  "icons": [
+    {
+      "src": "icon.svg",
+      "sizes": "any",
+      "type": "image/svg+xml",
+      "purpose": "any"
+    }
+  ],
+  "prefer_related_applications": false
+}
