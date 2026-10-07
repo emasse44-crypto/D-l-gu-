@@ -1132,7 +1132,6 @@ el("addInjury").onclick=function(){var side=el("injuryTeam").value,idx=Number(el
 el("printReport").onclick=function(){renderReport();window.print();};
 el("takePhotosBtn").onclick=function(){el("matchPhotosInput").click();};
 el("matchPhotosInput").onchange=function(){addPhotos(this.files);this.value="";};
-el("openReportFromPhotos").onclick=function(){showPageDirect("report");renderReport();window.scrollTo(0,0);};
 
 /* ===== CORRECTION DES MINUTES - VERSION DEVELOP ===== */
 function minuteEditorValue(v){return v==null?"":String(v);}
