@@ -1,0 +1,6 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <color name="app_icon_bg">#123B5D</color>
+    <color name="app_icon_green">#22C55E</color>
+    <color name="app_icon_white">#FFFFFF</color>
+</resources>
