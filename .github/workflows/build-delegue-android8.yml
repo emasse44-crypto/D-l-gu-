@@ -28,6 +28,8 @@ jobs:
 
       - name: Installer Android SDK
         uses: android-actions/setup-android@v3
+        with:
+          packages: "platform-tools"
 
       - name: Accepter les licences Android
         run: yes | sdkmanager --licenses > /dev/null || true
@@ -39,6 +41,7 @@ jobs:
         run: |
           java -version
           gradle --version
+          sdkmanager --list_installed
 
       - name: Construire l'APK Android 8
         working-directory: delegue-android8-apk
