@@ -1042,7 +1042,7 @@ function addPhotos(files){
   list.forEach(function(file){compressPhoto(file,function(data){photos.push(data);remaining--;if(remaining===0){saveState();renderPhotos();renderReport();}});});
 }
 function renderPhotosInReport(){
-  if(!photos.length)return empty("Aucune photo ajoutée.");
+  if(!photos.length)return '<div class="note">Aucune photo ajoutée.</div>';
   return '<div style="display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:10px">'+photos.map(function(src,i){return '<div><img src="'+src+'" alt="Photo '+(i+1)+'" style="width:100%;height:auto;border-radius:10px;display:block"><div class="note" style="margin-top:4px">Photo '+(i+1)+'</div></div>';}).join("")+'</div>';
 }
 
