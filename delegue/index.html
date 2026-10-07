@@ -1087,6 +1087,7 @@ if(exclusions.length){
 exclusionHtml=exclusions.map(function(x){return '<div style="margin-top:6px"><strong>'+escapeHtml(formatMinute(x.start))+'</strong> · '+escapeHtml(teamName(x.team))+' · <strong>'+escapeHtml(x.player)+'</strong> · ⚪ exclusion 10 minutes</div>';}).join("");
 }else exclusionHtml=empty("Aucune exclusion temporaire.");
 html+=section("⚪ EXCLUSIONS TEMPORAIRES",exclusionHtml);
+html+=section("📸 PHOTOS DU MATCH",renderPhotosInReport());
 
 box.innerHTML=html;
 }function goHome(){var pages=document.querySelectorAll(".page");pages.forEach(function(p){p.classList.remove("active");p.style.removeProperty("display");});var home=el("home");home.style.display="block";home.hidden=false;window.scrollTo(0,0);}function showPageDirect(pageId){var pages=document.querySelectorAll(".page");pages.forEach(function(p){p.classList.remove("active");p.style.display="none";});var home=document.getElementById("home");if(home)home.style.display="none";var page=document.getElementById(pageId);if(!page)return;page.classList.add("active");page.style.display="block";if(pageId==="changes")renderChanges();if(pageId==="events")renderCards();}
