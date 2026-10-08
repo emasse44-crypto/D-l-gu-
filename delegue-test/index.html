@@ -123,7 +123,7 @@ input:focus,select:focus{border-color:#60a5fa;box-shadow:0 0 0 3px rgba(96,165,2
 <body>
 <div class="app">
 <h1>⚽ Délégué Football</h1>
-<div class="version">TEST V73</div>
+<div class="version">TEST V74</div>
 <section id="home">
 <div class="card"><div class="teams">
 <div><div class="team" id="teamA">Équipe A</div><div class="score" id="scoreA">0</div></div>
@@ -764,13 +764,10 @@ if(!window.Tesseract){status.textContent="❌ Le moteur OCR n’est pas disponib
 status.textContent="⏳ Préparation de la photo…";
 loadImageFile(file).then(function(img){
 var base=cleanScanCanvas(img);
-status.textContent="⏳ Vérification de la structure de la photo…";
-return detectSingleTeamRows(img,status).then(function(single){
-if(single&&referenceColumnScore(single.a)>=5)return {single:single};
 var variants=[base,makeReferenceCrop(base)],best=null;
 function tryVariant(i){
 if(i>=variants.length)return Promise.resolve(best);
-status.textContent="⏳ Analyse de la feuille…";
+status.textContent="⏳ Lecture séparée des deux équipes…";
 return referenceScanVariant(variants[i],status).then(function(data){
 var score=referenceColumnScore(data.a)+referenceColumnScore(data.b);
 if(!best||score>best.score)best={data:data,score:score};
@@ -778,10 +775,15 @@ if(score>=18||i===variants.length-1)return best;
 return tryVariant(i+1);
 });
 }
-return tryVariant(0);
+return tryVariant(0).then(function(result){
+if(result&&result.data&&referenceColumnScore(result.data.a)>=5&&referenceColumnScore(result.data.b)>=5)return result;
+status.textContent="⏳ Tentative de lecture d’une demi-composition…";
+return detectSingleTeamRows(img,status).then(function(single){
+return single?{data:single,score:referenceColumnScore(single.a)}:result;
+});
 });
 }).then(function(result){
-var data=result&&result.single?result.single:result&&result.data;
+var data=result&&result.data?result.data:result;
 if(!data||!data.a||data.a.length<3||(!data.single&&(!data.b||data.b.length<3))){
 status.textContent="⚠️ Lecture insuffisante. Essayez une photo bien cadrée sur la feuille.";
 return;
