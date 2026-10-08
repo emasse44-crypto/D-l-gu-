@@ -123,7 +123,7 @@ input:focus,select:focus{border-color:#60a5fa;box-shadow:0 0 0 3px rgba(96,165,2
 <body>
 <div class="app">
 <h1>⚽ Délégué Football</h1>
-<div class="version">TEST V70</div>
+<div class="version">TEST V71</div>
 <section id="home">
 <div class="card"><div class="teams">
 <div><div class="team" id="teamA">Équipe A</div><div class="score" id="scoreA">0</div></div>
@@ -660,8 +660,11 @@ return good;
 }
 function makeReferenceCrop(canvas){
 var w=canvas.width,h=canvas.height,c=document.createElement("canvas"),ctx=c.getContext("2d");
-var x=Math.round(w*.08),y=Math.round(h*.075),cw=Math.round(w*.84),ch=Math.round(h*.72);
-c.width=cw;c.height=ch;ctx.drawImage(canvas,x,y,cw,ch,0,0,cw,ch);
+var x=Math.round(w*.04),y=Math.round(h*.05),cw=Math.round(w*.92),ch=Math.round(h*.89);
+var scale=1.25;
+c.width=Math.round(cw*scale);c.height=Math.round(ch*scale);
+ctx.imageSmoothingEnabled=true;
+ctx.drawImage(canvas,x,y,cw,ch,0,0,c.width,c.height);
 return c;
 }
 function cropColumn(canvas,left){
@@ -674,12 +677,14 @@ function referenceScanVariant(canvas,status){
 var left=cropColumn(canvas,true),right=cropColumn(canvas,false);
 status.textContent="⏳ Lecture de l’équipe recevante…";
 return Promise.all([
-Tesseract.recognize(left,"fra+eng",{tessedit_pageseg_mode:"6",preserve_interword_spaces:"1",user_defined_dpi:"300",load_system_dawg:"0",load_freq_dawg:"0"}),
-Tesseract.recognize(left,"fra+eng",{tessedit_pageseg_mode:"11",preserve_interword_spaces:"1",user_defined_dpi:"300",load_system_dawg:"0",load_freq_dawg:"0"}),
-Tesseract.recognize(right,"fra+eng",{tessedit_pageseg_mode:"6",preserve_interword_spaces:"1",user_defined_dpi:"300",load_system_dawg:"0",load_freq_dawg:"0"}),
-Tesseract.recognize(right,"fra+eng",{tessedit_pageseg_mode:"11",preserve_interword_spaces:"1",user_defined_dpi:"300",load_system_dawg:"0",load_freq_dawg:"0"})
+Tesseract.recognize(left,"fra",{tessedit_pageseg_mode:"6",preserve_interword_spaces:"1",user_defined_dpi:"300",load_system_dawg:"0",load_freq_dawg:"0"}),
+Tesseract.recognize(left,"fra",{tessedit_pageseg_mode:"11",preserve_interword_spaces:"1",user_defined_dpi:"300",load_system_dawg:"0",load_freq_dawg:"0"}),
+Tesseract.recognize(left,"fra",{tessedit_pageseg_mode:"12",preserve_interword_spaces:"1",user_defined_dpi:"300",load_system_dawg:"0",load_freq_dawg:"0"}),
+Tesseract.recognize(right,"fra",{tessedit_pageseg_mode:"6",preserve_interword_spaces:"1",user_defined_dpi:"300",load_system_dawg:"0",load_freq_dawg:"0"}),
+Tesseract.recognize(right,"fra",{tessedit_pageseg_mode:"11",preserve_interword_spaces:"1",user_defined_dpi:"300",load_system_dawg:"0",load_freq_dawg:"0"}),
+Tesseract.recognize(right,"fra",{tessedit_pageseg_mode:"12",preserve_interword_spaces:"1",user_defined_dpi:"300",load_system_dawg:"0",load_freq_dawg:"0"})
 ]).then(function(r){
-var a=extractReferenceColumnRows(r[0]),a2=extractReferenceColumnRows(r[1]),b=extractReferenceColumnRows(r[2]),b2=extractReferenceColumnRows(r[3]);
+var a=extractReferenceColumnRows(r[0]),a2=extractReferenceColumnRows(r[1]),a3=extractReferenceColumnRows(r[2]),b=extractReferenceColumnRows(r[3]),b2=extractReferenceColumnRows(r[4]),b3=extractReferenceColumnRows(r[5]);
 function mergeRows(x,y){
 var all=x.concat(y).sort(function(p,q){return p.y-q.y;}),out=[];
 all.forEach(function(v){
@@ -691,7 +696,7 @@ if(same&&!same.number&&v.number)same.number=v.number;
 });
 return out;
 }
-return {a:mergeRows(a,a2),b:mergeRows(b,b2)};
+return {a:mergeRows(mergeRows(a,a2),a3),b:mergeRows(mergeRows(b,b2),b3)};
 });
 }
 function showReferenceScanReview(data){
@@ -729,7 +734,7 @@ if(!window.Tesseract){status.textContent="❌ Le moteur OCR n’est pas disponib
 status.textContent="⏳ Préparation de la photo…";
 loadImageFile(file).then(function(img){
 var base=cleanScanCanvas(img);
-var variants=[base,makeReferenceCrop(base)],best=null;
+var variants=[base,makeReferenceCrop(base),makeReferenceCrop(img)],best=null;
 function tryVariant(i){
 if(i>=variants.length)return Promise.resolve(best);
 status.textContent="⏳ Analyse de la feuille…";
