@@ -22,6 +22,7 @@ body{margin:0;background:radial-gradient(circle at 50% -10%,#176b4a 0,#173653 28
 h1{text-align:center;font-size:29px;margin:8px 0 4px;letter-spacing:-.4px}
 .version{text-align:center;color:var(--muted);font-size:12px;margin-bottom:18px;text-transform:uppercase;letter-spacing:1.1px}
 .card{background:linear-gradient(145deg,rgba(25,55,76,.98),rgba(17,35,53,.98));border:1px solid var(--line);box-shadow:0 12px 30px rgba(0,0,0,.18);border-radius:20px;padding:18px;margin-bottom:14px}
+#home{display:block}#home.home-hidden{display:none!important}
 #home>.card:first-child{padding:20px 16px;background:linear-gradient(145deg,#123b5d 0%,#163a54 48%,#174d3b 100%);border:1px solid rgba(56,189,248,.28);box-shadow:0 16px 38px rgba(0,0,0,.28),0 0 28px rgba(34,197,94,.08)}
 .teams{display:grid;grid-template-columns:1fr 92px 1fr;align-items:center;text-align:center;gap:8px}
 .team{font-size:20px;font-weight:800;line-height:1.15}.teams .team:first-child{color:#60a5fa}.teams .team:last-child{color:#4ade80}
@@ -122,7 +123,7 @@ input:focus,select:focus{border-color:#60a5fa;box-shadow:0 0 0 3px rgba(96,165,2
 <body>
 <div class="app">
 <h1>⚽ Délégué Football</h1>
-<div class="version">VERSION STABLE + JOUR DE MATCH</div>
+<div class="version">TEST V66</div>
 <section id="home">
 <div class="card"><div class="teams">
 <div><div class="team" id="teamA">Équipe A</div><div class="score" id="scoreA">0</div></div>
@@ -130,9 +131,9 @@ input:focus,select:focus{border-color:#60a5fa;box-shadow:0 0 0 3px rgba(96,165,2
 <div><div class="team" id="teamB">Équipe B</div><div class="score" id="scoreB">0</div></div>
 </div><div class="buttons"><button id="goalA">+ But A</button><button id="goalB">+ But B</button></div><div class="quick-actions"><button type="button" id="quickChange">🔄<span>Changement</span></button><button type="button" id="quickCard">🟨<span>Carton</span></button><button type="button" class="green" id="startQuick">▶<span>Démarrer</span></button></div><div style="margin-top:14px"><div class="change-title">⚪ Exclusions 10 min</div><div id="liveExclusions"><p class="note">Aucune exclusion en cours.</p></div></div></div>
 <div class="card"><div class="mainbuttons"><button id="pause">⏸ Pause</button><button class="red" id="reset">↺ Nouveau match</button></div><button id="secondHalf" class="second-half">▶ 2e mi-temps · 45:00</button></div>
-<div class="card menu"><button data-page="compositions">👥 Compositions</button><button data-page="changes">🔄 Changements</button><button data-page="goals">⚽ Buts</button><button data-page="events">🟨 Cartons</button><button data-page="staff">👔 Staff</button><button data-page="settings">⚙️ Match</button><button data-page="photos">📸 Photos</button><button data-page="report">📄 Rapport</button></div>
+<div class="card menu"><button data-page="compositions">👥 Compositions</button><button data-page="changes">🔄 Changements</button><button data-page="goals">⚽ Buts</button><button data-page="events">🟨 Cartons</button><button data-page="staff">👔 Staff</button><button data-page="settings">⚙️ Match</button><button data-page="photos">📸 Photos</button><button id="reportHomeBtn" data-page="report">📄 Rapport</button></div>
 </section>
-<section class="page card" id="compositions"><button class="back">← Retour</button><h2>Compositions</h2><p class="note">1 à 11 : titulaires · 12 à 14 : remplaçants · 15 et 16 : encadrement. Le capitaine est sélectionnable.</p><div class="change-item"><strong>📷 Scanner une composition</strong><p class="note">Prenez une photo d'une composition. Le scanner essaie de récupérer les numéros, noms, licences et le capitaine. Vérifiez toujours le résultat avant validation.</p><input id="matchSheetPhoto" type="file" accept="image/*" capture="environment" style="display:none"><button id="scanSheetBtn" style="width:100%;margin-top:8px">📷 Prendre / choisir une composition</button><div id="scanStatus" class="note" style="margin-top:8px"></div><div id="scanReview" style="display:none;margin-top:12px"></div></div><div class="composition-team"><h3>Équipe A</h3><div id="playersA"></div></div><div class="composition-team"><h3>Équipe B</h3><div id="playersB"></div></div><button class="green" id="saveCompositions" style="width:100%;margin-top:18px">Enregistrer les compositions</button><button class="red" id="resetComposition" style="width:100%;margin-top:10px">🗑️ Remise à zéro des compositions</button></section>
+<section class="page card" id="compositions"><button class="back">← Retour</button><h2>Compositions</h2><p class="note">1 à 11 : titulaires · 12 à 16 : remplaçants. Le staff est renseigné séparément dans la rubrique 👔 Staff. Le capitaine est sélectionnable.</p><div class="change-item"><strong>📷 Scanner une composition</strong><p class="note">Prenez une photo d'une composition. Le scanner essaie de récupérer les numéros, noms, licences et le capitaine. Vérifiez toujours le résultat avant validation.</p><input id="matchSheetPhoto" type="file" accept="image/*" capture="environment" style="display:none"><button id="scanSheetBtn" style="width:100%;margin-top:8px">📷 Prendre / choisir une composition</button><div id="scanStatus" class="note" style="margin-top:8px"></div><div id="scanReview" style="display:none;margin-top:12px"></div></div><div class="composition-team"><h3>Équipe A</h3><div id="playersA"></div></div><div class="composition-team"><h3>Équipe B</h3><div id="playersB"></div></div><button class="green" id="saveCompositions" style="width:100%;margin-top:18px">Enregistrer les compositions</button><button class="red" id="resetComposition" style="width:100%;margin-top:10px">🗑️ Remise à zéro des compositions</button></section>
 <section class="page card" id="changes"><button class="back">← Retour</button><h2>Changements</h2><p class="note">Effectuez une sortie puis une entrée. Le numéro du joueur suffit, le nom est facultatif.</p><div class="change-grid"><div><div class="change-title">Équipe A</div><button id="changeA" style="width:100%">🔄 Faire un changement A</button></div><div><div class="change-title">Équipe B</div><button id="changeB" style="width:100%">🔄 Faire un changement B</button></div></div><div id="changeForm" style="display:none;margin-top:18px"><p id="changeTeamLabel" class="change-title"></p><p>Joueur qui sort</p><select id="playerOut"></select><p>Remplaçant qui entre</p><select id="playerIn"></select><button class="green" id="confirmChange" style="width:100%;margin-top:10px">Valider le changement</button></div><div class="change-history"><h3>Historique</h3><div id="changeHistory"><p class="note">Aucun changement.</p></div></div></section>
 <section class="page card" id="goals"><button class="back">← Retour</button><h2>⚽ Buts du match</h2><div class="teams" style="margin-bottom:14px"><div><div class="team" id="goalsTeamA">Équipe A</div><div class="score" id="goalsScoreA">0</div></div><div><div class="clock" id="goalsClock">00:00</div></div><div><div class="team" id="goalsTeamB">Équipe B</div><div class="score" id="goalsScoreB">0</div></div></div><div class="buttons"><button id="goalPageA">+ But A</button><button id="goalPageB">+ But B</button></div><div id="goalForm" style="display:none;margin-top:14px"><p id="goalTeamLabel" class="change-title"></p><p>Buteur</p><select id="goalPlayer"></select><p style="margin-top:10px">Passeur</p><select id="goalAssist"><option value="">Aucun passeur</option></select><p style="margin-top:10px">Type de but</p><select id="goalType"><option value="Pied">👟 Pied</option><option value="Tête">🧠 Tête</option><option value="Penalty">⚽ Penalty</option></select><button class="green" id="confirmGoal" style="width:100%;margin-top:10px">Valider le but</button></div><div style="margin-top:18px"><div class="change-title">Chronologie des buts</div><div id="goalHistory"><p class="note">Aucun but.</p></div></div></section>
 <section class="page card" id="events">
@@ -170,8 +171,8 @@ input:focus,select:focus{border-color:#60a5fa;box-shadow:0 0 0 3px rgba(96,165,2
 <section class="page card" id="delegateGuide"><button class="back">← Retour</button><h2>🧑‍⚖️ Missions du délégué</h2><div class="change-item"><h3>📋 Checklist jour de match</h3><p class="note">Cochez les actions réalisées. La progression est conservée sur l'appareil.</p><div id="delegateProgress" style="font-weight:bold;margin:8px 0">0/32 vérifications</div><div style="height:10px;background:#374151;border-radius:99px;overflow:hidden"><div id="delegateProgressBar" style="height:100%;width:0%;background:#22c55e"></div></div></div><div id="delegateChecklistBox"></div><button id="resetDelegateChecklist" class="red" style="width:100%;margin-top:12px">Réinitialiser la checklist délégué</button><div class="change-item"><strong>⚠️ Rappel</strong><div class="note" style="margin-top:6px">Le délégué facilite l'organisation, veille à la sécurité et accompagne les officiels. Il ne se substitue pas à l'arbitre.</div></div></section><section class="page card" id="incidents"><button class="back">← Retour</button><h2>🚨 Incidents de match</h2><p class="note">Notez les incidents importants avec la minute et une description.</p><input id="incidentText" placeholder="Description de l'incident"><button id="addIncident" class="green" style="width:100%;margin-top:10px">Ajouter l'incident</button><div id="incidentHistory" class="change-history"></div></section>
 <section class="page card" id="injuries"><button class="back">← Retour</button><h2>🩹 Blessures</h2><p class="note">Enregistrez une blessure et si le joueur a dû sortir.</p><div class="change-grid"><select id="injuryTeam"><option value="A">Équipe A</option><option value="B">Équipe B</option></select><select id="injuryPlayer"><option value="">Choisir un joueur</option></select></div><input id="injuryText" placeholder="Nature / observation" style="margin-top:10px"><label class="check-row"><input type="checkbox" id="injuryOut"> Joueur sorti du terrain</label><button id="addInjury" class="green" style="width:100%;margin-top:10px">Ajouter la blessure</button><div id="injuryHistory" class="change-history"></div></section>
 <section class="page card" id="report"><button class="back">← Retour</button><h2>📄 Rapport final</h2><div id="reportContent"></div><button id="printReport" class="green" style="width:100%;margin-top:12px">📄 Enregistrer le rapport en PDF</button></section>
-<section class="page card" id="photos"><button class="back">← Retour</button><h2>📸 Photos du match</h2><p class="note">Ajoutez jusqu’à 12 photos. Elles seront conservées avec le match et apparaîtront dans le rapport final.</p><input id="matchPhotosInput" type="file" accept="image/*" capture="environment" multiple style="display:none"><button id="takePhotosBtn" class="green" style="width:100%">📸 Prendre / choisir des photos</button><button id="openReportFromPhotos" style="width:100%;margin-top:10px">📄 Ouvrir le rapport</button><div id="photosCount" class="note" style="margin-top:10px"></div><div id="photosGrid" style="display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:10px;margin-top:12px"></div></section>
-<section class="page card" id="settings"><button class="back">← Retour</button><h2>Informations du match</h2><p>Équipe A</p><input id="teamAInput" value="Équipe A"><p>Équipe B</p><input id="teamBInput" value="Équipe B"><p>Compétition</p><input id="competitionInput" placeholder="Coupe de France, championnat..."><p>Date</p><input id="matchDateInput" type="date"><p>Heure du coup d'envoi</p><input id="kickoffInput" type="time"><p>Stade</p><input id="stadiumInput" placeholder="Stade / terrain"><p>Arbitre</p><input id="refereeInput" placeholder="Nom de l'arbitre"><p>Assistant 1</p><input id="assistant1Input" placeholder="Nom de l'assistant 1"><p>Assistant 2</p><input id="assistant2Input" placeholder="Nom de l'assistant 2"><p>Délégué</p><input id="delegateInput" placeholder="Nom du délégué"><p>Commissaire</p><input id="commissionerInput" placeholder="Nom du commissaire"><p>Responsable sécurité</p><input id="securityInput" placeholder="Nom du responsable sécurité"><p>Observations</p><input id="observationInput" placeholder="Observations générales"><button class="green" id="saveNames" style="width:100%;margin-top:14px">Enregistrer</button></section>
+<section class="page card" id="photos"><button class="back">← Retour</button><h2>📸 Photos du match</h2><p class="note">Ajoutez jusqu’à 12 photos. Elles seront conservées avec le match et apparaîtront dans le rapport final.</p><input id="matchPhotosInput" type="file" accept="image/*" capture="environment" multiple style="display:none"><button id="takePhotosBtn" class="green" style="width:100%">📸 Prendre / choisir des photos</button><div id="photosCount" class="note" style="margin-top:10px"></div><div id="photosGrid" style="display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:10px;margin-top:12px"></div></section>
+<section class="page card" id="settings"><button class="back">← Retour</button><h2>Informations du match</h2><p>Équipe A</p><input id="teamAInput" value="Équipe A"><p>Équipe B</p><input id="teamBInput" value="Équipe B"><p>Compétition</p><input id="competitionInput" placeholder="Coupe de France, championnat..."><p>Date</p><input id="matchDateInput" type="date"><p>Heure du coup d'envoi</p><input id="kickoffInput" type="time"><p>Stade</p><input id="stadiumInput" placeholder="Stade / terrain"><p>Arbitre</p><input id="refereeInput" placeholder="Nom de l'arbitre"><p>Assistant 1</p><input id="assistant1Input" placeholder="Nom de l'assistant 1"><p>Assistant 2</p><input id="assistant2Input" placeholder="Nom de l'assistant 2"><p>Délégué</p><input id="delegateInput" placeholder="Nom du délégué"><p>Délégué adjoint</p><input id="delegateAdjointInput" placeholder="Nom du délégué adjoint"><p>Commissaire</p><input id="commissionerInput" placeholder="Nom du commissaire"><p>Responsable sécurité</p><input id="securityInput" placeholder="Nom du responsable sécurité"><p>Président recevant</p><input id="presidentRecevantInput" placeholder="Nom du président recevant"><p>Président visiteur</p><input id="presidentVisiteurInput" placeholder="Nom du président visiteur"><p>Observations</p><input id="observationInput" placeholder="Observations générales"><button class="green" id="saveNames" style="width:100%;margin-top:14px">Enregistrer</button></section>
 </div>
 <script src="https://cdn.jsdelivr.net/npm/tesseract.js@5/dist/tesseract.min.js"></script>
 <script>
@@ -181,7 +182,7 @@ var scoreA=0,scoreB=0,seconds=0,running=false,timer=null,chronoStartedAt=null;
 var playersA=Array.from({length:16},function(_,i){return {name:"",license:"",captain:false,active:i<11,role:""};});
 var playersB=Array.from({length:16},function(_,i){return {name:"",license:"",captain:false,active:i<11,role:""};});
 var staffA=["","","","",""],staffB=["","","","",""];
-var changes=[],goals=[],cards=[],exclusions=[],staffCards=[],staffExclusions=[];var incidents=[],injuries=[],photos=[];var delegateChecklist=[false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false];var matchInfo={competition:"",date:"",kickoff:"",stadium:"",referee:"",assistant1:"",assistant2:"",delegate:"",commissioner:"",security:"",observation:""};var checklist=[false,false,false,false,false,false,false,false,false,false,false,false];
+var changes=[],goals=[],cards=[],exclusions=[],staffCards=[],staffExclusions=[];var incidents=[],injuries=[],photos=[];var delegateChecklist=[false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false];var matchInfo={competition:"",date:"",kickoff:"",stadium:"",referee:"",assistant1:"",assistant2:"",delegate:"",delegateAdjoint:"",commissioner:"",presidentRecevant:"",presidentVisiteur:"",security:"",observation:""};var checklist=[false,false,false,false,false,false,false,false,false,false,false,false];
 function el(id){return document.getElementById(id);}var STORAGE_KEY="football_scoreboard_v1";
 function saveState(){try{localStorage.setItem(STORAGE_KEY,JSON.stringify({scoreA:scoreA,scoreB:scoreB,seconds:seconds,running:running,chronoStartedAt:chronoStartedAt,playersA:playersA,playersB:playersB,staffA:staffA,staffB:staffB,changes:changes,goals:goals,cards:cards,exclusions:exclusions,staffCards:staffCards,staffExclusions:staffExclusions,incidents:incidents,injuries:injuries,photos:photos,matchInfo:matchInfo,checklist:checklist,checklistOrderVersion:4,delegateChecklist:delegateChecklist,delegateChecklistVersion:1,teamA:el("teamA").textContent,teamB:el("teamB").textContent}));}catch(e){}}
 function loadState(){try{var raw=localStorage.getItem(STORAGE_KEY);if(!raw)return;var s=JSON.parse(raw);if(!s)return;if(typeof s.scoreA==="number")scoreA=s.scoreA;if(typeof s.scoreB==="number")scoreB=s.scoreB;if(typeof s.seconds==="number")seconds=s.seconds;if(typeof s.running==="boolean")running=s.running;if(typeof s.chronoStartedAt==="number")chronoStartedAt=s.chronoStartedAt;if(Array.isArray(s.playersA)&&s.playersA.length===16)playersA=s.playersA;if(Array.isArray(s.playersB)&&s.playersB.length===16)playersB=s.playersB;if(Array.isArray(s.staffA)&&s.staffA.length===5)staffA=s.staffA;if(Array.isArray(s.staffB)&&s.staffB.length===5)staffB=s.staffB;if(Array.isArray(s.changes))changes=s.changes;if(Array.isArray(s.goals))goals=s.goals;if(Array.isArray(s.cards))cards=s.cards;if(Array.isArray(s.exclusions))exclusions=s.exclusions;if(Array.isArray(s.staffCards))staffCards=s.staffCards;if(Array.isArray(s.staffExclusions))staffExclusions=s.staffExclusions;if(Array.isArray(s.incidents))incidents=s.incidents;if(Array.isArray(s.injuries))injuries=s.injuries;if(Array.isArray(s.photos))photos=s.photos.slice(0,12);if(s.matchInfo&&typeof s.matchInfo==="object")matchInfo=Object.assign(matchInfo,s.matchInfo);if(Array.isArray(s.delegateChecklist)&&s.delegateChecklist.length===32)delegateChecklist=s.delegateChecklist;if(Array.isArray(s.checklist)){var oldChecklist=s.checklist.concat([false,false,false,false,false,false,false,false,false,false,false,false,false]).slice(0,13);if(s.checklistOrderVersion===4){checklist=oldChecklist.slice(0,8).concat(oldChecklist.slice(9,13));}else if(s.checklistOrderVersion===3){checklist=oldChecklist.slice(0,8).concat(oldChecklist.slice(9,13));}else if(s.checklistOrderVersion===2){checklist=[oldChecklist[0],oldChecklist[1],oldChecklist[2],false,oldChecklist[3],oldChecklist[4],oldChecklist[5],oldChecklist[6],oldChecklist[7],oldChecklist[8],oldChecklist[9],oldChecklist[10],oldChecklist[11]];}else{var v1=oldChecklist;checklist=[v1[0],v1[5],v1[6],false,v1[1],v1[2],v1[3],v1[4],v1[7],v1[8],v1[9],v1[10],v1[11]];}}if(typeof s.teamA==="string"&&s.teamA)el("teamA").textContent=s.teamA;if(typeof s.teamB==="string"&&s.teamB)el("teamB").textContent=s.teamB;el("teamAInput").value=el("teamA").textContent;el("teamBInput").value=el("teamB").textContent;}catch(e){}}
@@ -210,7 +211,7 @@ delegateChecklist=[false,false,false,false,false,false,false,false,false,false,f
 el("teamA").textContent="Équipe A";el("teamB").textContent="Équipe B";
 ["teamAInput","teamBInput","competitionInput","dateInput","kickoffInput","stadiumInput","refereeInput","assistant1Input","assistant2Input","delegateInput","commissionerInput","securityInput","observationInput"].forEach(function(id){if(el(id))el(id).value="";});
 renderGoals();renderCards();renderStaffHistory();renderLiveExclusions();renderAllPlayers();renderChanges();update();updateGoalButtonLabels();renderReport();
-}function renderPlayers(team,id){var c=el(id);c.innerHTML="";team.forEach(function(p,i){p.license=p.license||"";p.role=p.role||"";var row=document.createElement("div");row.className="player-row";var n=document.createElement("div");n.className="player-number";n.textContent=i+1;var input=document.createElement("input");input.type="text";input.placeholder=i<11?"Titulaire":(i<14?"Remplaçant":"Joueur ou encadrement");input.value=p.name;input.setAttribute("data-index",i);var lic=document.createElement("input");lic.type="text";lic.placeholder="N° licence";lic.value=p.license||"";lic.className="player-license";lic.setAttribute("data-license-index",i);row.appendChild(n);row.appendChild(input);row.appendChild(lic);if(i<14){var cap=document.createElement("button");cap.type="button";cap.className="captain-button"+(p.captain?" selected":"");cap.textContent=p.captain?"★ Capitaine":"Capitaine";cap.onclick=function(){team.forEach(function(x){x.captain=false;});p.captain=true;renderPlayers(team,id);};row.appendChild(cap);}else{var role=document.createElement("select");role.setAttribute("data-role-index",i);role.innerHTML="<option value=''>Rôle</option><option value='E'>E · Éducateur</option><option value='D'>D · Dirigeant</option>";role.value=p.role||"";row.appendChild(role);}c.appendChild(row);});}
+}function renderPlayers(team,id){var c=el(id);c.innerHTML="";team.forEach(function(p,i){p.license=p.license||"";p.role=p.role||"";var row=document.createElement("div");row.className="player-row";var n=document.createElement("div");n.className="player-number";n.textContent=i+1;var input=document.createElement("input");input.type="text";input.placeholder=i<11?"Titulaire":"Remplaçant";input.value=p.name;input.setAttribute("data-index",i);var lic=document.createElement("input");lic.type="text";lic.placeholder="N° licence";lic.value=p.license||"";lic.className="player-license";lic.setAttribute("data-license-index",i);row.appendChild(n);row.appendChild(input);row.appendChild(lic);if(i<16){var cap=document.createElement("button");cap.type="button";cap.className="captain-button"+(p.captain?" selected":"");cap.textContent=p.captain?"★ Capitaine":"Capitaine";cap.onclick=function(){team.forEach(function(x){x.captain=false;});p.captain=true;renderPlayers(team,id);};row.appendChild(cap);}c.appendChild(row);});}
 function readPlayers(team,id){el(id).querySelectorAll("input[data-index]").forEach(function(x){team[Number(x.getAttribute("data-index"))].name=x.value.trim();});el(id).querySelectorAll("input[data-license-index]").forEach(function(x){team[Number(x.getAttribute("data-license-index"))].license=x.value.trim();});el(id).querySelectorAll("select[data-role-index]").forEach(function(x){team[Number(x.getAttribute("data-role-index"))].role=x.value;});}
 function renderAllPlayers(){renderPlayers(playersA,"playersA");renderPlayers(playersB,"playersB");}function normalizeOcrLine(s){return s.replace(/[|]/g,"I").replace(/\s+/g," ").trim();}
 function cleanOcrName(s){
@@ -532,7 +533,7 @@ var item={y:x.y,name:"",license:x.license||"",number:idx<14?idx+1:0,role:""};
 if(best>=0&&bestDist<=65){
 item.name=names[best].name||"";
 item.role=names[best].role||"";
-if(names[best].number>=1&&names[best].number<=14)item.number=names[best].number;
+if(names[best].number>=1&&names[best].number<=16)item.number=names[best].number;
 usedNames[best]=true;
 }
 out.push(item);
@@ -621,9 +622,9 @@ status.textContent="✅ "+rows.length+" ligne(s) détectée(s). Vérifiez noms, 
 function escapeHtmlAttr(v){return String(v==null?"":v).replace(/&/g,"&amp;").replace(/"/g,"&quot;").replace(/</g,"&lt;").replace(/>/g,"&gt;").replace(/'/g,"&#39;");}
 window.showFullScanReview=function(rows,hint){
 var box=el("scanReview");if(!box)return;
-var players=rows.filter(function(x){return x.number>=1&&x.number<=14;}).slice(0,14);
-var staff=rows.filter(function(x){return x.number===0||x.number>14;}).slice(0,10);
-var html='<div class="scan-review"><h4>🔎 Vérification de la composition</h4><div class="note">Les joueurs 1 à 14 sont récupérés dans la composition. Les membres d’encadrement sont récupérés séparément dans la rubrique 👔 Staff, sans modifier votre saisie manuelle des n°15 et 16.</div>'+(hint?'<div class="note" style="margin-top:8px">✅ <strong>Équipe '+hint+' détectée automatiquement</strong>.</div>':'<label class="note">Équipe à remplir</label><select data-scan-team style="margin-top:6px"><option value="A">Équipe A</option><option value="B">Équipe B</option></select>')+'<div class="scan-team-review"><h4>Joueurs détectés</h4>';
+var players=rows.filter(function(x){return x.number>=1&&x.number<=16;}).slice(0,16);
+var staff=rows.filter(function(x){return x.number===0;}).slice(0,10);
+var html='<div class="scan-review"><h4>🔎 Vérification de la composition</h4><div class="note">Les joueurs 1 à 16 sont récupérés dans la composition. Les membres du staff sont gérés séparément dans la rubrique 👔 Staff.</div>'+(hint?'<div class="note" style="margin-top:8px">✅ <strong>Équipe '+hint+' détectée automatiquement</strong>.</div>':'<label class="note">Équipe à remplir</label><select data-scan-team style="margin-top:6px"><option value="A">Équipe A</option><option value="B">Équipe B</option></select>')+'<div class="scan-team-review"><h4>Joueurs détectés</h4>';
 if(!players.length)html+='<div class="note">⚠️ Aucun joueur reconnu.</div>';
 players.forEach(function(x,i){
 var n=x.number||i+1;html+='<div class="scan-row"><div class="scan-num">'+n+'</div><input type="text" value="'+escapeHtmlAttr(x.name)+'" data-scan-name="'+i+'" data-scan-number="'+n+'" placeholder="Nom / prénom"><input type="text" value="'+escapeHtmlAttr(x.license||"")+'" data-scan-license="'+i+'" placeholder="N° licence"></div><label class="scan-captain"><input type="checkbox" '+(/capitaine/i.test(x.name)?"checked":"")+' data-scan-cap="'+i+'"> Capitaine</label>';
@@ -637,10 +638,10 @@ html+='</div><button class="green" id="confirmScanReview" style="width:100%;marg
 box.innerHTML=html;box.style.display="block";
 box.querySelector("#confirmScanReview").onclick=function(){
 var selector=box.querySelector("select[data-scan-team]"),side=hint||(selector?selector.value:"A"),team=side==="B"?playersB:playersA;
-for(var i=0;i<14;i++){team[i].name="";team[i].license="";team[i].captain=false;team[i].active=i<11;}
+for(var i=0;i<16;i++){team[i].name="";team[i].license="";team[i].captain=false;team[i].active=i<11;}
 box.querySelectorAll("input[data-scan-name]").forEach(function(input){
 var i=Number(input.getAttribute("data-scan-name")),n=Number(input.getAttribute("data-scan-number")),lic=box.querySelector('input[data-scan-license="'+i+'"]'),cap=box.querySelector('input[data-scan-cap="'+i+'"]');
-if(n>=1&&n<=14){team[n-1].name=input.value.trim();team[n-1].license=lic?lic.value.trim():"";team[n-1].captain=!!(cap&&cap.checked);team[n-1].active=n<=11;}
+if(n>=1&&n<=16){team[n-1].name=input.value.trim();team[n-1].license=lic?lic.value.trim():"";team[n-1].captain=!!(cap&&cap.checked);team[n-1].active=n<=11;}
 });
 var staffTarget=side==="B"?staffB:staffA;
 for(var si=0;si<5;si++){staffTarget[si]="";}
@@ -653,8 +654,8 @@ renderAllPlayers();renderStaff(staffA,"staffA");renderStaff(staffB,"staffB");sav
 box.querySelector("#cancelScanReview").onclick=function(){box.style.display="none";box.innerHTML="";el("scanStatus").textContent="Lecture annulée.";};
 }
 function downloadText(filename,text){var blob=new Blob([text],{type:"text/plain;charset=utf-8"});var url=URL.createObjectURL(blob);var a=document.createElement("a");a.href=url;a.download=filename;document.body.appendChild(a);a.click();a.remove();setTimeout(function(){URL.revokeObjectURL(url);},1000);}function teamDownloadText(team,name){readPlayers(team,team===playersA?"playersA":"playersB");var lines=[name,"==============================","CAPITAINE : "+(function(){var i=team.findIndex(function(p){return p.captain;});return i>=0?playerLabel(team[i],i):"Non renseigné";})(),"","TITULAIRES"];team.slice(0,11).forEach(function(p,i){lines.push((i+1)+". "+(p.name||"Non renseigné")+" · Licence : "+playerLicense(p));});lines.push("","REMPLAÇANTS");team.slice(11,14).forEach(function(p,i){lines.push((i+12)+". "+(p.name||"Non renseigné")+" · Licence : "+playerLicense(p));});team.slice(14,16).forEach(function(p,i){if(p.name||p.role)lines.push((i+15)+". "+(p.name||"Non renseigné")+" · "+(p.role==="E"?"Éducateur":p.role==="D"?"Dirigeant":"Rôle non renseigné")+" · Licence : "+playerLicense(p));});return lines.join("\n");}function downloadTeam(team,name,file){downloadText(file,teamDownloadText(team,name));}function playerLabel(p,i){return (p.name||("Joueur "+(i+1)))+" (n°"+(i+1)+")";} function playerLicense(p){return p.license||"Non renseigné";}
-function setupChange(team,label){readPlayers(team,team===playersA?"playersA":"playersB");var hasActive=team.some(function(p){return p.active===true;});if(!hasActive){team.forEach(function(p,i){p.active=i<11;});saveState();}el("changeTeamLabel").textContent=label;var out=el("playerOut"),inn=el("playerIn");out.innerHTML="";inn.innerHTML="";team.forEach(function(p,i){if(p.active){var o=document.createElement("option");o.value=i;o.textContent=playerLabel(p,i);out.appendChild(o);}if(!p.active&&i>=11){var q=document.createElement("option");q.value=i;q.textContent=playerLabel(p,i);inn.appendChild(q);}});el("changeForm").style.display="block";el("changeForm").dataset.team=team===playersA?"A":"B";if(!inn.options.length){inn.innerHTML="<option value=''>Aucun remplaçant disponible</option>";}}
-function confirmChange(){var team=el("changeForm").dataset.team==="A"?playersA:playersB;var outIndex=Number(el("playerOut").value),inIndex=Number(el("playerIn").value);if(!Number.isInteger(outIndex)||!Number.isInteger(inIndex)||!team[inIndex]){alert("Choisissez un joueur sortant et un remplaçant.");return;}var outPlayer=team[outIndex],inPlayer=team[inIndex];if(!outPlayer.active||inPlayer.active||inIndex<11){alert("Changement impossible.");return;}outPlayer.active=false;inPlayer.active=true;changes.push({team:el("changeForm").dataset.team,out:playerLabel(outPlayer,outIndex),in:playerLabel(inPlayer,inIndex),minute:Math.floor(seconds/60)+":"+String(seconds%60).padStart(2,"0")});el("changeForm").style.display="none";renderChanges();saveState();}
+function setupChange(team,label){readPlayers(team,team===playersA?"playersA":"playersB");var hasActive=team.some(function(p){return p.active===true;});if(!hasActive){team.forEach(function(p,i){p.active=i<11;});saveState();}el("changeTeamLabel").textContent=label;var out=el("playerOut"),inn=el("playerIn");out.innerHTML="";inn.innerHTML="";team.forEach(function(p,i){if(p.active){var o=document.createElement("option");o.value=i;o.textContent=playerLabel(p,i);out.appendChild(o);}if(!p.active){var excluded=exclusions.some(function(x){return x.team===(team===playersA?"A":"B")&&x.number===i+1&&x.active;});var sentOff=cards.some(function(x){return x.team===(team===playersA?"A":"B")&&x.number===i+1&&String(x.type||"").indexOf("🟥")===0;});if(!excluded&&!sentOff){var q=document.createElement("option");q.value=i;q.textContent=(p.name?playerLabel(p,i):"N°"+(i+1)+" · joueur non renseigné")+(i<11?" · sorti":" · remplaçant");inn.appendChild(q);}}});el("changeForm").style.display="block";el("changeForm").dataset.team=team===playersA?"A":"B";if(!inn.options.length){inn.innerHTML="<option value=''>Aucun joueur disponible pour entrer</option>";}}
+function confirmChange(){var side=el("changeForm").dataset.team==="A"?"A":"B";var team=side==="A"?playersA:playersB;var outIndex=Number(el("playerOut").value),inIndex=Number(el("playerIn").value);if(!Number.isInteger(outIndex)||!Number.isInteger(inIndex)||!team[inIndex]){alert("Choisissez un joueur sortant et un joueur entrant.");return;}var outPlayer=team[outIndex],inPlayer=team[inIndex];var excluded=exclusions.some(function(x){return x.team===side&&x.number===inIndex+1&&x.active;});var sentOff=cards.some(function(x){return x.team===side&&x.number===inIndex+1&&String(x.type||"").indexOf("🟥")===0;});if(!outPlayer.active||inPlayer.active||excluded||sentOff){alert("Changement impossible.");return;}var wasSubstitutedOut=changes.some(function(x){return x.team===side&&x.out===playerLabel(inPlayer,inIndex);});outPlayer.active=false;inPlayer.active=true;changes.push({team:side,out:playerLabel(outPlayer,outIndex),in:playerLabel(inPlayer,inIndex),minute:Math.floor(seconds/60)+":"+String(seconds%60).padStart(2,"0"),returning:wasSubstitutedOut});el("changeForm").style.display="none";renderChanges();saveState();}
 function setupCard(side,label){
   var form=el("cardForm");
   var type=form.dataset.type||"";
@@ -666,7 +667,7 @@ function setupCard(side,label){
   var sel=el("cardPlayer");sel.innerHTML="";
   team.forEach(function(p,i){
     p=p||{};
-    if(i<16&&(!p.role||i<14)){
+    if(i<16){
       var o=document.createElement("option");o.value=i;
       o.textContent=p.name?playerLabel(p,i):("N°"+(i+1)+" · joueur non renseigné");
       if(p.name&&!p.active)o.textContent+=" · remplaçant / sorti";
@@ -811,10 +812,10 @@ function deleteCard(index){
 function correctCard(index){
  var x=cards[index];var team=x.team==="A"?playersA:playersB;
  var match=x.player.match(/n°(\d+)/);var current=match?match[1]:"";
- var sel=prompt("Entrez le numéro du bon joueur (1 à 14) :",current);
+ var sel=prompt("Entrez le numéro du bon joueur (1 à 16) :",current);
  if(sel===null)return;
  var n=Number(sel);
- if(!Number.isInteger(n)||n<1||n>14||!team[n-1]||!team[n-1].active){alert("Choisissez le numéro d’un joueur actuellement actif.");return;}
+ if(!Number.isInteger(n)||n<1||n>16||!team[n-1]||!team[n-1].active){alert("Choisissez le numéro d’un joueur actuellement actif.");return;}
  x.player=playerLabel(team[n-1],n-1);x.number=n;
  renderCards();saveState();
 }
@@ -825,7 +826,7 @@ el("goalTeamLabel").textContent=label;
 var sel=el("goalPlayer");sel.innerHTML="";
 var assist=el("goalAssist");assist.innerHTML='<option value="">Aucun passeur</option>';
 team.forEach(function(p,i){
-if(i<16&&(!p.role||i<14)){
+if(i<16){
 var o=document.createElement("option");o.value=i;o.textContent=playerLabel(p,i);
 if(!p.active)o.textContent+=" · remplaçant / sorti";
 sel.appendChild(o);
@@ -1002,13 +1003,49 @@ function renderIncidents(){var box=el("incidentHistory");if(!box)return;box.inne
 function renderInjuryPlayers(){var sel=el("injuryPlayer"),side=el("injuryTeam").value,team=side==="A"?playersA:playersB;sel.innerHTML='<option value="">Choisir un joueur</option>';team.forEach(function(p,i){if(p.name){var o=document.createElement("option");o.value=i;o.textContent=playerLabel(p,i);sel.appendChild(o);}});}
 function renderInjuries(){var box=el("injuryHistory");if(!box)return;box.innerHTML="";if(!injuries.length){box.innerHTML='<p class="note">Aucune blessure enregistrée.</p>';return;}injuries.forEach(function(x,i){var d=document.createElement("div");d.className="change-item";d.innerHTML="<strong>"+escapeHtml(x.minute)+"</strong> · Équipe "+escapeHtml(x.team)+" · "+escapeHtml(x.player)+"<br>"+escapeHtml(x.note||"Observation non renseignée")+(x.out?"<br>⚠️ Sorti du terrain":"");var b=document.createElement("button");b.textContent="❌ Supprimer";b.style.marginTop="8px";b.onclick=function(){injuries.splice(i,1);renderInjuries();saveState();};d.appendChild(b);box.appendChild(d);});}
 function escapeHtml(s){return String(s||"").replace(/&/g,"&amp;").replace(/</g,"&lt;").replace(/>/g,"&gt;");}
-function fillMatchInfo(){var map={competition:"competitionInput",date:"matchDateInput",kickoff:"kickoffInput",stadium:"stadiumInput",referee:"refereeInput",assistant1:"assistant1Input",assistant2:"assistant2Input",delegate:"delegateInput",commissioner:"commissionerInput",security:"securityInput",observation:"observationInput"};Object.keys(map).forEach(function(k){var x=el(map[k]);if(x)x.value=matchInfo[k]||"";});el("teamAInput").value=el("teamA").textContent;el("teamBInput").value=el("teamB").textContent;}
-function saveMatchInfo(){matchInfo.competition=el("competitionInput").value.trim();matchInfo.date=el("matchDateInput").value;matchInfo.kickoff=el("kickoffInput").value;matchInfo.stadium=el("stadiumInput").value.trim();matchInfo.referee=el("refereeInput").value.trim();matchInfo.assistant1=el("assistant1Input").value.trim();matchInfo.assistant2=el("assistant2Input").value.trim();matchInfo.delegate=el("delegateInput").value.trim();matchInfo.commissioner=el("commissionerInput").value.trim();matchInfo.security=el("securityInput").value.trim();matchInfo.observation=el("observationInput").value.trim();el("teamA").textContent=el("teamAInput").value||"Équipe A";el("teamB").textContent=el("teamBInput").value||"Équipe B";updateGoalButtonLabels();update();saveState();renderReport();document.querySelectorAll(".page").forEach(function(p){p.classList.remove("active");});el("home").style.display="block";}
+function fillMatchInfo(){var map={competition:"competitionInput",date:"matchDateInput",kickoff:"kickoffInput",stadium:"stadiumInput",referee:"refereeInput",assistant1:"assistant1Input",assistant2:"assistant2Input",delegate:"delegateInput",delegateAdjoint:"delegateAdjointInput",commissioner:"commissionerInput",presidentRecevant:"presidentRecevantInput",presidentVisiteur:"presidentVisiteurInput",security:"securityInput",observation:"observationInput"};Object.keys(map).forEach(function(k){var x=el(map[k]);if(x)x.value=matchInfo[k]||"";});el("teamAInput").value=el("teamA").textContent;el("teamBInput").value=el("teamB").textContent;}
+function saveMatchInfo(){matchInfo.competition=el("competitionInput").value.trim();matchInfo.date=el("matchDateInput").value;matchInfo.kickoff=el("kickoffInput").value;matchInfo.stadium=el("stadiumInput").value.trim();matchInfo.referee=el("refereeInput").value.trim();matchInfo.assistant1=el("assistant1Input").value.trim();matchInfo.assistant2=el("assistant2Input").value.trim();matchInfo.delegate=el("delegateInput").value.trim();matchInfo.delegateAdjoint=el("delegateAdjointInput").value.trim();matchInfo.commissioner=el("commissionerInput").value.trim();matchInfo.presidentRecevant=el("presidentRecevantInput").value.trim();matchInfo.presidentVisiteur=el("presidentVisiteurInput").value.trim();matchInfo.security=el("securityInput").value.trim();matchInfo.observation=el("observationInput").value.trim();el("teamA").textContent=el("teamAInput").value||"Équipe A";el("teamB").textContent=el("teamBInput").value||"Équipe B";updateGoalButtonLabels();update();saveState();renderReport();document.querySelectorAll(".page").forEach(function(p){p.classList.remove("active");});el("home").style.display="block";}
 
-function compressPhoto(file,callback){var reader=new FileReader();reader.onload=function(){var img=new Image();img.onload=function(){var max=1400,w=img.naturalWidth,h=img.naturalHeight;if(w>max||h>max){var ratio=Math.min(max/w,max/h);w=Math.round(w*ratio);h=Math.round(h*ratio);}var canvas=document.createElement("canvas");canvas.width=w;canvas.height=h;canvas.getContext("2d").drawImage(img,0,0,w,h);callback(canvas.toDataURL("image/jpeg",0.72));};img.src=reader.result;};reader.readAsDataURL(file);}
-function renderPhotos(){var grid=el("photosGrid"),count=el("photosCount");if(!grid)return;count.textContent=photos.length+"/12 photo(s)";grid.innerHTML="";if(!photos.length){grid.innerHTML='<div class="note" style="grid-column:1/-1">Aucune photo ajoutée.</div>';return;}photos.forEach(function(src,i){var wrap=document.createElement("div");wrap.className="change-item";wrap.style.margin="0";wrap.innerHTML='<img src="'+src+'" alt="Photo '+(i+1)+'" style="width:100%;height:180px;object-fit:cover;border-radius:12px;display:block;cursor:pointer"><button class="red" style="width:100%;margin-top:8px">🗑️ Supprimer</button>';wrap.querySelector("img").onclick=function(){var w=window.open("");if(w){w.document.write('<title>Photo '+(i+1)+'</title><img src="'+src+'" style="max-width:100%;height:auto">');w.document.close();}};wrap.querySelector("button").onclick=function(){if(!confirm("Supprimer cette photo ?"))return;photos.splice(i,1);saveState();renderPhotos();renderReport();};grid.appendChild(wrap);});}
-function addPhotos(files){var list=Array.from(files||[]).filter(function(f){return /^image\//i.test(f.type);});if(!list.length)return;var room=12-photos.length;if(list.length>room){alert("Maximum 12 photos. Seules les "+room+" première(s) seront ajoutées.");list=list.slice(0,room);}var remaining=list.length;list.forEach(function(file){compressPhoto(file,function(data){photos.push(data);remaining--;if(remaining===0){saveState();renderPhotos();renderReport();}});});}
-function renderPhotosInReport(){if(!photos.length)return empty("Aucune photo ajoutée.");return '<div style="display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:10px">'+photos.map(function(src,i){return '<div><img src="'+src+'" alt="Photo '+(i+1)+'" style="width:100%;height:auto;border-radius:10px;display:block"><div class="note" style="margin-top:4px">Photo '+(i+1)+'</div></div>';}).join("")+'</div>';}
+function compressPhoto(file,callback){
+  var reader=new FileReader();
+  reader.onload=function(){
+    var img=new Image();
+    img.onload=function(){
+      var max=1400,w=img.naturalWidth,h=img.naturalHeight;
+      if(w>max||h>max){var ratio=Math.min(max/w,max/h);w=Math.round(w*ratio);h=Math.round(h*ratio);}
+      var canvas=document.createElement("canvas");canvas.width=w;canvas.height=h;
+      var ctx=canvas.getContext("2d");ctx.drawImage(img,0,0,w,h);
+      callback(canvas.toDataURL("image/jpeg",0.72));
+    };
+    img.src=reader.result;
+  };
+  reader.readAsDataURL(file);
+}
+function renderPhotos(){
+  var grid=el("photosGrid"),count=el("photosCount");if(!grid)return;
+  count.textContent=photos.length+"/12 photo(s)";
+  grid.innerHTML="";
+  if(!photos.length){grid.innerHTML='<div class="note" style="grid-column:1/-1">Aucune photo ajoutée.</div>';return;}
+  photos.forEach(function(src,i){
+    var wrap=document.createElement("div");wrap.className="change-item";wrap.style.margin="0";
+    wrap.innerHTML='<img src="'+src+'" alt="Photo '+(i+1)+'" style="width:100%;height:180px;object-fit:cover;border-radius:12px;display:block;cursor:pointer"><button class="red" style="width:100%;margin-top:8px">🗑️ Supprimer</button>';
+    wrap.querySelector("img").onclick=function(){var w=window.open("");if(w){w.document.write('<title>Photo '+(i+1)+'</title><img src="'+src+'" style="max-width:100%;height:auto">');w.document.close();}};
+    wrap.querySelector("button").onclick=function(){if(!confirm("Supprimer cette photo ?"))return;photos.splice(i,1);saveState();renderPhotos();renderReport();};
+    grid.appendChild(wrap);
+  });
+}
+function addPhotos(files){
+  var list=Array.from(files||[]).filter(function(f){return /^image\//i.test(f.type);});
+  if(!list.length)return;
+  var room=12-photos.length;
+  if(list.length>room){alert("Maximum 12 photos. Seules les "+room+" première(s) seront ajoutées.");list=list.slice(0,room);}
+  var remaining=list.length;
+  list.forEach(function(file){compressPhoto(file,function(data){photos.push(data);remaining--;if(remaining===0){saveState();renderPhotos();renderReport();}});});
+}
+function renderPhotosInReport(){
+  if(!photos.length)return '<div class="note">Aucune photo ajoutée.</div>';
+  return '<div style="display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:10px">'+photos.map(function(src,i){return '<div><img src="'+src+'" alt="Photo '+(i+1)+'" style="width:100%;height:auto;border-radius:10px;display:block"><div class="note" style="margin-top:4px">Photo '+(i+1)+'</div></div>';}).join("")+'</div>';
+}
 
 function renderReport(){
 var box=el("reportContent");if(!box)return;
@@ -1016,18 +1053,43 @@ var teamAName=el("teamA").textContent,teamBName=el("teamB").textContent;
 function teamName(side){return side==="A"?teamAName:teamBName;}
 function section(title,content){return '<div class="change-item report-section"><div class="report-title">'+title+'</div>'+content+'</div>';}
 function empty(text){return '<div class="note">'+text+'</div>';}
-var html='<div class="change-item"><div class="report-title">Match</div><div><strong>'+escapeHtml(teamAName)+" "+scoreA+" - "+scoreB+" "+escapeHtml(teamBName)+'</strong></div><div>Compétition : '+escapeHtml(matchInfo.competition||"Non renseignée")+'</div><div>Date : '+escapeHtml(matchInfo.date||"Non renseignée")+' · Coup d’envoi : '+escapeHtml(matchInfo.kickoff||"Non renseigné")+'</div><div>Stade : '+escapeHtml(matchInfo.stadium||"Non renseigné")+'</div><div>Arbitre : '+escapeHtml(matchInfo.referee||"Non renseigné")+'</div><div>Assistant 1 : '+escapeHtml(matchInfo.assistant1||"Non renseigné")+'</div><div>Assistant 2 : '+escapeHtml(matchInfo.assistant2||"Non renseigné")+'</div><div>Délégué : '+escapeHtml(matchInfo.delegate||"Non renseigné")+'</div><div>Commissaire : '+escapeHtml(matchInfo.commissioner||"Non renseigné")+'</div><div>Responsable sécurité : '+escapeHtml(matchInfo.security||"Non renseigné")+'</div></div>';
+var html='<div class="change-item"><div class="report-title">Match</div><div><strong>'+escapeHtml(teamAName)+" "+scoreA+" - "+scoreB+" "+escapeHtml(teamBName)+'</strong></div><div>Compétition : '+escapeHtml(matchInfo.competition||"Non renseignée")+'</div><div>Date : '+escapeHtml(matchInfo.date||"Non renseignée")+' · Coup d’envoi : '+escapeHtml(matchInfo.kickoff||"Non renseigné")+'</div><div>Stade : '+escapeHtml(matchInfo.stadium||"Non renseigné")+'</div><div>Arbitre : '+escapeHtml(matchInfo.referee||"Non renseigné")+'</div><div>Assistant 1 : '+escapeHtml(matchInfo.assistant1||"Non renseigné")+'</div><div>Assistant 2 : '+escapeHtml(matchInfo.assistant2||"Non renseigné")+'</div><div>Délégué : '+escapeHtml(matchInfo.delegate||"Non renseigné")+'</div><div>Délégué adjoint : '+escapeHtml(matchInfo.delegateAdjoint||"Non renseigné")+'</div><div>Commissaire : '+escapeHtml(matchInfo.commissioner||"Non renseigné")+'</div><div>Président recevant : '+escapeHtml(matchInfo.presidentRecevant||"Non renseigné")+'</div><div>Président visiteur : '+escapeHtml(matchInfo.presidentVisiteur||"Non renseigné")+'</div><div>Responsable sécurité : '+escapeHtml(matchInfo.security||"Non renseigné")+'</div></div>';
 
 var goalHtml="";
 if(goals.length){
 goalHtml=goals.map(function(x,i){return '<div style="margin-top:6px"><strong>'+escapeHtml(x.minute)+'</strong> · '+escapeHtml(teamName(x.team))+' · ⚽ <strong>'+escapeHtml(x.player)+'</strong> · '+escapeHtml(x.goalType||"Pied")+(x.assist?' · Passeur : <strong>'+escapeHtml(x.assist)+'</strong>':'')+(x.cancelled?' · BUT ANNULÉ':'')+'</div>';}).join("");
 }else goalHtml=empty("Aucun but enregistré.");
+var finalCompositionHtml="";
+function finalTeamComposition(team,side){
+  var rows=[];
+  team.forEach(function(p,i){
+    var label=playerLabel(p,i);
+    var markers="";
+    var goalCount=goals.filter(function(x){return x.team===side&&x.player===label&&!x.cancelled;}).length;
+    if(goalCount)markers+='<span title="Buteur" style="font-size:20px">⚽</span> ';
+    var cardList=cards.filter(function(x){return x.team===side&&x.number===i+1;});
+    cardList.forEach(function(x){
+      var t=(x.type||"").toLowerCase();
+      var bg=t.indexOf("rouge")>=0?"#ef4444":(t.indexOf("blanc")>=0?"#f8fafc":"#facc15");
+      var fg=t.indexOf("blanc")>=0?"#111827":"#111827";
+      markers+='<span title="'+escapeHtml(x.type||"Carton")+'" style="display:inline-block;width:18px;height:23px;border-radius:3px;background:'+bg+';color:'+fg+';vertical-align:-5px;margin-right:3px;border:1px solid rgba(255,255,255,.35)"></span>';
+    });
+    var hasChange=changes.some(function(x){return x.team===side&&(x.out===label||x.in===label);});
+    if(hasChange)markers+='<span title="Changement" style="font-size:22px;margin-right:4px">↔️</span> ';
+    rows.push('<div style="margin-top:7px;padding:9px 10px;background:rgba(7,15,28,.58);border-radius:10px;border-left:4px solid '+(p.active?'#22c55e':'#64748b')+'"><strong>'+markers+'N°'+(i+1)+' · '+escapeHtml(label)+'</strong></div>');
+  });
+  return rows.length?rows.join(""):empty("Composition non renseignée.");
+}
+finalCompositionHtml='<div style="display:grid;grid-template-columns:1fr 1fr;gap:12px"><div><div class="report-title">'+escapeHtml(teamAName)+'</div>'+finalTeamComposition(playersA,"A")+'</div><div><div class="report-title">'+escapeHtml(teamBName)+'</div>'+finalTeamComposition(playersB,"B")+'</div></div>';
+html+=section("👥 COMPOSITION FINALE",finalCompositionHtml);
+
 html+=section("⚽ BUTEURS",goalHtml);
 
 var changeHtml="";
-if(changes.length){
-changeHtml=changes.map(function(x){return '<div style="margin-top:6px"><strong>'+escapeHtml(x.minute)+'</strong> · '+escapeHtml(teamName(x.team))+' · Sortie : <strong>'+escapeHtml(x.out)+'</strong> → Entrée : <strong>'+escapeHtml(x.in)+'</strong></div>';}).join("");
-}else changeHtml=empty("Aucun changement enregistré.");
+var reportChanges=changes.filter(function(x){return !x.returning;});
+if(reportChanges.length){
+changeHtml=reportChanges.map(function(x){return '<div style="margin-top:6px"><strong>'+escapeHtml(x.minute)+'</strong> · '+escapeHtml(teamName(x.team))+' · Sortie : <strong>'+escapeHtml(x.out)+'</strong> → Entrée : <strong>'+escapeHtml(x.in)+'</strong></div>';}).join("");
+}else changeHtml=empty("Aucun changement à faire figurer.");
 html+=section("🔄 CHANGEMENTS",changeHtml);
 
 var cardHtml="";
@@ -1055,7 +1117,43 @@ html+=section("📸 PHOTOS DU MATCH",renderPhotosInReport());
 
 box.innerHTML=html;
 }function goHome(){var pages=document.querySelectorAll(".page");pages.forEach(function(p){p.classList.remove("active");p.style.removeProperty("display");});var home=el("home");home.style.display="block";home.hidden=false;window.scrollTo(0,0);}function showPageDirect(pageId){var pages=document.querySelectorAll(".page");pages.forEach(function(p){p.classList.remove("active");p.style.display="none";});var home=document.getElementById("home");if(home)home.style.display="none";var page=document.getElementById(pageId);if(!page)return;page.classList.add("active");page.style.display="block";if(pageId==="changes")renderChanges();if(pageId==="events")renderCards();}
-function renderChanges(){var c=el("changeHistory");c.innerHTML="";if(!changes.length){c.innerHTML="<p class='note'>Aucun changement.</p>";return;}changes.forEach(function(x){var d=document.createElement("div");d.className="change-item";d.textContent=x.minute+" · Équipe "+x.team+" : "+x.out+" → "+x.in;c.appendChild(d);});}
+function rebuildActiveStates(){
+  [playersA,playersB].forEach(function(team){
+    team.forEach(function(p,i){p.active=i<11;});
+  });
+  changes.forEach(function(x){
+    var team=x.team==="A"?playersA:playersB;
+    if(!team)return;
+    var outIndex=-1,inIndex=-1;
+    team.forEach(function(p,i){
+      if(playerLabel(p,i)===x.out)outIndex=i;
+      if(playerLabel(p,i)===x.in)inIndex=i;
+    });
+    if(outIndex>=0)team[outIndex].active=false;
+    if(inIndex>=0)team[inIndex].active=true;
+  });
+}
+function renderChanges(){
+  var c=el("changeHistory");c.innerHTML="";
+  if(!changes.length){c.innerHTML="<p class='note'>Aucun changement.</p>";return;}
+  changes.forEach(function(x,i){
+    var d=document.createElement("div");d.className="change-item";
+    var info=document.createElement("div");
+    info.textContent=x.minute+" · "+(x.team==="A"?el("teamA").textContent:el("teamB").textContent)+" : "+x.out+" → "+x.in+(x.returning?" · retour":"");
+    d.appendChild(info);
+    var btn=document.createElement("button");btn.type="button";btn.className="red";btn.textContent="🗑️ Supprimer";btn.style.width="100%";btn.style.marginTop="8px";
+    btn.onclick=function(){
+      if(!confirm("Supprimer ce changement ?"))return;
+      changes.splice(i,1);
+      rebuildActiveStates();
+      saveState();
+      renderChanges();
+      renderReport();
+      if(typeof renderSheet==="function")renderSheet();
+    };
+    d.appendChild(btn);c.appendChild(d);
+  });
+}
 function updateGoalButtonLabels(){
 var a=el("teamA")?el("teamA").textContent:"Équipe A";
 var b=el("teamB")?el("teamB").textContent:"Équipe B";
@@ -1074,11 +1172,13 @@ el("cardSimpleB").onclick=function(){setupCard("B",el("teamB").textContent);};
 el("cardTypeYellow").onclick=function(){selectCardType("🟨 Jaune");};
 el("cardTypeWhite").onclick=function(){selectCardType("⚪ Blanc");};
 el("cardTypeRed").onclick=function(){selectCardType("🟥 Rouge");};
-document.querySelectorAll("[data-page]").forEach(function(b){b.onclick=function(){var page=b.getAttribute("data-page");if(page==="compositions")renderAllPlayers();if(page==="changes")renderChanges();if(page==="goals"){renderGoalsPage();}if(page==="events"){renderCards();}if(page==="staff"){renderStaff(staffA,"staffA");renderStaff(staffB,"staffB");renderStaffHistory();}if(page==="sheet"){renderTimeline();renderSheet();}if(page==="checklist"){renderChecklist();}if(page==="delegateGuide"){renderDelegateChecklist();}if(page==="incidents"){renderIncidents();}if(page==="injuries"){renderInjuryPlayers();renderInjuries();}if(page==="report"){renderReport();}if(page==="photos"){renderPhotos();}if(page==="settings"){fillMatchInfo();}el("home").style.display="none";document.querySelectorAll(".page").forEach(function(p){p.classList.remove("active");});el(page).classList.add("active");};});
-document.querySelectorAll(".back").forEach(function(b){b.onclick=function(){document.querySelectorAll(".page").forEach(function(p){p.classList.remove("active");});el("home").style.display="block";};});
+document.querySelectorAll("[data-page]").forEach(function(b){b.onclick=function(){var page=b.getAttribute("data-page");if(page==="compositions")renderAllPlayers();if(page==="changes")renderChanges();if(page==="goals"){renderGoalsPage();}if(page==="events"){renderCards();}if(page==="staff"){renderStaff(staffA,"staffA");renderStaff(staffB,"staffB");renderStaffHistory();}if(page==="sheet"){renderTimeline();renderSheet();}if(page==="checklist"){renderChecklist();}if(page==="delegateGuide"){renderDelegateChecklist();}if(page==="incidents"){renderIncidents();}if(page==="injuries"){renderInjuryPlayers();renderInjuries();}if(page==="report"){renderReport();}if(page==="photos"){renderPhotos();}if(page==="settings"){fillMatchInfo();}el("home").classList.add("home-hidden");el("home").style.display="none";document.querySelectorAll(".page").forEach(function(p){p.classList.remove("active");p.style.display="none";});el(page).classList.add("active");el(page).style.display="block";};});
+el("printReport").onclick=function(){renderReport();window.print();};
+el("reportHomeBtn").onclick=function(e){e.preventDefault();showPageDirect("report");renderReport();window.scrollTo(0,0);};
+document.querySelectorAll(".back").forEach(function(b){b.onclick=function(){document.querySelectorAll(".page").forEach(function(p){p.classList.remove("active");p.style.removeProperty("display");});el("home").classList.remove("home-hidden");el("home").style.display="block";el("home").hidden=false;window.scrollTo(0,0);};});
 el("saveNames").onclick=saveMatchInfo;
 el("scanSheetBtn").onclick=function(){el("matchSheetPhoto").click();};el("matchSheetPhoto").onchange=function(){scanMatchSheet(this.files&&this.files[0]);this.value="";};
-el("saveCompositions").onclick=function(){readPlayers(playersA,"playersA");readPlayers(playersB,"playersB");playersA.forEach(function(p,i){p.active=i<11;});playersB.forEach(function(p,i){p.active=i<11;});renderAllPlayers();saveState();alert("Compositions enregistrées. Les n°1 à 11 sont titulaires, les n°12 à 14 sont remplaçants.");};el("resetComposition").onclick=function(){if(!confirm("Effacer les joueurs, licences et capitaines des deux équipes ?"))return;playersA=Array.from({length:16},function(){return {name:"",license:"",captain:false,active:false,role:""};});playersB=Array.from({length:16},function(){return {name:"",license:"",captain:false,active:false,role:""};});playersA.forEach(function(p,i){p.active=i<11;});playersB.forEach(function(p,i){p.active=i<11;});renderAllPlayers();saveState();alert("Les deux compositions ont été remises à zéro.");};
+el("saveCompositions").onclick=function(){readPlayers(playersA,"playersA");readPlayers(playersB,"playersB");playersA.forEach(function(p,i){p.active=i<11;});playersB.forEach(function(p,i){p.active=i<11;});renderAllPlayers();saveState();alert("Compositions enregistrées. Les n°1 à 11 sont titulaires, les n°12 à 16 sont remplaçants.");};el("resetComposition").onclick=function(){if(!confirm("Effacer les joueurs, licences et capitaines des deux équipes ?"))return;playersA=Array.from({length:16},function(){return {name:"",license:"",captain:false,active:false,role:""};});playersB=Array.from({length:16},function(){return {name:"",license:"",captain:false,active:false,role:""};});playersA.forEach(function(p,i){p.active=i<11;});playersB.forEach(function(p,i){p.active=i<11;});renderAllPlayers();saveState();alert("Les deux compositions ont été remises à zéro.");};
 el("changeA").onclick=function(){setupChange(playersA,"Changement Équipe A");};
 el("changeB").onclick=function(){setupChange(playersB,"Changement Équipe B");};
 el("confirmChange").onclick=confirmChange;
@@ -1095,7 +1195,6 @@ el("addInjury").onclick=function(){var side=el("injuryTeam").value,idx=Number(el
 el("printReport").onclick=function(){renderReport();window.print();};
 el("takePhotosBtn").onclick=function(){el("matchPhotosInput").click();};
 el("matchPhotosInput").onchange=function(){addPhotos(this.files);this.value="";};
-el("openReportFromPhotos").onclick=function(){renderReport();el("photos").classList.remove("active");el("photos").style.display="none";el("home").style.display="none";el("report").classList.add("active");el("report").style.display="block";window.scrollTo(0,0);};
 
 /* ===== CORRECTION DES MINUTES - VERSION DEVELOP ===== */
 function minuteEditorValue(v){return v==null?"":String(v);}
@@ -1188,8 +1287,8 @@ renderCards=function(){_renderCardsMinute();refreshCardMinuteEditor();};
 var _renderStaffHistoryMinute=renderStaffHistory;
 renderStaffHistory=function(){_renderStaffHistoryMinute();refreshStaffCardMinuteEditor();};
 
-loadState();playersA.forEach(function(p,i){if(typeof p.active!=="boolean")p.active=i<11;});playersB.forEach(function(p,i){if(typeof p.active!=="boolean")p.active=i<11;});if(running&&typeof chronoStartedAt==="number"){startChronoRefresh();syncChrono();}
-if("serviceWorker" in navigator){window.addEventListener("load",function(){navigator.serviceWorker.register("sw.js?v=25").catch(function(){});});}
+loadState();playersA.forEach(function(p,i){if(typeof p.active!=="boolean")p.active=i<11;});playersB.forEach(function(p,i){if(typeof p.active!=="boolean")p.active=i<11;});if(playersA.every(function(p){return p.active===true;})&&playersA.some(function(p){return p.name;})){playersA.forEach(function(p,i){p.active=i<11;});}if(playersB.every(function(p){return p.active===true;})&&playersB.some(function(p){return p.name;})){playersB.forEach(function(p,i){p.active=i<11;});}saveState();if(running&&typeof chronoStartedAt==="number"){startChronoRefresh();syncChrono();}
+if("serviceWorker" in navigator){window.addEventListener("load",function(){navigator.serviceWorker.register("sw.js").catch(function(){});});}
 renderAllPlayers();update();updateGoalButtonLabels();
 })();
 </script>
