@@ -123,7 +123,7 @@ input:focus,select:focus{border-color:#60a5fa;box-shadow:0 0 0 3px rgba(96,165,2
 <body>
 <div class="app">
 <h1>⚽ Délégué Football</h1>
-<div class="version">TEST V70</div>
+<div class="version">TEST V71</div>
 <section id="home">
 <div class="card"><div class="teams">
 <div><div class="team" id="teamA">Équipe A</div><div class="score" id="scoreA">0</div></div>
@@ -722,6 +722,74 @@ renderAllPlayers();saveState();box.style.display="none";box.innerHTML="";el("sca
 };
 box.querySelector("#cancelReferenceScan").onclick=function(){box.style.display="none";box.innerHTML="";el("scanStatus").textContent="Lecture annulée.";};
 }
+function detectSingleTeamRows(img,status){
+return Tesseract.recognize(img,"fra+eng",{tessedit_pageseg_mode:"11",preserve_interword_spaces:"1",user_defined_dpi:"300",load_system_dawg:"0",load_freq_dawg:"0"}).then(function(head){
+var words=(head.data&&head.data.words)||[],maillotY=null;
+words.forEach(function(w){
+var t=normalizeOcrLine(w.text||"");
+if(/^(maillot|mallot)$/i.test(t)){var b=w.bbox||{};maillotY=((Number(b.y0)||0)+(Number(b.y1)||0))/2;}
+});
+var w=img.naturalWidth||img.width,h=img.naturalHeight||img.height;
+var c=document.createElement("canvas"),ctx=c.getContext("2d",{willReadFrequently:true});
+c.width=w;c.height=h;ctx.drawImage(img,0,0,w,h);
+var data=ctx.getImageData(0,0,w,h).data;
+var x0=Math.floor(w*.26),x1=Math.floor(w*.995),span=x1-x0,lines=[];
+for(var y=0;y<h;y+=2){
+var dark=0,total=0;
+for(var x=x0;x<x1;x+=2){
+var p=(y*w+x)*4,v=.299*data[p]+.587*data[p+1]+.114*data[p+2];
+if(v<205)dark++;total++;
+}
+if(total&&dark/total>.62)lines.push(y);
+}
+var groups=[];
+lines.forEach(function(y){
+if(!groups.length||y-groups[groups.length-1][groups[groups.length-1].length-1]>4)groups.push([y]);
+else groups[groups.length-1].push(y);
+});
+var centers=groups.map(function(g){return g[Math.floor(g.length/2)];}).filter(function(y){return y>h*.15&&y<h*.9;});
+var start=-1;
+if(maillotY!==null){
+for(var i=0;i<centers.length;i++){if(centers[i]>maillotY+15){start=i;break;}}
+}
+if(start<0){
+for(var j=0;j<centers.length-15;j++){
+var ok=true;
+for(var k=1;k<15;k++){var gap=centers[j+k]-centers[j+k-1];if(gap<38||gap>75){ok=false;break;}}
+if(ok){start=j;break;}
+}
+}
+if(start<0||start+14>=centers.length){
+status.textContent="⚠️ Impossible de repérer les 14 lignes de joueurs.";
+return null;
+}
+var rowLines=centers.slice(start,start+15),strip=document.createElement("canvas"),sctx=strip.getContext("2d");
+var rowH=58,scale=2.2,gap=8;
+strip.width=Math.floor((x1-x0)*scale);strip.height=Math.floor(14*rowH*scale+13*gap*scale);
+for(var r=0;r<14;r++){
+var sy=rowLines[r]+3,sh=Math.max(10,rowLines[r+1]-rowLines[r]-6),dy=Math.floor(r*(rowH+gap)*scale);
+sctx.drawImage(img,x0,sy,x1-x0,sh,0,dy,strip.width,Math.floor(sh*scale));
+}
+status.textContent="⏳ Lecture des 14 lignes de joueurs…";
+return Promise.all([
+Tesseract.recognize(strip,"fra",{tessedit_pageseg_mode:"6",preserve_interword_spaces:"1",user_defined_dpi:"300",load_system_dawg:"0",load_freq_dawg:"0"}),
+Tesseract.recognize(strip,"fra",{tessedit_pageseg_mode:"11",preserve_interword_spaces:"1",user_defined_dpi:"300",load_system_dawg:"0",load_freq_dawg:"0"})
+]).then(function(rr){
+var a=extractReferenceColumnRows(rr[0]),b=extractReferenceColumnRows(rr[1]);
+function merge(x,y){
+var all=x.concat(y).sort(function(p,q){return p.y-q.y;}),out=[];
+all.forEach(function(v){
+var same=null;
+for(var i=0;i<out.length;i++){if(Math.abs(out[i].y-v.y)<35){same=out[i];break;}}
+if(!same)out.push({y:v.y,name:v.name});else if((v.name||"").length>(same.name||"").length)same.name=v.name;
+});
+return out.slice(0,14);
+}
+return {a:merge(a,b),b:[],single:"singleA"};
+});
+});
+}
+
 function scanMatchSheet(file){
 if(!file)return;
 var status=el("scanStatus"),review=el("scanReview");review.style.display="none";review.innerHTML="";
@@ -729,6 +797,9 @@ if(!window.Tesseract){status.textContent="❌ Le moteur OCR n’est pas disponib
 status.textContent="⏳ Préparation de la photo…";
 loadImageFile(file).then(function(img){
 var base=cleanScanCanvas(img);
+status.textContent="⏳ Vérification de la structure de la photo…";
+return detectSingleTeamRows(img,status).then(function(single){
+if(single&&referenceColumnScore(single.a)>=5)return {single:single};
 var variants=[base,makeReferenceCrop(base)],best=null;
 function tryVariant(i){
 if(i>=variants.length)return Promise.resolve(best);
@@ -741,13 +812,15 @@ return tryVariant(i+1);
 });
 }
 return tryVariant(0);
-}).then(function(best){
-if(!best||referenceColumnScore(best.data.a)<5||referenceColumnScore(best.data.b)<5){
+});
+}).then(function(result){
+var data=result&&result.single?result.single:result&&result.data;
+if(!data||referenceColumnScore(data.a)<5||(!data.single&&referenceColumnScore(data.b)<5)){
 status.textContent="⚠️ Lecture insuffisante. Essayez une photo bien cadrée sur la feuille.";
 return;
 }
-showReferenceScanReview(best.data);
-status.textContent="✅ Feuille lue. Vérifiez les deux équipes avant validation.";
+showReferenceScanReview(data);
+status.textContent="✅ Feuille lue. Vérifiez le résultat avant validation.";
 }).catch(function(err){console.error("OCR référence",err);status.textContent="❌ Erreur OCR : "+(err&&err.message?err.message:"lecture impossible");});
 }
 function escapeHtmlAttr(v){return String(v==null?"":v).replace(/&/g,"&amp;").replace(/"/g,"&quot;").replace(/</g,"&lt;").replace(/>/g,"&gt;").replace(/'/g,"&#39;");}
