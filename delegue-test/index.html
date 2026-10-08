@@ -123,7 +123,7 @@ input:focus,select:focus{border-color:#60a5fa;box-shadow:0 0 0 3px rgba(96,165,2
 <body>
 <div class="app">
 <h1>⚽ Délégué Football</h1>
-<div class="version">TEST V71</div>
+<div class="version">TEST V72</div>
 <section id="home">
 <div class="card"><div class="teams">
 <div><div class="team" id="teamA">Équipe A</div><div class="score" id="scoreA">0</div></div>
@@ -723,70 +723,38 @@ renderAllPlayers();saveState();box.style.display="none";box.innerHTML="";el("sca
 box.querySelector("#cancelReferenceScan").onclick=function(){box.style.display="none";box.innerHTML="";el("scanStatus").textContent="Lecture annulée.";};
 }
 function detectSingleTeamRows(img,status){
-return Tesseract.recognize(img,"fra+eng",{tessedit_pageseg_mode:"11",preserve_interword_spaces:"1",user_defined_dpi:"300",load_system_dawg:"0",load_freq_dawg:"0"}).then(function(head){
-var words=(head.data&&head.data.words)||[],maillotY=null;
-words.forEach(function(w){
-var t=normalizeOcrLine(w.text||"");
-if(/^(maillot|mallot)$/i.test(t)){var b=w.bbox||{};maillotY=((Number(b.y0)||0)+(Number(b.y1)||0))/2;}
-});
 var w=img.naturalWidth||img.width,h=img.naturalHeight||img.height;
-var c=document.createElement("canvas"),ctx=c.getContext("2d",{willReadFrequently:true});
-c.width=w;c.height=h;ctx.drawImage(img,0,0,w,h);
-var data=ctx.getImageData(0,0,w,h).data;
-var x0=Math.floor(w*.26),x1=Math.floor(w*.995),span=x1-x0,lines=[];
-for(var y=0;y<h;y+=2){
-var dark=0,total=0;
-for(var x=x0;x<x1;x+=2){
-var p=(y*w+x)*4,v=.299*data[p]+.587*data[p+1]+.114*data[p+2];
-if(v<205)dark++;total++;
-}
-if(total&&dark/total>.62)lines.push(y);
-}
-var groups=[];
-lines.forEach(function(y){
-if(!groups.length||y-groups[groups.length-1][groups[groups.length-1].length-1]>4)groups.push([y]);
-else groups[groups.length-1].push(y);
-});
-var centers=groups.map(function(g){return g[Math.floor(g.length/2)];}).filter(function(y){return y>h*.15&&y<h*.9;});
-var start=-1;
-if(maillotY!==null){
-for(var i=0;i<centers.length;i++){if(centers[i]>maillotY+15){start=i;break;}}
-}
-if(start<0){
-for(var j=0;j<centers.length-15;j++){
-var ok=true;
-for(var k=1;k<15;k++){var gap=centers[j+k]-centers[j+k-1];if(gap<38||gap>75){ok=false;break;}}
-if(ok){start=j;break;}
-}
-}
-if(start<0||start+14>=centers.length){
-status.textContent="⚠️ Impossible de repérer les 14 lignes de joueurs.";
-return null;
-}
-var rowLines=centers.slice(start,start+15),strip=document.createElement("canvas"),sctx=strip.getContext("2d");
-var rowH=58,scale=2.2,gap=8;
-strip.width=Math.floor((x1-x0)*scale);strip.height=Math.floor(14*rowH*scale+13*gap*scale);
-for(var r=0;r<14;r++){
-var sy=rowLines[r]+3,sh=Math.max(10,rowLines[r+1]-rowLines[r]-6),dy=Math.floor(r*(rowH+gap)*scale);
-sctx.drawImage(img,x0,sy,x1-x0,sh,0,dy,strip.width,Math.floor(sh*scale));
-}
-status.textContent="⏳ Lecture des 14 lignes de joueurs…";
+var crop=document.createElement("canvas"),ctx=crop.getContext("2d",{willReadFrequently:true});
+var x=Math.floor(w*.22),y=Math.floor(h*.27),cw=Math.floor(w*.78),ch=Math.floor(h*.66);
+crop.width=cw*2;crop.height=ch*2;
+ctx.drawImage(img,x,y,cw,ch,0,0,crop.width,crop.height);
+status.textContent="⏳ Lecture des noms des 14 joueurs…";
 return Promise.all([
-Tesseract.recognize(strip,"fra",{tessedit_pageseg_mode:"6",preserve_interword_spaces:"1",user_defined_dpi:"300",load_system_dawg:"0",load_freq_dawg:"0"}),
-Tesseract.recognize(strip,"fra",{tessedit_pageseg_mode:"11",preserve_interword_spaces:"1",user_defined_dpi:"300",load_system_dawg:"0",load_freq_dawg:"0"})
+Tesseract.recognize(crop,"fra+eng",{tessedit_pageseg_mode:"6",preserve_interword_spaces:"1",user_defined_dpi:"300",load_system_dawg:"0",load_freq_dawg:"0"}),
+Tesseract.recognize(crop,"fra+eng",{tessedit_pageseg_mode:"11",preserve_interword_spaces:"1",user_defined_dpi:"300",load_system_dawg:"0",load_freq_dawg:"0"})
 ]).then(function(rr){
-var a=extractReferenceColumnRows(rr[0]),b=extractReferenceColumnRows(rr[1]);
-function merge(x,y){
-var all=x.concat(y).sort(function(p,q){return p.y-q.y;}),out=[];
-all.forEach(function(v){
-var same=null;
-for(var i=0;i<out.length;i++){if(Math.abs(out[i].y-v.y)<35){same=out[i];break;}}
-if(!same)out.push({y:v.y,name:v.name});else if((v.name||"").length>(same.name||"").length)same.name=v.name;
+var candidates=[];
+rr.forEach(function(res){
+var lines=((res.data&&res.data.text)||"").split(/\r?\n/);
+lines.forEach(function(line){
+var s=normalizeOcrLine(line).replace(/[^A-Za-zÀ-ÿ' .-]/g," ").replace(/\s+/g," ").trim();
+if(!s||s.length<5||s.length>45)return;
+if(/^(maillot|mallot|nom|prénom|prenom|équipe|equipe|recevante|visiteuse|central|arbitre|composition|compositions|joueurs?|joueur)$/i.test(s))return;
+if(/^(?:e|m|a|d|dr)$/i.test(s))return;
+var toks=s.split(/\s+/).filter(function(t){return t.length>=2;});
+if(toks.length<2)return;
+var letters=(s.match(/[A-Za-zÀ-ÿ]/g)||[]).length;
+if(letters<5)return;
+candidates.push(s);
 });
-return out.slice(0,14);
-}
-var ht=(head.data&&head.data.text)||"";var side=/visiteuse|visiteuse/i.test(ht)?"singleB":"singleA";return {a:merge(a,b),b:[],single:side};
 });
+var unique=[];
+candidates.forEach(function(s){
+if(!unique.some(function(x){return x.toUpperCase()===s.toUpperCase();}))unique.push(s);
+});
+var rows=unique.slice(0,14).map(function(name,i){return {y:i*50,name:name};});
+if(rows.length<5)return null;
+return {a:rows,b:[],single:"singleA"};
 });
 }
 
