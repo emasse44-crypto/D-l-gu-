@@ -785,7 +785,7 @@ if(!same)out.push({y:v.y,name:v.name});else if((v.name||"").length>(same.name||"
 });
 return out.slice(0,14);
 }
-return {a:merge(a,b),b:[],single:"singleA"};
+var ht=(head.data&&head.data.text)||"";var side=/visiteuse|visiteuse/i.test(ht)?"singleB":"singleA";return {a:merge(a,b),b:[],single:side};
 });
 });
 }
