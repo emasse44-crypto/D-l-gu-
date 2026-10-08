@@ -1,0 +1,23 @@
+{
+  "id": "/D-l-gu-/delegue-ai-test/",
+  "name": "Délégué Football TEST",
+  "short_name": "Délégué TEST",
+  "description": "Version de test de Délégué Football",
+  "start_url": "/D-l-gu-/delegue-ai-test/",
+  "scope": "/D-l-gu-/delegue-ai-test/",
+  "display": "standalone",
+  "display_override": ["standalone"],
+  "orientation": "portrait",
+  "theme_color": "#111827",
+  "background_color": "#111827",
+  "lang": "fr-FR",
+  "icons": [
+    {
+      "src": "icon.svg",
+      "sizes": "any",
+      "type": "image/svg+xml",
+      "purpose": "any maskable"
+    }
+  ],
+  "prefer_related_applications": false
+}
