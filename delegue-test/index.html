@@ -123,7 +123,7 @@ input:focus,select:focus{border-color:#60a5fa;box-shadow:0 0 0 3px rgba(96,165,2
 <body>
 <div class="app">
 <h1>⚽ Délégué Football</h1>
-<div class="version">TEST V71</div>
+<div class="version">TEST V72</div>
 <section id="home">
 <div class="card"><div class="teams">
 <div><div class="team" id="teamA">Équipe A</div><div class="score" id="scoreA">0</div></div>
@@ -133,7 +133,7 @@ input:focus,select:focus{border-color:#60a5fa;box-shadow:0 0 0 3px rgba(96,165,2
 <div class="card"><div class="mainbuttons"><button id="pause">⏸ Pause</button><button class="red" id="reset">↺ Nouveau match</button></div><button id="secondHalf" class="second-half">▶ 2e mi-temps · 45:00</button></div>
 <div class="card menu"><button data-page="compositions">👥 Compositions</button><button data-page="changes">🔄 Changements</button><button data-page="goals">⚽ Buts</button><button data-page="events">🟨 Cartons</button><button data-page="staff">👔 Staff</button><button data-page="settings">⚙️ Match</button><button data-page="photos">📸 Photos</button><button id="reportHomeBtn" data-page="report">📄 Rapport</button></div>
 </section>
-<section class="page card" id="compositions"><button class="back">← Retour</button><h2>Compositions</h2><p class="note">1 à 11 : titulaires · 12 à 16 : remplaçants. Le staff est renseigné séparément dans la rubrique 👔 Staff. Le capitaine est sélectionnable.</p><div class="change-item"><strong>📷 Scanner une composition</strong><p class="note">Prenez une photo d'une composition. Le scanner essaie de récupérer les numéros, noms, licences et le capitaine. Vérifiez toujours le résultat avant validation.</p><input id="matchSheetCamera" type="file" accept="image/*" capture="environment" style="display:none"><input id="matchSheetGallery" type="file" accept="image/*" style="display:none"><div style="display:grid;grid-template-columns:1fr 1fr;gap:8px;margin-top:8px"><button id="scanSheetCameraBtn" class="green">📷 Prendre une photo</button><button id="scanSheetGalleryBtn">🖼️ Choisir une photo</button></div><div id="scanStatus" class="note" style="margin-top:8px"></div><div id="scanReview" style="display:none;margin-top:12px"></div></div><div class="composition-team"><h3>Équipe A</h3><div id="playersA"></div></div><div class="composition-team"><h3>Équipe B</h3><div id="playersB"></div></div><button class="green" id="saveCompositions" style="width:100%;margin-top:18px">Enregistrer les compositions</button><button class="red" id="resetComposition" style="width:100%;margin-top:10px">🗑️ Remise à zéro des compositions</button></section>
+<section class="page card" id="compositions"><button class="back">← Retour</button><h2>Compositions</h2><p class="note">1 à 11 : titulaires · 12 à 16 : remplaçants. Le staff est renseigné séparément dans la rubrique 👔 Staff. Le capitaine est sélectionnable.</p><div class="change-item"><strong>📷 Scanner une composition</strong><p class="note">Prenez une photo d'une composition. Le scanner essaie de récupérer les numéros, noms, licences et le capitaine. Vérifiez toujours le résultat avant validation.</p><input id="matchSheetCamera" type="file" accept="image/*" capture="environment" style="display:none"><input id="matchSheetGallery" type="file" accept="image/*" style="display:none"><div style="display:grid;grid-template-columns:1fr 1fr;gap:8px;margin-top:8px"><button id="scanSheetCameraBtn" class="green">📷 Prendre une photo</button><button id="scanSheetGalleryBtn">🖼️ Choisir une photo</button></div><div style="margin-top:10px"><select id="scanMode"><option value="full">📄 Feuille complète · 2 équipes</option><option value="singleA">📋 Photo seule · Équipe A</option><option value="singleB">📋 Photo seule · Équipe B</option></select></div><div id="scanStatus" class="note" style="margin-top:8px"></div><div id="scanReview" style="display:none;margin-top:12px"></div></div><div class="composition-team"><h3>Équipe A</h3><div id="playersA"></div></div><div class="composition-team"><h3>Équipe B</h3><div id="playersB"></div></div><button class="green" id="saveCompositions" style="width:100%;margin-top:18px">Enregistrer les compositions</button><button class="red" id="resetComposition" style="width:100%;margin-top:10px">🗑️ Remise à zéro des compositions</button></section>
 <section class="page card" id="changes"><button class="back">← Retour</button><h2>Changements</h2><p class="note">Effectuez une sortie puis une entrée. Le numéro du joueur suffit, le nom est facultatif.</p><div class="change-grid"><div><div class="change-title">Équipe A</div><button id="changeA" style="width:100%">🔄 Faire un changement A</button></div><div><div class="change-title">Équipe B</div><button id="changeB" style="width:100%">🔄 Faire un changement B</button></div></div><div id="changeForm" style="display:none;margin-top:18px"><p id="changeTeamLabel" class="change-title"></p><p>Joueur qui sort</p><select id="playerOut"></select><p>Remplaçant qui entre</p><select id="playerIn"></select><button class="green" id="confirmChange" style="width:100%;margin-top:10px">Valider le changement</button></div><div class="change-history"><h3>Historique</h3><div id="changeHistory"><p class="note">Aucun changement.</p></div></div></section>
 <section class="page card" id="goals"><button class="back">← Retour</button><h2>⚽ Buts du match</h2><div class="teams" style="margin-bottom:14px"><div><div class="team" id="goalsTeamA">Équipe A</div><div class="score" id="goalsScoreA">0</div></div><div><div class="clock" id="goalsClock">00:00</div></div><div><div class="team" id="goalsTeamB">Équipe B</div><div class="score" id="goalsScoreB">0</div></div></div><div class="buttons"><button id="goalPageA">+ But A</button><button id="goalPageB">+ But B</button></div><div id="goalForm" style="display:none;margin-top:14px"><p id="goalTeamLabel" class="change-title"></p><p>Buteur</p><select id="goalPlayer"></select><p style="margin-top:10px">Passeur</p><select id="goalAssist"><option value="">Aucun passeur</option></select><p style="margin-top:10px">Type de but</p><select id="goalType"><option value="Pied">👟 Pied</option><option value="Tête">🧠 Tête</option><option value="Penalty">⚽ Penalty</option></select><button class="green" id="confirmGoal" style="width:100%;margin-top:10px">Valider le but</button></div><div style="margin-top:18px"><div class="change-title">Chronologie des buts</div><div id="goalHistory"><p class="note">Aucun but.</p></div></div></section>
 <section class="page card" id="events">
@@ -671,35 +671,37 @@ var x=left?0:Math.round(w*.50),cw=Math.round(w*.50);
 c.width=cw;c.height=h;ctx.drawImage(canvas,x,0,cw,h,0,0,cw,h);
 return c;
 }
-function referenceScanVariant(canvas,status){
-var left=cropColumn(canvas,true),right=cropColumn(canvas,false);
-status.textContent="⏳ Lecture de l’équipe recevante…";
-return Promise.all([
+function referenceScanVariant(canvas,status,mode){
+var single=mode==="singleA"||mode==="singleB";
+var left=single?canvas:cropColumn(canvas,true),right=single?null:cropColumn(canvas,false);
+status.textContent=single?"⏳ Lecture de la colonne de l’équipe…":"⏳ Lecture des deux équipes…";
+var jobs=[
 Tesseract.recognize(left,"fra+eng",{tessedit_pageseg_mode:"6",preserve_interword_spaces:"1",user_defined_dpi:"300",load_system_dawg:"0",load_freq_dawg:"0"}),
-Tesseract.recognize(left,"fra+eng",{tessedit_pageseg_mode:"11",preserve_interword_spaces:"1",user_defined_dpi:"300",load_system_dawg:"0",load_freq_dawg:"0"}),
-Tesseract.recognize(right,"fra+eng",{tessedit_pageseg_mode:"6",preserve_interword_spaces:"1",user_defined_dpi:"300",load_system_dawg:"0",load_freq_dawg:"0"}),
-Tesseract.recognize(right,"fra+eng",{tessedit_pageseg_mode:"11",preserve_interword_spaces:"1",user_defined_dpi:"300",load_system_dawg:"0",load_freq_dawg:"0"})
-]).then(function(r){
-var a=extractReferenceColumnRows(r[0]),a2=extractReferenceColumnRows(r[1]),b=extractReferenceColumnRows(r[2]),b2=extractReferenceColumnRows(r[3]);
+Tesseract.recognize(left,"fra+eng",{tessedit_pageseg_mode:"11",preserve_interword_spaces:"1",user_defined_dpi:"300",load_system_dawg:"0",load_freq_dawg:"0"})
+];
+if(!single){
+jobs.push(Tesseract.recognize(right,"fra+eng",{tessedit_pageseg_mode:"6",preserve_interword_spaces:"1",user_defined_dpi:"300",load_system_dawg:"0",load_freq_dawg:"0"}));
+jobs.push(Tesseract.recognize(right,"fra+eng",{tessedit_pageseg_mode:"11",preserve_interword_spaces:"1",user_defined_dpi:"300",load_system_dawg:"0",load_freq_dawg:"0"}));
+}
+return Promise.all(jobs).then(function(r){
 function mergeRows(x,y){
 var all=x.concat(y).sort(function(p,q){return p.y-q.y;}),out=[];
 all.forEach(function(v){
 var same=null;
 for(var i=0;i<out.length;i++){if(Math.abs(out[i].y-v.y)<22){same=out[i];break;}}
-if(!same)out.push({y:v.y,name:v.name,number:v.number});
+if(!same)out.push({y:v.y,name:v.name});
 else if((v.name||"").length>(same.name||"").length)same.name=v.name;
-if(same&&!same.number&&v.number)same.number=v.number;
 });
 return out;
 }
-return {a:mergeRows(a,a2).slice(0,14),b:mergeRows(b,b2).slice(0,14)};
-});
+if(single)return {a:mergeRows(extractReferenceColumnRows(r[0]),extractReferenceColumnRows(r[1])).slice(0,14),b:[],single:mode};
+return {a:mergeRows(extractReferenceColumnRows(r[0]),extractReferenceColumnRows(r[1])).slice(0,14),b:mergeRows(extractReferenceColumnRows(r[2]),extractReferenceColumnRows(r[3])).slice(0,14)};
 }
 function showReferenceScanReview(data){
 var box=el("scanReview");if(!box)return;
 box.style.display="block";
-function teamHtml(rows,side){
-var html='<div class="scan-team-review"><h4>'+(side==="A"?"Équipe A · recevante":"Équipe B · visiteuse")+'</h4>';
+function teamHtml(rows,side,title){
+var html='<div class="scan-team-review"><h4>'+title+'</h4>';
 rows.slice(0,16).forEach(function(x,i){
 var n=i+1;
 html+='<div class="scan-row"><div class="scan-num">'+n+'</div><input type="text" value="'+escapeHtmlAttr(x.name||"")+'" data-ref-name="'+side+'" data-ref-index="'+i+'" data-ref-number="'+n+'" placeholder="Nom / prénom"></div>';
@@ -710,16 +712,19 @@ html+='<div class="scan-row"><div class="scan-num">'+n+'</div><input type="text"
 }
 return html+'</div>';
 }
-box.innerHTML='<div class="scan-review"><h4>🔎 Vérification de la feuille</h4><div class="note">Les numéros sont attribués selon les lignes de la feuille. Vérifiez les noms avant validation.</div><div class="scan-columns">'+teamHtml(data.a,"A")+teamHtml(data.b,"B")+'</div><button class="green" id="confirmReferenceScan" style="width:100%;margin-top:12px">✅ Valider les joueurs</button><button id="cancelReferenceScan" style="width:100%;margin-top:8px">Annuler</button></div>';
+var single=!!data.single;
+var content=single?teamHtml(data.a,data.single==="singleA"?"A":"B",data.single==="singleA"?"Équipe A · photo seule":"Équipe B · photo seule"):teamHtml(data.a,"A","Équipe A · recevante")+teamHtml(data.b,"B","Équipe B · visiteuse");
+box.innerHTML='<div class="scan-review"><h4>🔎 Vérification de la feuille</h4><div class="note">'+(single?"Photo d’une seule équipe : les joueurs sont numérotés selon l’ordre des lignes.":"Les numéros sont attribués selon les lignes de la feuille.")+' Vérifiez les noms avant validation.</div><div class="scan-columns">'+content+'</div><button class="green" id="confirmReferenceScan" style="width:100%;margin-top:12px">✅ Valider les joueurs</button><button id="cancelReferenceScan" style="width:100%;margin-top:8px">Annuler</button></div>';
 box.querySelector("#confirmReferenceScan").onclick=function(){
 ["A","B"].forEach(function(side){
+if(single&&side!==(data.single==="singleA"?"A":"B"))return;
 var team=side==="A"?playersA:playersB;
 box.querySelectorAll('input[data-ref-name="'+side+'"]').forEach(function(input){
-var i=Number(input.getAttribute("data-ref-index")),n=Number(input.getAttribute("data-ref-number")),name=input.value.trim();
+var i=Number(input.getAttribute("data-ref-index")),name=input.value.trim();
 if(i>=0&&i<16){team[i].name=name;team[i].license="";team[i].active=i<11;team[i].captain=false;}
 });
 });
-renderAllPlayers();saveState();box.style.display="none";box.innerHTML="";el("scanStatus").textContent="✅ Joueurs récupérés. Vérifiez encore les compositions.";
+renderAllPlayers();saveState();box.style.display="none";box.innerHTML="";el("scanStatus").textContent="✅ Joueurs récupérés. Vérifiez encore la composition.";
 };
 box.querySelector("#cancelReferenceScan").onclick=function(){box.style.display="none";box.innerHTML="";el("scanStatus").textContent="Lecture annulée.";};
 }
@@ -727,6 +732,7 @@ function scanMatchSheet(file){
 if(!file)return;
 var status=el("scanStatus"),review=el("scanReview");review.style.display="none";review.innerHTML="";
 if(!window.Tesseract){status.textContent="❌ Le moteur OCR n’est pas disponible.";return;}
+var mode=el("scanMode")?el("scanMode").value:"full";
 status.textContent="⏳ Préparation de la photo…";
 loadImageFile(file).then(function(img){
 var base=cleanScanCanvas(img);
@@ -734,21 +740,22 @@ var variants=[base,makeReferenceCrop(base)],best=null;
 function tryVariant(i){
 if(i>=variants.length)return Promise.resolve(best);
 status.textContent="⏳ Analyse de la feuille…";
-return referenceScanVariant(variants[i],status).then(function(data){
-var score=referenceColumnScore(data.a)+referenceColumnScore(data.b);
+return referenceScanVariant(variants[i],status,mode).then(function(data){
+var score=referenceColumnScore(data.a)+(data.single?0:referenceColumnScore(data.b));
 if(!best||score>best.score)best={data:data,score:score};
-if(score>=18||i===variants.length-1)return best;
+if(score>=12||i===variants.length-1)return best;
 return tryVariant(i+1);
 });
 }
 return tryVariant(0);
 }).then(function(best){
-if(!best||referenceColumnScore(best.data.a)<5||referenceColumnScore(best.data.b)<5){
+var min=best&&best.data&&best.data.single?5:5;
+if(!best||referenceColumnScore(best.data.a)<min||(!best.data.single&&referenceColumnScore(best.data.b)<min)){
 status.textContent="⚠️ Lecture insuffisante. Essayez une photo bien cadrée sur la feuille.";
 return;
 }
 showReferenceScanReview(best.data);
-status.textContent="✅ Feuille lue. Vérifiez les deux équipes avant validation.";
+status.textContent="✅ Feuille lue. Vérifiez le résultat avant validation.";
 }).catch(function(err){console.error("OCR référence",err);status.textContent="❌ Erreur OCR : "+(err&&err.message?err.message:"lecture impossible");});
 }
 function escapeHtmlAttr(v){return String(v==null?"":v).replace(/&/g,"&amp;").replace(/"/g,"&quot;").replace(/</g,"&lt;").replace(/>/g,"&gt;").replace(/'/g,"&#39;");}
