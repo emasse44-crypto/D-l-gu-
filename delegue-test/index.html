@@ -123,7 +123,7 @@ input:focus,select:focus{border-color:#60a5fa;box-shadow:0 0 0 3px rgba(96,165,2
 <body>
 <div class="app">
 <h1>⚽ Délégué Football</h1>
-<div class="version">TEST V66</div>
+<div class="version">TEST V67</div>
 <section id="home">
 <div class="card"><div class="teams">
 <div><div class="team" id="teamA">Équipe A</div><div class="score" id="scoreA">0</div></div>
@@ -573,7 +573,7 @@ return !!x.name||!!x.license||!!x.role;
 });
 return out.slice(0,30);
 }
-function scanMatchSheet(file){
+function scanMatchSheetLegacy(file){
 if(!file)return;
 var status=el("scanStatus"),review=el("scanReview");review.style.display="none";review.innerHTML="";
 if(!window.Tesseract){status.textContent="❌ Le moteur OCR n’est pas disponible.";return;}
@@ -618,6 +618,140 @@ window.showFullScanReview(rows,hint);
 status.textContent="✅ "+rows.length+" ligne(s) détectée(s). Vérifiez noms, licences et équipe.";
 });
 });}).catch(function(err){console.error("OCR",err);status.textContent="❌ Erreur OCR : "+(err&&err.message?err.message:"lecture impossible");});
+}
+}
+function extractReferenceColumnRows(result){
+var words=(result.data&&result.data.words)||[],rows=[];
+words.forEach(function(word){
+var raw=normalizeOcrLine(word.text||"");if(!raw)return;
+var b=word.bbox||{},x=Number(b.x0)||0,y=Number(b.y0)||0,y1=Number(b.y1)||0,cy=(y+y1)/2,row=null;
+for(var i=rows.length-1;i>=0;i--){if(Math.abs(rows[i].y-cy)<=24){row=rows[i];break;}if(rows[i].y<cy-42)break;}
+if(!row){row={y:cy,words:[]};rows.push(row);}
+row.words.push({text:raw,x:x});
+});
+rows.sort(function(a,b){return a.y-b.y;});
+var out=[];
+rows.forEach(function(row){
+row.words.sort(function(a,b){return a.x-b.x;});
+var texts=row.words.map(function(w){return w.text;});
+var first=texts[0]||"";
+var number=0;
+var m=first.match(/^(1[0-6]|[1-9])$/);
+if(m)number=Number(m[1]);
+var parts=[];
+texts.forEach(function(t,j){
+var clean=t.replace(/[^A-Za-zÀ-ÿ' .-]/g," ").replace(/\s+/g," ").trim();
+if(!clean)return;
+if(j===0&&number) return;
+if(/^(maillot|nom|pr[ée]nom|équipe|equipe|recevante|visiteuse|central|arbitre|composition)$/i.test(clean))return;
+if(/^(c|r|e|m|a|d|dr)$/i.test(clean))return;
+if(/^\d{1,2}$/.test(clean))return;
+parts.push(clean);
+});
+var name=cleanRecognizedName(parts.join(" "));
+var letters=(name.match(/[A-Za-zÀ-ÿ]/g)||[]).length;
+if(letters<4)return;
+if(/^(arbitre|central|recevante|visiteuse|nom|prénom|maillot)$/i.test(name))return;
+out.push({y:row.y,name:name,number:number});
+});
+return out;
+}
+function referenceColumnScore(rows){
+var good=0;
+rows.forEach(function(x){if((x.name||"").split(/\s+/).length>=2)good++;});
+return good;
+}
+function makeReferenceCrop(canvas){
+var w=canvas.width,h=canvas.height,c=document.createElement("canvas"),ctx=c.getContext("2d");
+var x=Math.round(w*.08),y=Math.round(h*.075),cw=Math.round(w*.84),ch=Math.round(h*.72);
+c.width=cw;c.height=ch;ctx.drawImage(canvas,x,y,cw,ch,0,0,cw,ch);
+return c;
+}
+function cropColumn(canvas,left){
+var w=canvas.width,h=canvas.height,c=document.createElement("canvas"),ctx=c.getContext("2d");
+var x=left?0:Math.round(w*.50),cw=Math.round(w*.50);
+c.width=cw;c.height=h;ctx.drawImage(canvas,x,0,cw,h,0,0,cw,h);
+return c;
+}
+function referenceScanVariant(canvas,status){
+var left=cropColumn(canvas,true),right=cropColumn(canvas,false);
+status.textContent="⏳ Lecture de l’équipe recevante…";
+return Promise.all([
+Tesseract.recognize(left,"fra+eng",{tessedit_pageseg_mode:"6",preserve_interword_spaces:"1",user_defined_dpi:"300",load_system_dawg:"0",load_freq_dawg:"0"}),
+Tesseract.recognize(left,"fra+eng",{tessedit_pageseg_mode:"11",preserve_interword_spaces:"1",user_defined_dpi:"300",load_system_dawg:"0",load_freq_dawg:"0"}),
+Tesseract.recognize(right,"fra+eng",{tessedit_pageseg_mode:"6",preserve_interword_spaces:"1",user_defined_dpi:"300",load_system_dawg:"0",load_freq_dawg:"0"}),
+Tesseract.recognize(right,"fra+eng",{tessedit_pageseg_mode:"11",preserve_interword_spaces:"1",user_defined_dpi:"300",load_system_dawg:"0",load_freq_dawg:"0"})
+]).then(function(r){
+var a=extractReferenceColumnRows(r[0]),a2=extractReferenceColumnRows(r[1]),b=extractReferenceColumnRows(r[2]),b2=extractReferenceColumnRows(r[3]);
+function mergeRows(x,y){
+var all=x.concat(y).sort(function(p,q){return p.y-q.y;}),out=[];
+all.forEach(function(v){
+var same=null;
+for(var i=0;i<out.length;i++){if(Math.abs(out[i].y-v.y)<22){same=out[i];break;}}
+if(!same)out.push({y:v.y,name:v.name,number:v.number});
+else if((v.name||"").length>(same.name||"").length)same.name=v.name;
+if(same&&!same.number&&v.number)same.number=v.number;
+});
+return out;
+}
+return {a:mergeRows(a,a2),b:mergeRows(b,b2)};
+});
+}
+function showReferenceScanReview(data){
+var box=el("scanReview");if(!box)return;
+box.style.display="block";
+function teamHtml(rows,side){
+var html='<div class="scan-team-review"><h4>'+(side==="A"?"Équipe A · recevante":"Équipe B · visiteuse")+'</h4>';
+rows.slice(0,16).forEach(function(x,i){
+var n=x.number>=1&&x.number<=16?x.number:i+1;
+html+='<div class="scan-row"><div class="scan-num">'+n+'</div><input type="text" value="'+escapeHtmlAttr(x.name||"")+'" data-ref-name="'+side+'" data-ref-index="'+i+'" data-ref-number="'+n+'" placeholder="Nom / prénom"></div>';
+});
+for(var i=rows.length;i<16;i++){
+var n=i+1;
+html+='<div class="scan-row"><div class="scan-num">'+n+'</div><input type="text" value="" data-ref-name="'+side+'" data-ref-index="'+i+'" data-ref-number="'+n+'" placeholder="Nom / prénom"></div>';
+}
+return html+'</div>';
+}
+box.innerHTML='<div class="scan-review"><h4>🔎 Vérification de la feuille</h4><div class="note">Les numéros sont attribués selon les lignes de la feuille. Vérifiez les noms avant validation.</div><div class="scan-columns">'+teamHtml(data.a,"A")+teamHtml(data.b,"B")+'</div><button class="green" id="confirmReferenceScan" style="width:100%;margin-top:12px">✅ Valider les joueurs</button><button id="cancelReferenceScan" style="width:100%;margin-top:8px">Annuler</button></div>';
+box.querySelector("#confirmReferenceScan").onclick=function(){
+["A","B"].forEach(function(side){
+var team=side==="A"?playersA:playersB;
+box.querySelectorAll('input[data-ref-name="'+side+'"]').forEach(function(input){
+var i=Number(input.getAttribute("data-ref-index")),n=Number(input.getAttribute("data-ref-number")),name=input.value.trim();
+if(i>=0&&i<16){team[i].name=name;team[i].license="";team[i].active=i<11;team[i].captain=false;}
+});
+});
+renderAllPlayers();saveState();box.style.display="none";box.innerHTML="";el("scanStatus").textContent="✅ Joueurs récupérés. Vérifiez encore les compositions.";
+};
+box.querySelector("#cancelReferenceScan").onclick=function(){box.style.display="none";box.innerHTML="";el("scanStatus").textContent="Lecture annulée.";};
+}
+function scanMatchSheet(file){
+if(!file)return;
+var status=el("scanStatus"),review=el("scanReview");review.style.display="none";review.innerHTML="";
+if(!window.Tesseract){status.textContent="❌ Le moteur OCR n’est pas disponible.";return;}
+status.textContent="⏳ Préparation de la photo…";
+loadImageFile(file).then(function(img){
+var base=cleanScanCanvas(img);
+var variants=[base,makeReferenceCrop(base)],best=null;
+function tryVariant(i){
+if(i>=variants.length)return Promise.resolve(best);
+status.textContent="⏳ Analyse de la feuille…";
+return referenceScanVariant(variants[i],status).then(function(data){
+var score=referenceColumnScore(data.a)+referenceColumnScore(data.b);
+if(!best||score>best.score)best={data:data,score:score};
+if(score>=18||i===variants.length-1)return best;
+return tryVariant(i+1);
+});
+}
+return tryVariant(0);
+}).then(function(best){
+if(!best||referenceColumnScore(best.data.a)<5||referenceColumnScore(best.data.b)<5){
+status.textContent="⚠️ Lecture insuffisante. Essayez une photo bien cadrée sur la feuille.";
+return;
+}
+showReferenceScanReview(best.data);
+status.textContent="✅ Feuille lue. Vérifiez les deux équipes avant validation.";
+}).catch(function(err){console.error("OCR référence",err);status.textContent="❌ Erreur OCR : "+(err&&err.message?err.message:"lecture impossible");});
 }
 function escapeHtmlAttr(v){return String(v==null?"":v).replace(/&/g,"&amp;").replace(/"/g,"&quot;").replace(/</g,"&lt;").replace(/>/g,"&gt;").replace(/'/g,"&#39;");}
 window.showFullScanReview=function(rows,hint){
