@@ -123,7 +123,7 @@ input:focus,select:focus{border-color:#60a5fa;box-shadow:0 0 0 3px rgba(96,165,2
 <body>
 <div class="app">
 <h1>⚽ Délégué Football</h1>
-<div class="version">V62</div>
+<div class="version">V63</div>
 <section id="home">
 <div class="card"><div class="teams">
 <div><div class="team" id="teamA">Équipe A</div><div class="score" id="scoreA">0</div></div>
@@ -1059,6 +1059,28 @@ var goalHtml="";
 if(goals.length){
 goalHtml=goals.map(function(x,i){return '<div style="margin-top:6px"><strong>'+escapeHtml(x.minute)+'</strong> · '+escapeHtml(teamName(x.team))+' · ⚽ <strong>'+escapeHtml(x.player)+'</strong> · '+escapeHtml(x.goalType||"Pied")+(x.assist?' · Passeur : <strong>'+escapeHtml(x.assist)+'</strong>':'')+(x.cancelled?' · BUT ANNULÉ':'')+'</div>';}).join("");
 }else goalHtml=empty("Aucun but enregistré.");
+var finalCompositionHtml="";
+function finalTeamComposition(team,side){
+  var rows=[];
+  team.forEach(function(p,i){
+    if(!p.name)return;
+    var label=playerLabel(p,i);
+    var events=[];
+    var goalCount=goals.filter(function(x){return x.team===side&&x.player===label&&!x.cancelled;}).length;
+    if(goalCount)events.push("⚽ Buteur"+(goalCount>1?" x"+goalCount:""));
+    var cardList=cards.filter(function(x){return x.team===side&&x.number===i+1;});
+    cardList.forEach(function(x){events.push(escapeHtml(x.type||"Carton"));});
+    var hasChange=changes.some(function(x){return x.team===side&&(x.out===label||x.in===label);});
+    if(hasChange)events.push("🔄 Changement");
+    var status=p.active?"SUR LE TERRAIN":"REMPLAÇANT";
+    var statusHtml=p.active?'<span style="color:#4ade80;font-weight:800">SUR LE TERRAIN</span>':'<span style="color:#fbbf24;font-weight:800">REMPLAÇANT</span>';
+    rows.push('<div style="margin-top:7px;padding:9px 10px;background:rgba(7,15,28,.58);border-radius:10px;border-left:4px solid '+(p.active?'#22c55e':'#64748b')+'"><strong>N°'+(i+1)+' · '+escapeHtml(label)+'</strong> · '+statusHtml+(events.length?' · '+events.join(' · '):'')+'</div>');
+  });
+  return rows.length?rows.join(""):empty("Composition non renseignée.");
+}
+finalCompositionHtml='<div style="display:grid;grid-template-columns:1fr 1fr;gap:12px"><div><div class="report-title">'+escapeHtml(teamAName)+'</div>'+finalTeamComposition(playersA,"A")+'</div><div><div class="report-title">'+escapeHtml(teamBName)+'</div>'+finalTeamComposition(playersB,"B")+'</div></div>';
+html+=section("👥 COMPOSITION FINALE",finalCompositionHtml);
+
 html+=section("⚽ BUTEURS",goalHtml);
 
 var changeHtml="";
