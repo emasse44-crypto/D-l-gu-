@@ -123,7 +123,7 @@ input:focus,select:focus{border-color:#60a5fa;box-shadow:0 0 0 3px rgba(96,165,2
 <body>
 <div class="app">
 <h1>⚽ Délégué Football</h1>
-<div class="version">TEST V72</div>
+<div class="version">TEST V73</div>
 <section id="home">
 <div class="card"><div class="teams">
 <div><div class="team" id="teamA">Équipe A</div><div class="score" id="scoreA">0</div></div>
@@ -724,27 +724,26 @@ box.querySelector("#cancelReferenceScan").onclick=function(){box.style.display="
 }
 function detectSingleTeamRows(img,status){
 var w=img.naturalWidth||img.width,h=img.naturalHeight||img.height;
-var crop=document.createElement("canvas"),ctx=crop.getContext("2d",{willReadFrequently:true});
-var x=Math.floor(w*.22),y=Math.floor(h*.27),cw=Math.floor(w*.78),ch=Math.floor(h*.66);
+var x=Math.floor(w*.18),y=Math.floor(h*.12),cw=Math.floor(w*.80),ch=Math.floor(h*.82);
+var crop=document.createElement("canvas"),ctx=crop.getContext("2d");
 crop.width=cw*2;crop.height=ch*2;
+ctx.imageSmoothingEnabled=true;
 ctx.drawImage(img,x,y,cw,ch,0,0,crop.width,crop.height);
-status.textContent="⏳ Lecture des noms des 14 joueurs…";
+status.textContent="⏳ Lecture de la colonne des joueurs…";
 return Promise.all([
-Tesseract.recognize(crop,"fra+eng",{tessedit_pageseg_mode:"6",preserve_interword_spaces:"1",user_defined_dpi:"300",load_system_dawg:"0",load_freq_dawg:"0"}),
-Tesseract.recognize(crop,"fra+eng",{tessedit_pageseg_mode:"11",preserve_interword_spaces:"1",user_defined_dpi:"300",load_system_dawg:"0",load_freq_dawg:"0"})
+Tesseract.recognize(crop,"fra+eng",{tessedit_pageseg_mode:"6",preserve_interword_spaces:"1",user_defined_dpi:"300"}),
+Tesseract.recognize(crop,"fra+eng",{tessedit_pageseg_mode:"11",preserve_interword_spaces:"1",user_defined_dpi:"300"})
 ]).then(function(rr){
 var candidates=[];
 rr.forEach(function(res){
-var lines=((res.data&&res.data.text)||"").split(/\r?\n/);
+var lines=(res.data&&res.data.lines)||[];
 lines.forEach(function(line){
-var s=normalizeOcrLine(line).replace(/[^A-Za-zÀ-ÿ' .-]/g," ").replace(/\s+/g," ").trim();
-if(!s||s.length<5||s.length>45)return;
-if(/^(maillot|mallot|nom|prénom|prenom|équipe|equipe|recevante|visiteuse|central|arbitre|composition|compositions|joueurs?|joueur)$/i.test(s))return;
-if(/^(?:e|m|a|d|dr)$/i.test(s))return;
-var toks=s.split(/\s+/).filter(function(t){return t.length>=2;});
+var s=normalizeOcrLine((line.text||"")).replace(/[^A-Za-zÀ-ÿ' .-]/g," ").replace(/s+/g," ").trim();
+if(!s||s.length<5||s.length>55)return;
+if(/maillot|mallot|nom.?prénom|équipe|recevante|visiteuse|arbitre|composition/i.test(s))return;
+var toks=s.split(/s+/).filter(function(t){return t.length>=2;});
 if(toks.length<2)return;
-var letters=(s.match(/[A-Za-zÀ-ÿ]/g)||[]).length;
-if(letters<5)return;
+if((s.match(/[A-Za-zÀ-ÿ]/g)||[]).length<5)return;
 candidates.push(s);
 });
 });
@@ -753,7 +752,7 @@ candidates.forEach(function(s){
 if(!unique.some(function(x){return x.toUpperCase()===s.toUpperCase();}))unique.push(s);
 });
 var rows=unique.slice(0,14).map(function(name,i){return {y:i*50,name:name};});
-if(rows.length<5)return null;
+if(rows.length<3)return null;
 return {a:rows,b:[],single:"singleA"};
 });
 }
@@ -783,7 +782,7 @@ return tryVariant(0);
 });
 }).then(function(result){
 var data=result&&result.single?result.single:result&&result.data;
-if(!data||referenceColumnScore(data.a)<5||(!data.single&&referenceColumnScore(data.b)<5)){
+if(!data||!data.a||data.a.length<3||(!data.single&&(!data.b||data.b.length<3))){
 status.textContent="⚠️ Lecture insuffisante. Essayez une photo bien cadrée sur la feuille.";
 return;
 }
