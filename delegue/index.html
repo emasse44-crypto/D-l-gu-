@@ -123,7 +123,7 @@ input:focus,select:focus{border-color:#60a5fa;box-shadow:0 0 0 3px rgba(96,165,2
 <body>
 <div class="app">
 <h1>⚽ Délégué Football</h1>
-<div class="version">V63</div>
+<div class="version">V64</div>
 <section id="home">
 <div class="card"><div class="teams">
 <div><div class="team" id="teamA">Équipe A</div><div class="score" id="scoreA">0</div></div>
@@ -1063,7 +1063,6 @@ var finalCompositionHtml="";
 function finalTeamComposition(team,side){
   var rows=[];
   team.forEach(function(p,i){
-    if(!p.name)return;
     var label=playerLabel(p,i);
     var events=[];
     var goalCount=goals.filter(function(x){return x.team===side&&x.player===label&&!x.cancelled;}).length;
