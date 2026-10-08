@@ -123,7 +123,7 @@ input:focus,select:focus{border-color:#60a5fa;box-shadow:0 0 0 3px rgba(96,165,2
 <body>
 <div class="app">
 <h1>⚽ Délégué Football</h1>
-<div class="version">V60</div>
+<div class="version">V61</div>
 <section id="home">
 <div class="card"><div class="teams">
 <div><div class="team" id="teamA">Équipe A</div><div class="score" id="scoreA">0</div></div>
@@ -655,7 +655,7 @@ box.querySelector("#cancelScanReview").onclick=function(){box.style.display="non
 }
 function downloadText(filename,text){var blob=new Blob([text],{type:"text/plain;charset=utf-8"});var url=URL.createObjectURL(blob);var a=document.createElement("a");a.href=url;a.download=filename;document.body.appendChild(a);a.click();a.remove();setTimeout(function(){URL.revokeObjectURL(url);},1000);}function teamDownloadText(team,name){readPlayers(team,team===playersA?"playersA":"playersB");var lines=[name,"==============================","CAPITAINE : "+(function(){var i=team.findIndex(function(p){return p.captain;});return i>=0?playerLabel(team[i],i):"Non renseigné";})(),"","TITULAIRES"];team.slice(0,11).forEach(function(p,i){lines.push((i+1)+". "+(p.name||"Non renseigné")+" · Licence : "+playerLicense(p));});lines.push("","REMPLAÇANTS");team.slice(11,14).forEach(function(p,i){lines.push((i+12)+". "+(p.name||"Non renseigné")+" · Licence : "+playerLicense(p));});team.slice(14,16).forEach(function(p,i){if(p.name||p.role)lines.push((i+15)+". "+(p.name||"Non renseigné")+" · "+(p.role==="E"?"Éducateur":p.role==="D"?"Dirigeant":"Rôle non renseigné")+" · Licence : "+playerLicense(p));});return lines.join("\n");}function downloadTeam(team,name,file){downloadText(file,teamDownloadText(team,name));}function playerLabel(p,i){return (p.name||("Joueur "+(i+1)))+" (n°"+(i+1)+")";} function playerLicense(p){return p.license||"Non renseigné";}
 function setupChange(team,label){readPlayers(team,team===playersA?"playersA":"playersB");var hasActive=team.some(function(p){return p.active===true;});if(!hasActive){team.forEach(function(p,i){p.active=i<11;});saveState();}el("changeTeamLabel").textContent=label;var out=el("playerOut"),inn=el("playerIn");out.innerHTML="";inn.innerHTML="";team.forEach(function(p,i){if(p.active){var o=document.createElement("option");o.value=i;o.textContent=playerLabel(p,i);out.appendChild(o);}if(!p.active){var excluded=exclusions.some(function(x){return x.team===(team===playersA?"A":"B")&&x.number===i+1&&x.active;});var sentOff=cards.some(function(x){return x.team===(team===playersA?"A":"B")&&x.number===i+1&&String(x.type||"").indexOf("🟥")===0;});if(!excluded&&!sentOff){var q=document.createElement("option");q.value=i;q.textContent=(p.name?playerLabel(p,i):"N°"+(i+1)+" · joueur non renseigné")+(i<11?" · sorti":" · remplaçant");inn.appendChild(q);}}});el("changeForm").style.display="block";el("changeForm").dataset.team=team===playersA?"A":"B";if(!inn.options.length){inn.innerHTML="<option value=''>Aucun joueur disponible pour entrer</option>";}}
-function confirmChange(){var side=el("changeForm").dataset.team==="A"?"A":"B";var team=side==="A"?playersA:playersB;var outIndex=Number(el("playerOut").value),inIndex=Number(el("playerIn").value);if(!Number.isInteger(outIndex)||!Number.isInteger(inIndex)||!team[inIndex]){alert("Choisissez un joueur sortant et un joueur entrant.");return;}var outPlayer=team[outIndex],inPlayer=team[inIndex];var excluded=exclusions.some(function(x){return x.team===side&&x.number===inIndex+1&&x.active;});var sentOff=cards.some(function(x){return x.team===side&&x.number===inIndex+1&&String(x.type||"").indexOf("🟥")===0;});if(!outPlayer.active||inPlayer.active||excluded||sentOff){alert("Changement impossible.");return;}outPlayer.active=false;inPlayer.active=true;changes.push({team:side,out:playerLabel(outPlayer,outIndex),in:playerLabel(inPlayer,inIndex),minute:Math.floor(seconds/60)+":"+String(seconds%60).padStart(2,"0")});el("changeForm").style.display="none";renderChanges();saveState();}
+function confirmChange(){var side=el("changeForm").dataset.team==="A"?"A":"B";var team=side==="A"?playersA:playersB;var outIndex=Number(el("playerOut").value),inIndex=Number(el("playerIn").value);if(!Number.isInteger(outIndex)||!Number.isInteger(inIndex)||!team[inIndex]){alert("Choisissez un joueur sortant et un joueur entrant.");return;}var outPlayer=team[outIndex],inPlayer=team[inIndex];var excluded=exclusions.some(function(x){return x.team===side&&x.number===inIndex+1&&x.active;});var sentOff=cards.some(function(x){return x.team===side&&x.number===inIndex+1&&String(x.type||"").indexOf("🟥")===0;});if(!outPlayer.active||inPlayer.active||excluded||sentOff){alert("Changement impossible.");return;}var wasSubstitutedOut=changes.some(function(x){return x.team===side&&x.out===playerLabel(inPlayer,inIndex);});outPlayer.active=false;inPlayer.active=true;changes.push({team:side,out:playerLabel(outPlayer,outIndex),in:playerLabel(inPlayer,inIndex),minute:Math.floor(seconds/60)+":"+String(seconds%60).padStart(2,"0"),returning:wasSubstitutedOut});el("changeForm").style.display="none";renderChanges();saveState();}
 function setupCard(side,label){
   var form=el("cardForm");
   var type=form.dataset.type||"";
@@ -1062,9 +1062,10 @@ goalHtml=goals.map(function(x,i){return '<div style="margin-top:6px"><strong>'+e
 html+=section("⚽ BUTEURS",goalHtml);
 
 var changeHtml="";
-if(changes.length){
-changeHtml=changes.map(function(x){return '<div style="margin-top:6px"><strong>'+escapeHtml(x.minute)+'</strong> · '+escapeHtml(teamName(x.team))+' · Sortie : <strong>'+escapeHtml(x.out)+'</strong> → Entrée : <strong>'+escapeHtml(x.in)+'</strong></div>';}).join("");
-}else changeHtml=empty("Aucun changement enregistré.");
+var reportChanges=changes.filter(function(x){return !x.returning;});
+if(reportChanges.length){
+changeHtml=reportChanges.map(function(x){return '<div style="margin-top:6px"><strong>'+escapeHtml(x.minute)+'</strong> · '+escapeHtml(teamName(x.team))+' · Sortie : <strong>'+escapeHtml(x.out)+'</strong> → Entrée : <strong>'+escapeHtml(x.in)+'</strong></div>';}).join("");
+}else changeHtml=empty("Aucun changement à faire figurer.");
 html+=section("🔄 CHANGEMENTS",changeHtml);
 
 var cardHtml="";
