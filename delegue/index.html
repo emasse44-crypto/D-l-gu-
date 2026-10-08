@@ -123,7 +123,7 @@ input:focus,select:focus{border-color:#60a5fa;box-shadow:0 0 0 3px rgba(96,165,2
 <body>
 <div class="app">
 <h1>⚽ Délégué Football</h1>
-<div class="version">V61</div>
+<div class="version">V62</div>
 <section id="home">
 <div class="card"><div class="teams">
 <div><div class="team" id="teamA">Équipe A</div><div class="score" id="scoreA">0</div></div>
@@ -1093,7 +1093,43 @@ html+=section("📸 PHOTOS DU MATCH",renderPhotosInReport());
 
 box.innerHTML=html;
 }function goHome(){var pages=document.querySelectorAll(".page");pages.forEach(function(p){p.classList.remove("active");p.style.removeProperty("display");});var home=el("home");home.style.display="block";home.hidden=false;window.scrollTo(0,0);}function showPageDirect(pageId){var pages=document.querySelectorAll(".page");pages.forEach(function(p){p.classList.remove("active");p.style.display="none";});var home=document.getElementById("home");if(home)home.style.display="none";var page=document.getElementById(pageId);if(!page)return;page.classList.add("active");page.style.display="block";if(pageId==="changes")renderChanges();if(pageId==="events")renderCards();}
-function renderChanges(){var c=el("changeHistory");c.innerHTML="";if(!changes.length){c.innerHTML="<p class='note'>Aucun changement.</p>";return;}changes.forEach(function(x,i){var d=document.createElement("div");d.className="change-item";var info=document.createElement("div");info.textContent=x.minute+" · Équipe "+x.team+" : "+x.out+" → "+x.in;d.appendChild(info);var btn=document.createElement("button");btn.type="button";btn.className="red";btn.textContent="🗑️ Supprimer";btn.style.width="100%";btn.style.marginTop="8px";btn.onclick=function(){if(!confirm("Supprimer ce changement ?"))return;changes.splice(i,1);saveState();renderChanges();renderReport();if(typeof renderSheet==="function")renderSheet();};d.appendChild(btn);c.appendChild(d);});}
+function rebuildActiveStates(){
+  [playersA,playersB].forEach(function(team){
+    team.forEach(function(p,i){p.active=i<11;});
+  });
+  changes.forEach(function(x){
+    var team=x.team==="A"?playersA:playersB;
+    if(!team)return;
+    var outIndex=-1,inIndex=-1;
+    team.forEach(function(p,i){
+      if(playerLabel(p,i)===x.out)outIndex=i;
+      if(playerLabel(p,i)===x.in)inIndex=i;
+    });
+    if(outIndex>=0)team[outIndex].active=false;
+    if(inIndex>=0)team[inIndex].active=true;
+  });
+}
+function renderChanges(){
+  var c=el("changeHistory");c.innerHTML="";
+  if(!changes.length){c.innerHTML="<p class='note'>Aucun changement.</p>";return;}
+  changes.forEach(function(x,i){
+    var d=document.createElement("div");d.className="change-item";
+    var info=document.createElement("div");
+    info.textContent=x.minute+" · "+(x.team==="A"?el("teamA").textContent:el("teamB").textContent)+" : "+x.out+" → "+x.in+(x.returning?" · retour":"");
+    d.appendChild(info);
+    var btn=document.createElement("button");btn.type="button";btn.className="red";btn.textContent="🗑️ Supprimer";btn.style.width="100%";btn.style.marginTop="8px";
+    btn.onclick=function(){
+      if(!confirm("Supprimer ce changement ?"))return;
+      changes.splice(i,1);
+      rebuildActiveStates();
+      saveState();
+      renderChanges();
+      renderReport();
+      if(typeof renderSheet==="function")renderSheet();
+    };
+    d.appendChild(btn);c.appendChild(d);
+  });
+}
 function updateGoalButtonLabels(){
 var a=el("teamA")?el("teamA").textContent:"Équipe A";
 var b=el("teamB")?el("teamB").textContent:"Équipe B";
