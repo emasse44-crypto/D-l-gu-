@@ -123,7 +123,7 @@ input:focus,select:focus{border-color:#60a5fa;box-shadow:0 0 0 3px rgba(96,165,2
 <body>
 <div class="app">
 <h1>⚽ Délégué Football</h1>
-<div class="version">TEST V69</div>
+<div class="version">TEST V70</div>
 <section id="home">
 <div class="card"><div class="teams">
 <div><div class="team" id="teamA">Équipe A</div><div class="score" id="scoreA">0</div></div>
@@ -633,25 +633,23 @@ var out=[];
 rows.forEach(function(row){
 row.words.sort(function(a,b){return a.x-b.x;});
 var texts=row.words.map(function(w){return w.text;});
-var first=texts[0]||"";
-var number=0;
-var m=first.match(/^(1[0-6]|[1-9])$/);
-if(m)number=Number(m[1]);
 var parts=[];
 texts.forEach(function(t,j){
 var clean=t.replace(/[^A-Za-zÀ-ÿ' .-]/g," ").replace(/\s+/g," ").trim();
 if(!clean)return;
-if(j===0&&number) return;
-if(/^(maillot|nom|pr[ée]nom|équipe|equipe|recevante|visiteuse|central|arbitre|composition)$/i.test(clean))return;
-if(/^(c|r|e|m|a|d|dr)$/i.test(clean))return;
+if(/^(maillot|mallot|nom|pr[ée]nom|équipe|equipe|recevante|visiteuse|central|arbitre|composition|compositions|fi|empositions)$/i.test(clean))return;
+if(/^(c|r|e|m|a|d|dr|ls|si|ot|cr|i|ii|l|et)$/i.test(clean))return;
 if(/^\d{1,2}$/.test(clean))return;
 parts.push(clean);
 });
 var name=cleanRecognizedName(parts.join(" "));
+name=name.replace(/\b(?:LS|SI|OT|CR|II|I)\b/gi," ").replace(/\s+/g," ").trim();
+var tokens=name.split(/\s+/).filter(function(t){return t.length>=2;});
+name=tokens.join(" ");
 var letters=(name.match(/[A-Za-zÀ-ÿ]/g)||[]).length;
-if(letters<4)return;
-if(/^(arbitre|central|recevante|visiteuse|nom|prénom|maillot)$/i.test(name))return;
-out.push({y:row.y,name:name,number:number});
+if(letters<4||tokens.length<2)return;
+if(/(maillot|mallot|nom\s*[/\\-]?\s*pr[ée]nom|composition|empositions)/i.test(name))return;
+out.push({y:row.y,name:name});
 });
 return out;
 }
@@ -702,7 +700,7 @@ box.style.display="block";
 function teamHtml(rows,side){
 var html='<div class="scan-team-review"><h4>'+(side==="A"?"Équipe A · recevante":"Équipe B · visiteuse")+'</h4>';
 rows.slice(0,16).forEach(function(x,i){
-var n=x.number>=1&&x.number<=16?x.number:i+1;
+var n=i+1;
 html+='<div class="scan-row"><div class="scan-num">'+n+'</div><input type="text" value="'+escapeHtmlAttr(x.name||"")+'" data-ref-name="'+side+'" data-ref-index="'+i+'" data-ref-number="'+n+'" placeholder="Nom / prénom"></div>';
 });
 for(var i=rows.length;i<16;i++){
