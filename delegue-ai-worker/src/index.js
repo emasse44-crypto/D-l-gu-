@@ -30,19 +30,19 @@ export default {
         properties:{
           home:{type:"object",additionalProperties:false,properties:{
             players:{type:"array",items:{type:"object",additionalProperties:false,properties:{
-              number:{type:"integer",minimum:1,maximum:16},name:{type:"string"}
-            },required:["number","name"]}},
+              number:{type:"integer",minimum:1,maximum:16},name:{type:"string"},license:{type:"string"}
+            },required:["number","name","license"]}},
             staff:{type:"array",maxItems:5,items:{type:"object",additionalProperties:false,properties:{
-              name:{type:"string"},role:{type:"string",enum:["E","M","A","D","D/DR",""]}
-            },required:["name","role"]}}
+              name:{type:"string"},license:{type:"string"},role:{type:"string",enum:["E","M","A","D","D/DR",""]}
+            },required:["name","license","role"]}}
           },required:["players","staff"]},
           away:{type:"object",additionalProperties:false,properties:{
             players:{type:"array",items:{type:"object",additionalProperties:false,properties:{
-              number:{type:"integer",minimum:1,maximum:16},name:{type:"string"}
-            },required:["number","name"]}},
+              number:{type:"integer",minimum:1,maximum:16},name:{type:"string"},license:{type:"string"}
+            },required:["number","name","license"]}},
             staff:{type:"array",maxItems:5,items:{type:"object",additionalProperties:false,properties:{
-              name:{type:"string"},role:{type:"string",enum:["E","M","A","D","D/DR",""]}
-            },required:["name","role"]}}
+              name:{type:"string"},license:{type:"string"},role:{type:"string",enum:["E","M","A","D","D/DR",""]}
+            },required:["name","license","role"]}}
           },required:["players","staff"]}
         },
         required:["home","away"]
@@ -52,6 +52,9 @@ export default {
         "Tu es chargé de lire une feuille officielle de composition de football photographiée.",
         "Il y a deux colonnes: équipe recevante à gauche et équipe visiteuse à droite.",
         "Pour chaque équipe, lis les joueurs dans l'ordre des numéros visibles. Conserve exactement le numéro 1 à 16 quand il est présent.",
+        "IMPORTANT: pour CHAQUE joueur, lis séparément le nom et le numéro de licence imprimé dans la colonne immédiatement à droite du nom. Recopie la licence intégralement, chiffre par chiffre, dans license.",
+        "Lis aussi les licences des remplaçants et du staff lorsqu’elles sont présentes. Une licence est une suite de chiffres, ne la confonds pas avec le numéro du joueur.",
+        "Si aucune licence n’est imprimée ou si elle est réellement illisible, renvoie license comme chaîne vide. N’invente jamais de chiffres.",
         "Ne mélange JAMAIS les joueurs des deux équipes.",
         "Les lignes sous les joueurs correspondent au staff. Recopie le nom et le rôle quand il est visible: E, M, A, D ou D/DR.",
         "Ignore les titres, en-têtes, arbitres et autres personnes qui ne sont pas joueurs ou staff.",
