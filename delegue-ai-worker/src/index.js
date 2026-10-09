@@ -56,12 +56,7 @@ export default {
 "Recopie chaque numéro de licence exactement, chiffre par chiffre, pour les titulaires, les remplaçants et les membres du staff.",
 "Si un numéro est partiellement difficile à lire, examine attentivement les chiffres visibles. Ne complète jamais les chiffres manquants par supposition.",
 "Ne laisse une licence vide que si elle est absente ou réellement illisible sur la photo."
-        "Si aucune licence n’est imprimée ou si elle est réellement illisible, renvoie license comme chaîne vide. N’invente jamais de chiffres.",
-        "Ne mélange JAMAIS les joueurs des deux équipes.",
-        "Les lignes sous les joueurs correspondent au staff. Recopie le nom et le rôle quand il est visible: E, M, A, D ou D/DR.",
-        "Ignore les titres, en-têtes, arbitres et autres personnes qui ne sont pas joueurs ou staff.",
-        "Si un nom est illisible, renvoie une chaîne vide plutôt que d'inventer.",
-        "Le résultat doit être strictement conforme au schéma JSON."
+        
       ].join(" ");
 
       const ai = await fetch("https://api.openai.com/v1/responses", {
