@@ -133,7 +133,7 @@ input:focus,select:focus{border-color:#60a5fa;box-shadow:0 0 0 3px rgba(96,165,2
 <body>
 <div class="app">
 <h1>⚽ Délégué Football</h1>
-<div class="version">TEST V90</div>
+<div class="version">TEST V91</div>
 <section id="home">
 <div class="card"><div class="teams">
 <div><div class="team" id="teamA">Équipe A</div><div class="score" id="scoreA">0</div></div>
@@ -1507,7 +1507,7 @@ html+=section("⚪ EXCLUSIONS TEMPORAIRES",exclusionHtml);
 html+=section("📸 PHOTOS DU MATCH",renderPhotosInReport());
 
 box.innerHTML=html;
-}function goHome(){var pages=document.querySelectorAll(".page");pages.forEach(function(p){p.classList.remove("active");p.style.removeProperty("display");});var home=el("home");home.style.display="block";home.hidden=false;window.scrollTo(0,0);}function showPageDirect(pageId){var pages=document.querySelectorAll(".page");pages.forEach(function(p){p.classList.remove("active");p.style.display="none";});var home=document.getElementById("home");if(home)home.style.display="none";var page=document.getElementById(pageId);if(!page)return;page.classList.add("active");page.style.display="block";if(pageId==="changes")renderChanges();if(pageId==="events")renderCards();}
+}function goHome(){var pages=document.querySelectorAll(".page");pages.forEach(function(p){p.classList.remove("active");p.style.removeProperty("display");});var home=el("home");home.classList.remove("home-hidden");home.style.display="block";home.hidden=false;window.scrollTo(0,0);}function showPageDirect(pageId){var pages=document.querySelectorAll(".page");pages.forEach(function(p){p.classList.remove("active");p.style.display="none";});var home=document.getElementById("home");if(home)home.style.display="none";var page=document.getElementById(pageId);if(!page)return;page.classList.add("active");page.style.display="block";if(pageId==="changes")renderChanges();if(pageId==="events")renderCards();}
 function rebuildActiveStates(){
   [playersA,playersB].forEach(function(team){
     team.forEach(function(p,i){p.active=i<11;});
