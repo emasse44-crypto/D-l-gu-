@@ -133,7 +133,7 @@ input:focus,select:focus{border-color:#60a5fa;box-shadow:0 0 0 3px rgba(96,165,2
 <body>
 <div class="app">
 <h1>⚽ Délégué Football</h1>
-<div class="version">TEST V98</div>
+<div class="version">TEST V99</div>
 <section id="home">
 <div class="card"><div class="teams">
 <div><div class="team" id="teamA">Équipe A</div><div class="score" id="scoreA">0</div></div>
@@ -1084,6 +1084,25 @@ update();
 goHome();
 setTimeout(goHome,0);
 }function renderCards(){
+ // Nettoyer les anciennes expulsions automatiques devenues orphelines après une suppression.
+ function hasTriggerForAutoRed(red, list, staffMode){
+   var same=list.filter(function(item){
+     return item.team===red.team&&Number(item.number)===Number(red.number)&&
+       (!staffMode||item.member===red.member)&&!item.auto;
+   });
+   var redType=String(red.type||"").toLowerCase();
+   if(redType.indexOf("blanc")>=0){
+     return same.some(function(item){return item.type==="⚪ Blanc";})&&same.some(function(item){return item.type==="🟨 Jaune";});
+   }
+   if(redType.indexOf("jaune")>=0||redType.indexOf("sanction")>=0){
+     return same.filter(function(item){return item.type==="🟨 Jaune";}).length>=2;
+   }
+   return true;
+ }
+ var oldCards=cards.length,oldStaffCards=staffCards.length;
+ cards=cards.filter(function(item){return !item.auto||hasTriggerForAutoRed(item,cards,false);});
+ staffCards=staffCards.filter(function(item){return !item.auto||hasTriggerForAutoRed(item,staffCards,true);});
+ if(cards.length!==oldCards||staffCards.length!==oldStaffCards)saveState();
  var c=el("cardHistory");c.innerHTML="";
  var all=[];
  cards.forEach(function(x,i){all.push({kind:"player",item:x,index:i,minute:x.minute||"0:00"});});
