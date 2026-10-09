@@ -125,7 +125,7 @@ input:focus,select:focus{border-color:#60a5fa;box-shadow:0 0 0 3px rgba(96,165,2
 <body>
 <div class="app">
 <h1>⚽ Délégué Football</h1>
-<div class="version">TEST V79</div>
+<div class="version">TEST V80</div>
 <section id="home">
 <div class="card"><div class="teams">
 <div><div class="team" id="teamA">Équipe A</div><div class="score" id="scoreA">0</div></div>
@@ -1125,7 +1125,7 @@ el("goalTeamLabel").textContent=label;
 var sel=el("goalPlayer");sel.innerHTML="";
 var assist=el("goalAssist");assist.innerHTML='<option value="">Aucun passeur</option>';
 team.forEach(function(p,i){
-if(i<16&&!p.role&&!isPlayerExpelled(side,i)){
+if(i<16&&!p.role&&!isPlayerExpelled(side,i)&&!isPlayerTemporarilyExcluded(side,i)){
 var o=document.createElement("option");o.value=i;o.textContent=playerLabel(p,i);
 if(!p.active)o.textContent+=" · remplaçant / sorti";
 sel.appendChild(o);
@@ -1143,10 +1143,10 @@ var side=el("goalForm").dataset.team;
 var team=side==="A"?playersA:playersB;
 var rawGoal=el("goalPlayer").value;
 var idx=rawGoal===""?-1:Number(rawGoal);
-if(!Number.isInteger(idx)||idx<0||idx>15||!team[idx]||team[idx].role||isPlayerExpelled(side,idx)){alert("Un joueur expulsé ou membre du staff ne peut pas être sélectionné comme buteur.");return;}
+if(!Number.isInteger(idx)||idx<0||idx>15||!team[idx]||team[idx].role||isPlayerExpelled(side,idx)||isPlayerTemporarilyExcluded(side,idx)){alert("Un joueur expulsé, exclu temporairement pour carton blanc ou membre du staff ne peut pas être sélectionné comme buteur.");return;}
 var assistValue=el("goalAssist").value;
 var assistIdx=assistValue===""?null:Number(assistValue);
-if(assistIdx!==null&&(!Number.isInteger(assistIdx)||!team[assistIdx]||assistIdx<0||assistIdx>15||team[assistIdx].role||isPlayerExpelled(side,assistIdx))){alert("Choisissez un passeur valide non expulsé.");return;}
+if(assistIdx!==null&&(!Number.isInteger(assistIdx)||!team[assistIdx]||assistIdx<0||assistIdx>15||team[assistIdx].role||isPlayerExpelled(side,assistIdx)||isPlayerTemporarilyExcluded(side,assistIdx))){alert("Choisissez un passeur valide qui n’est ni expulsé ni exclu temporairement.");return;}
 var goalType=el("goalType").value||"Pied";
 if(side==="A"){scoreA++;}else{scoreB++;}
 goals.push({
