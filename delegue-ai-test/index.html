@@ -133,7 +133,7 @@ input:focus,select:focus{border-color:#60a5fa;box-shadow:0 0 0 3px rgba(96,165,2
 <body>
 <div class="app">
 <h1>⚽ Délégué Football</h1>
-<div class="version">TEST V89</div>
+<div class="version">TEST V90</div>
 <section id="home">
 <div class="card"><div class="teams">
 <div><div class="team" id="teamA">Équipe A</div><div class="score" id="scoreA">0</div></div>
@@ -1143,9 +1143,11 @@ function deleteStaffCard(index){
  if(type==="⚪ Blanc"){
    var parts=String(minute).split(":");
    var start=(Number(parts[0])||0)*60+(Number(parts[1])||0);
+   var captainWasActive=true;
    for(var j=staffExclusions.length-1;j>=0;j--){
      var ex=staffExclusions[j];
      if(ex.team===side&&ex.reason==="Exclusion capitaine suite à blanc staff"&&Number(ex.start)===start){
+       captainWasActive=ex.playerWasActive!==false;
        staffExclusions.splice(j,1);
      }
    }
@@ -1154,7 +1156,7 @@ function deleteStaffCard(index){
    if(capIndex>=0){
      var stillExcluded=staffExclusions.some(function(ex){return ex.team===side&&ex.number===capIndex+1&&ex.active!==false&&seconds<Number(ex.end);});
      var sentOff=cards.some(function(card){return card.team===side&&card.number===capIndex+1&&String(card.type||"").indexOf("🟥")===0;});
-     if(!stillExcluded&&!sentOff)players[capIndex].active=true;
+     if(captainWasActive&&!stillExcluded&&!sentOff)players[capIndex].active=true;
    }
  }
  renderCards();renderStaffHistory();saveState();update();
