@@ -1135,11 +1135,17 @@ function deleteStaffCard(index){
  if(!confirm("Supprimer cette sanction du staff ?"))return;
  var side=x.team,number=x.number,minute=x.minute||"0:00",member=x.member,type=x.type;
  staffCards.splice(index,1);
- // Retirer l'expulsion automatique liée à cette paire de sanctions, si elle existe.
+ // Recalculer l'expulsion automatique après suppression : elle ne reste que si
+ // les sanctions restantes déclenchent encore une expulsion (2 jaunes ou blanc + jaune).
  if(type==="⚪ Blanc"||type==="🟨 Jaune"){
+   var remainingStaff=staffCards.filter(function(item){return item.team===side&&item.number===number&&item.member===member&&!item.auto;});
+   var hasTwoYellows=remainingStaff.filter(function(item){return item.type==="🟨 Jaune";}).length>=2;
+   var hasWhiteYellow=remainingStaff.some(function(item){return item.type==="⚪ Blanc";})&&remainingStaff.some(function(item){return item.type==="🟨 Jaune";});
    staffCards=staffCards.filter(function(item){
      if(!item.auto||item.team!==side||item.number!==number||item.member!==member)return true;
-     return item.minute!==minute;
+     if(item.type==="🟥 Rouge (2 jaunes)")return hasTwoYellows;
+     if(item.type==="🟥 Rouge (blanc + jaune)")return hasWhiteYellow;
+     return true;
    });
  }
  if(type==="⚪ Blanc"){
@@ -1181,9 +1187,17 @@ function deleteCard(index){
  for(var j=exclusions.length-1;j>=0;j--){if(exclusions[j].team===side&&exclusions[j].number===number&&formatMinute(exclusions[j].start)===x.minute){exIndex=j;break;}}
  if(exIndex>=0)exclusions.splice(exIndex,1);
  }
- if(type==="🟨 Jaune"){
- var yellowCount=cards.filter(function(e){return e.team===side&&e.number===number&&e.type==="🟨 Jaune";}).length;
- if(yellowCount<2)cards=cards.filter(function(e){return !(e.auto&&e.team===side&&e.number===number&&e.type==="🟥 Rouge (2 jaunes)");});
+ if(type==="🟨 Jaune"||type==="⚪ Blanc"){
+ // Une expulsion automatique doit disparaître si la paire de cartons n'existe plus.
+ var remainingPlayerCards=cards.filter(function(e){return e.team===side&&e.number===number&&!e.auto;});
+ var yellowCount=remainingPlayerCards.filter(function(e){return e.type==="🟨 Jaune";}).length;
+ var hasWhiteYellow=remainingPlayerCards.some(function(e){return e.type==="⚪ Blanc";})&&yellowCount>=1;
+ cards=cards.filter(function(e){
+   if(!e.auto||e.team!==side||e.number!==number)return true;
+   if(e.type==="🟥 Rouge (2 jaunes)")return yellowCount>=2;
+   if(e.type==="🟥 Rouge (blanc + jaune)")return hasWhiteYellow;
+   return true;
+ });
  }
  restoreCardPlayer(side,number);
  renderCards();saveState();
