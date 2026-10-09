@@ -189,7 +189,27 @@ function el(id){return document.getElementById(id);}var STORAGE_KEY="football_sc
 function saveState(){try{localStorage.setItem(STORAGE_KEY,JSON.stringify({scoreA:scoreA,scoreB:scoreB,seconds:seconds,running:running,chronoStartedAt:chronoStartedAt,playersA:playersA,playersB:playersB,staffA:staffA,staffB:staffB,staffLicensesA:staffLicensesA,staffLicensesB:staffLicensesB,changes:changes,goals:goals,cards:cards,exclusions:exclusions,staffCards:staffCards,staffExclusions:staffExclusions,incidents:incidents,injuries:injuries,photos:photos,matchInfo:matchInfo,checklist:checklist,checklistOrderVersion:4,delegateChecklist:delegateChecklist,delegateChecklistVersion:1,teamA:el("teamA").textContent,teamB:el("teamB").textContent}));}catch(e){}}
 function loadState(){try{var raw=localStorage.getItem(STORAGE_KEY);if(!raw)return;var s=JSON.parse(raw);if(!s)return;if(typeof s.scoreA==="number")scoreA=s.scoreA;if(typeof s.scoreB==="number")scoreB=s.scoreB;if(typeof s.seconds==="number")seconds=s.seconds;if(typeof s.running==="boolean")running=s.running;if(typeof s.chronoStartedAt==="number")chronoStartedAt=s.chronoStartedAt;if(Array.isArray(s.playersA)&&s.playersA.length===16)playersA=s.playersA;if(Array.isArray(s.playersB)&&s.playersB.length===16)playersB=s.playersB;if(Array.isArray(s.staffA)&&s.staffA.length===5)staffA=s.staffA;if(Array.isArray(s.staffB)&&s.staffB.length===5)staffB=s.staffB;if(Array.isArray(s.staffLicensesA)&&s.staffLicensesA.length===5)staffLicensesA=s.staffLicensesA;if(Array.isArray(s.staffLicensesB)&&s.staffLicensesB.length===5)staffLicensesB=s.staffLicensesB;if(Array.isArray(s.changes))changes=s.changes;if(Array.isArray(s.goals))goals=s.goals;if(Array.isArray(s.cards))cards=s.cards;if(Array.isArray(s.exclusions))exclusions=s.exclusions;if(Array.isArray(s.staffCards))staffCards=s.staffCards;if(Array.isArray(s.staffExclusions))staffExclusions=s.staffExclusions;if(Array.isArray(s.incidents))incidents=s.incidents;if(Array.isArray(s.injuries))injuries=s.injuries;if(Array.isArray(s.photos))photos=s.photos.slice(0,12);if(s.matchInfo&&typeof s.matchInfo==="object")matchInfo=Object.assign(matchInfo,s.matchInfo);if(Array.isArray(s.delegateChecklist)&&s.delegateChecklist.length===32)delegateChecklist=s.delegateChecklist;if(Array.isArray(s.checklist)){var oldChecklist=s.checklist.concat([false,false,false,false,false,false,false,false,false,false,false,false,false]).slice(0,13);if(s.checklistOrderVersion===4){checklist=oldChecklist.slice(0,8).concat(oldChecklist.slice(9,13));}else if(s.checklistOrderVersion===3){checklist=oldChecklist.slice(0,8).concat(oldChecklist.slice(9,13));}else if(s.checklistOrderVersion===2){checklist=[oldChecklist[0],oldChecklist[1],oldChecklist[2],false,oldChecklist[3],oldChecklist[4],oldChecklist[5],oldChecklist[6],oldChecklist[7],oldChecklist[8],oldChecklist[9],oldChecklist[10],oldChecklist[11]];}else{var v1=oldChecklist;checklist=[v1[0],v1[5],v1[6],false,v1[1],v1[2],v1[3],v1[4],v1[7],v1[8],v1[9],v1[10],v1[11]];}}if(typeof s.teamA==="string"&&s.teamA)el("teamA").textContent=s.teamA;if(typeof s.teamB==="string"&&s.teamB)el("teamB").textContent=s.teamB;el("teamAInput").value=el("teamA").textContent;el("teamBInput").value=el("teamB").textContent;}catch(e){}}
 function update(){refreshExclusions();renderLiveExclusions();saveState();el("scoreA").textContent=scoreA;el("scoreB").textContent=scoreB;var m=String(Math.floor(seconds/60)).padStart(2,"0"),s=String(seconds%60).padStart(2,"0");el("clock").textContent=m+":"+s;el("clockPage").textContent=m+":"+s;if(el("goalsScoreA"))el("goalsScoreA").textContent=scoreA;if(el("goalsScoreB"))el("goalsScoreB").textContent=scoreB;if(el("goalsClock"))el("goalsClock").textContent=m+":"+s;el("status").textContent=running?"En cours":(seconds>0?"En pause":"Avant-match");if(el("sheetText"))el("sheetText").textContent=el("teamA").textContent+" "+scoreA+" - "+scoreB+" "+el("teamB").textContent;}
-function refreshExclusions(){exclusions.forEach(function(x){if(x.active&&seconds>=x.end){var team=x.team==="A"?playersA:playersB;if(team[x.number-1])team[x.number-1].active=true;x.active=false;}});staffExclusions.forEach(function(x){if(x.active&&seconds>=x.end){x.active=false;}});if(el("cardHistory"))renderCards();if(el("staffHistory"))renderStaffHistory();renderLiveExclusions();}
+function refreshExclusions(){
+exclusions.forEach(function(x){
+if(x.active&&seconds>=Number(x.end)){
+x.active=false;
+var team=x.team==="A"?playersA:playersB,idx=Number(x.number)-1;
+var another=exclusions.concat(staffExclusions).some(function(y){return y!==x&&y.active&&y.team===x.team&&Number(y.number)===Number(x.number)&&seconds<Number(y.end);});
+if(team[idx]&&!another&&!isPlayerExpelled(x.team,idx)&&x.playerWasActive!==false)team[idx].active=true;
+}
+});
+staffExclusions.forEach(function(x){
+if(x.active&&seconds>=Number(x.end)){
+x.active=false;
+var team=x.team==="A"?playersA:playersB,idx=Number(x.number)-1;
+var another=exclusions.concat(staffExclusions).some(function(y){return y!==x&&y.active&&y.team===x.team&&Number(y.number)===Number(x.number)&&seconds<Number(y.end);});
+if(team[idx]&&!another&&!isPlayerExpelled(x.team,idx)&&x.playerWasActive!==false)team[idx].active=true;
+}
+});
+if(el("cardHistory"))renderCards();
+if(el("staffHistory"))renderStaffHistory();
+renderLiveExclusions();
+}
 function renderLiveExclusions(){var box=el("liveExclusions");if(!box)return;var all=exclusions.concat(staffExclusions),html="";all.forEach(function(x){if(!x.active)return;var left=Math.max(0,(x.end||((x.start||0)+600))-seconds);if(left<=0)return;var m=Math.floor(left/60),s=String(left%60).padStart(2,"0");html+='<div class="change-item"><strong>⚪ '+(x.team==="A"?el("teamA").textContent:el("teamB").textContent)+'</strong> · '+(x.player||"Capitaine")+'<br>Sortie : '+formatMinute(x.start||0)+' · Retour : '+formatMinute(x.end||((x.start||0)+600))+'<br><strong>'+m+':'+s+'</strong> restantes</div>';});box.innerHTML=html||'<p class="note">Aucune exclusion en cours.</p>';}
 
 function syncChrono(){if(running&&typeof chronoStartedAt==="number"){seconds=Math.max(0,Math.floor((Date.now()-chronoStartedAt)/1000));}}
@@ -959,7 +979,7 @@ function setupCard(side,label){
   var sel=el("cardPlayer");sel.innerHTML="";
   team.forEach(function(p,i){
     p=p||{};
-    if(i<16&&!isPlayerExpelled(side,i)){
+    if(i<16&&!isPlayerExpelled(side,i)&&!isPlayerTemporarilyExcluded(side,i)){
       var o=document.createElement("option");o.value=i;
       o.textContent=p.name?playerLabel(p,i):("N°"+(i+1)+" · joueur non renseigné");
       if(p.name&&!p.active)o.textContent+=" · remplaçant / sorti";
@@ -1010,7 +1030,7 @@ staffCards.push({team:side,type:type,member:member,number:sidx+1,minute:minute,w
 var players=side==="A"?playersA:playersB;
 var cap=players.findIndex(function(p){return p.captain;});
 if(cap>=0){
-staffExclusions.push({team:side,number:cap+1,player:playerLabel(players[cap],cap),reason:"Exclusion capitaine suite à blanc staff",start:seconds,end:seconds+600,active:true});
+staffExclusions.push({team:side,number:cap+1,player:playerLabel(players[cap],cap),reason:"Exclusion capitaine suite à blanc staff",start:seconds,end:seconds+600,active:true,playerWasActive:players[cap].active===true});
 players[cap].active=false;
 }
 }else{
@@ -1029,7 +1049,7 @@ return;
 }
 var team=side==="A"?playersA:playersB;
 var idx=Number(raw);
-if(!Number.isInteger(idx)||idx<0||idx>15||!team[idx]||team[idx].role||isPlayerExpelled(side,idx)){alert("Choisissez un joueur ou un membre du staff non expulsé.");return;}
+if(!Number.isInteger(idx)||idx<0||idx>15||!team[idx]||team[idx].role||isPlayerExpelled(side,idx)||isPlayerTemporarilyExcluded(side,idx)){alert("Choisissez un joueur ou un membre du staff non expulsé ni exclu temporairement.");return;}
 var previous=cards.filter(function(x){return x.team===side&&x.number===idx+1&&(x.type==="🟨 Jaune"||x.type==="⚪ Blanc");});
 if(previous.some(function(x){return x.type.indexOf("🟥")===0;})||cards.some(function(x){return x.team===side&&x.number===idx+1&&x.type.indexOf("🟥")===0;})){alert("Ce joueur est déjà expulsé.");return;}
 var hadPrevious=previous.length>0;
@@ -1037,7 +1057,7 @@ cards.push({team:side,type:type,player:playerLabel(team[idx],idx),number:idx+1,m
 if(type==="🟥 Rouge"){
 team[idx].active=false;
 }else if(!hadPrevious&&type==="⚪ Blanc"){
-exclusions.push({team:side,number:idx+1,player:playerLabel(team[idx],idx),start:seconds,end:seconds+600,active:true});
+exclusions.push({team:side,number:idx+1,player:playerLabel(team[idx],idx),start:seconds,end:seconds+600,active:true,playerWasActive:team[idx].active===true});
 team[idx].active=false;
 }else if(hadPrevious){
 cards.push({team:side,type:"🟥 Rouge ("+(type==="⚪ Blanc"?"blanc + sanction précédente":"2 sanctions")+")",player:playerLabel(team[idx],idx),number:idx+1,minute:minute,auto:true});
@@ -1116,7 +1136,7 @@ function isPlayerExpelled(side,index){
 return cards.some(function(card){return card.team===side&&Number(card.number)===index+1&&String(card.type||"").indexOf("🟥 Rouge")===0;});
 }
 function isPlayerTemporarilyExcluded(side,index){
-return exclusions.some(function(exclusion){return exclusion.team===side&&Number(exclusion.number)===index+1&&exclusion.active===true&&seconds<Number(exclusion.end);});
+return exclusions.concat(staffExclusions).some(function(exclusion){return exclusion.team===side&&Number(exclusion.number)===index+1&&exclusion.active===true&&seconds<Number(exclusion.end);});
 }
 function setupGoal(team,label){
 var side=team===playersA?"A":"B";
@@ -1265,7 +1285,7 @@ staffCards.push({team:side,type:type,member:member,number:idx+1,minute:minute,wh
 var players=side==="A"?playersA:playersB;
 var cap=players.findIndex(function(p){return p.captain;});
 if(cap>=0){
-staffExclusions.push({team:side,number:cap+1,player:playerLabel(players[cap],cap),reason:"Exclusion capitaine suite à blanc staff",start:seconds,end:seconds+600,active:true});
+staffExclusions.push({team:side,number:cap+1,player:playerLabel(players[cap],cap),reason:"Exclusion capitaine suite à blanc staff",start:seconds,end:seconds+600,active:true,playerWasActive:players[cap].active===true});
 players[cap].active=false;
 }
 if(hadWhite){
