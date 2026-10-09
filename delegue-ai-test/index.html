@@ -834,7 +834,7 @@ return fetch(AI_VISION_ENDPOINT,{method:"POST",headers:{"Content-Type":"applicat
 return r.text().then(function(t){
 var data;
 try{data=JSON.parse(t);}catch(e){throw new Error("Réponse du serveur invalide.");}
-if(!r.ok)throw new Error(data.error||"Erreur du serveur.");
+if(!r.ok){var detail="";if(data.details){try{var parsed=JSON.parse(data.details);detail=parsed&&parsed.error&&parsed.error.message?parsed.error.message:String(data.details).slice(0,350);}catch(e){detail=String(data.details).slice(0,350);}}throw new Error((data.error||"Erreur du serveur.")+(detail?" Détail : "+detail:""));}
 return data;
 });
 }).then(function(data){
