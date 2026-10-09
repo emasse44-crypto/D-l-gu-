@@ -1089,13 +1089,20 @@ setTimeout(goHome,0);
    var x=entry.item,d=document.createElement("div");d.className="change-item";
    var teamNameText=x.team==="A"?el("teamA").textContent:el("teamB").textContent;
    var line=document.createElement("div");
-   if(entry.kind==="staff"){
-     line.textContent=entry.minute+" · "+teamNameText+" : "+x.type+" · "+x.member+" (staff "+x.number+")";
-   }else{
-     line.textContent=entry.minute+" · "+teamNameText+" : "+x.type+" · "+x.player;
-   }
+   line.textContent=entry.minute+" · "+teamNameText+" : "+x.type+" · "+(entry.kind==="staff"?x.member+" (staff "+x.number+")":x.player);
    d.appendChild(line);
    if(x.auto){var note=document.createElement("div");note.className="note";note.style.marginTop="5px";note.textContent="Sanction automatique";d.appendChild(note);}
+   var actions=document.createElement("div");actions.style.display="flex";actions.style.gap="8px";actions.style.flexWrap="wrap";actions.style.marginTop="8px";
+   if(entry.kind==="player"&&!x.auto){
+     var edit=document.createElement("button");edit.type="button";edit.textContent="✏️ Corriger";edit.onclick=function(){correctCard(entry.index);};actions.appendChild(edit);
+   }
+   if(!x.auto){
+     var del=document.createElement("button");del.type="button";del.textContent="🗑️ Supprimer";del.className="red";del.onclick=function(){
+       if(entry.kind==="player"){deleteCard(entry.index);}
+       else{deleteStaffCard(entry.index);}
+     };actions.appendChild(del);
+   }
+   if(actions.childNodes.length)d.appendChild(actions);
    c.appendChild(d);
  });
  function addExclusions(list,title){
@@ -1113,6 +1120,38 @@ setTimeout(goHome,0);
  }
  addExclusions(exclusions,"⚪ Exclusions temporaires des joueurs");
  addExclusions(staffExclusions,"⚪ Exclusions temporaires des capitaines (carton blanc au staff)");
+}
+function deleteStaffCard(index){
+ var x=staffCards[index];if(!x)return;
+ if(x.auto){alert("Cette expulsion est automatique. Supprimez le carton qui l’a déclenchée.");return;}
+ if(!confirm("Supprimer cette sanction du staff ?"))return;
+ var side=x.team,number=x.number,minute=x.minute||"0:00",member=x.member,type=x.type;
+ staffCards.splice(index,1);
+ // Retirer l'expulsion automatique liée à cette paire de sanctions, si elle existe.
+ if(type==="⚪ Blanc"||type==="🟨 Jaune"){
+   staffCards=staffCards.filter(function(item){
+     if(!item.auto||item.team!==side||item.number!==number||item.member!==member)return true;
+     return item.minute!==minute;
+   });
+ }
+ if(type==="⚪ Blanc"){
+   var parts=String(minute).split(":");
+   var start=(Number(parts[0])||0)*60+(Number(parts[1])||0);
+   for(var j=staffExclusions.length-1;j>=0;j--){
+     var ex=staffExclusions[j];
+     if(ex.team===side&&ex.number===number&&ex.reason==="Exclusion capitaine suite à blanc staff"&&Number(ex.start)===start){
+       staffExclusions.splice(j,1);
+     }
+   }
+   var players=side==="A"?playersA:playersB;
+   var capIndex=players.findIndex(function(p){return p.captain;});
+   if(capIndex>=0){
+     var stillExcluded=staffExclusions.some(function(ex){return ex.team===side&&ex.number===capIndex+1&&ex.active!==false&&seconds<Number(ex.end);});
+     var sentOff=cards.some(function(card){return card.team===side&&card.number===capIndex+1&&String(card.type||"").indexOf("🟥")===0;});
+     if(!stillExcluded&&!sentOff)players[capIndex].active=true;
+   }
+ }
+ renderCards();renderStaffHistory();saveState();update();
 }
 function restoreCardPlayer(teamSide,number){
  var team=teamSide==="A"?playersA:playersB;
