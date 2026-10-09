@@ -6,9 +6,7 @@
   "start_url": "/D-l-gu-/delegue/",
   "scope": "/D-l-gu-/delegue/",
   "display": "standalone",
-  "display_override": [
-    "standalone"
-  ],
+  "display_override": ["standalone"],
   "orientation": "portrait",
   "theme_color": "#111827",
   "background_color": "#111827",
