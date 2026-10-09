@@ -19,6 +19,7 @@ export default {
     try {
       const body = await request.json();
       const image = body && body.image;
+      // Image recadree transmise separement pour ameliorer la lecture des licences.
       const licenseImage = body && body.licenseImage;
       if (typeof image !== "string" || !image.startsWith("data:image/")) {
         return json({error:"Image manquante ou format invalide."},400,cors);
