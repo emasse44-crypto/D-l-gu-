@@ -133,7 +133,7 @@ input:focus,select:focus{border-color:#60a5fa;box-shadow:0 0 0 3px rgba(96,165,2
 <body>
 <div class="app">
 <h1>⚽ Délégué Football</h1>
-<div class="version">TEST V93</div>
+<div class="version">TEST V94</div>
 <section id="home">
 <div class="card"><div class="teams">
 <div><div class="team" id="teamA">Équipe A</div><div class="score" id="scoreA">0</div></div>
@@ -1471,17 +1471,19 @@ function finalTeamComposition(team,side){
   });
   return rows.length?rows.join(""):empty("Composition non renseignée.");
 }
-function finalStaffComposition(team,licenses){
+function finalStaffComposition(team,licenses,side){
   var rows=[];
   team.forEach(function(value,i){
     var parsed=parseStaffEntry(value),license=String(licenses[i]||"").trim();
     if(!parsed.name&&!parsed.role&&!license)return;
     var role=parsed.role==="E"?"Éducateur":(parsed.role==="D"?"Dirigeant":(parsed.role==="D/DR"?"Dirigeant / dirigeante":(parsed.role==="M"?"Médecin / soigneur":parsed.role)));
-    rows.push('<div style="margin-top:7px;padding:9px 10px;background:rgba(7,15,28,.58);border-radius:10px;border-left:4px solid #38bdf8"><strong>'+escapeHtml(parsed.name||"Membre du staff")+'</strong>'+(role?' · '+escapeHtml(role):"")+(license?'<div style="font-size:12px;margin-top:3px">Licence : '+escapeHtml(license)+'</div>':"")+"</div>");
+    var markers="";
+    staffCards.filter(function(x){return x.team===side&&x.number===i+1;}).forEach(function(x){var t=(x.type||"").toLowerCase();var bg=t.indexOf("rouge")>=0?"#ef4444":(t.indexOf("blanc")>=0?"#f8fafc":"#facc15");markers+='<span title="'+escapeHtml(x.type||"Carton")+'" style="display:inline-block;width:18px;height:23px;border-radius:3px;background:'+bg+';vertical-align:-5px;margin-right:3px;border:1px solid rgba(255,255,255,.35)"></span>';});
+    rows.push('<div style="margin-top:7px;padding:9px 10px;background:rgba(7,15,28,.58);border-radius:10px;border-left:4px solid #38bdf8"><strong>'+markers+escapeHtml(parsed.name||"Membre du staff")+'</strong>'+(role?' · '+escapeHtml(role):"")+(license?'<div style="font-size:12px;margin-top:3px">Licence : '+escapeHtml(license)+'</div>':"")+"</div>");
   });
   return '<div style="margin-top:12px"><div class="report-title">👔 STAFF</div>'+(rows.length?rows.join(""):empty("Aucun membre du staff renseigné."))+'</div>';
 }
-finalCompositionHtml='<div style="display:grid;grid-template-columns:1fr 1fr;gap:12px"><div><div class="report-title">'+escapeHtml(teamAName)+'</div>'+finalTeamComposition(playersA,"A")+finalStaffComposition(staffA,staffLicensesA)+'</div><div><div class="report-title">'+escapeHtml(teamBName)+'</div>'+finalTeamComposition(playersB,"B")+finalStaffComposition(staffB,staffLicensesB)+'</div></div>';
+finalCompositionHtml='<div style="display:grid;grid-template-columns:1fr 1fr;gap:12px"><div><div class="report-title">'+escapeHtml(teamAName)+'</div>'+finalTeamComposition(playersA,"A")+finalStaffComposition(staffA,staffLicensesA,"A")+'</div><div><div class="report-title">'+escapeHtml(teamBName)+'</div>'+finalTeamComposition(playersB,"B")+finalStaffComposition(staffB,staffLicensesB,"B")+'</div></div>';
 html+=section("👥 COMPOSITION FINALE",finalCompositionHtml);
 
 html+=section("⚽ BUTEURS",goalHtml);
