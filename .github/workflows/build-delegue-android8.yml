@@ -1,4 +1,4 @@
-name: Build Délégué Football Android 8 - V58
+name: Build Délégué Football Android 8 - V1
 
 on:
   push:
@@ -51,6 +51,6 @@ jobs:
         uses: actions/upload-artifact@v4
         if: success()
         with:
-          name: delegue-football-android8-V58
+          name: delegue-football-android8-V1
           path: delegue-android8-apk/app/build/outputs/apk/debug/app-debug.apk
           if-no-files-found: error
