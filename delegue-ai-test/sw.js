@@ -1,4 +1,4 @@
-const CACHE_NAME = "delegue-ai-vision-v1";
+const CACHE_NAME = "delegue-ai-vision-v2";
 const APP_SHELL = [
   "./",
   "./index.html",
@@ -27,8 +27,8 @@ self.addEventListener("activate", event => {
 self.addEventListener("fetch", event => {
   if (event.request.method !== "GET") return;
   const url = new URL(event.request.url);
-  const isAppHtml = url.pathname.endsWith("/index.html") || url.pathname.endsWith("/delegue-test/") || url.pathname.endsWith("/delegue-test");
-  const isServiceWorker = url.pathname.endsWith("/delegue-test/sw.js");
+  const isAppHtml = url.pathname.endsWith("/index.html") || url.pathname.endsWith("/delegue-ai-test/") || url.pathname.endsWith("/delegue-ai-test");
+  const isServiceWorker = url.pathname.endsWith("/delegue-ai-test/sw.js");
 
   if (isAppHtml || isServiceWorker) {
     event.respondWith(fetch(event.request).then(response => {
