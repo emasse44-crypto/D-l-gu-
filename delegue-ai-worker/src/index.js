@@ -66,7 +66,7 @@ export default {
           "Content-Type":"application/json"
         },
         body:JSON.stringify({
-          model:"gpt-5.5",
+          model:"gpt-5.4-mini",
           input:[{
             role:"user",
             content:[
