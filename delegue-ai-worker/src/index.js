@@ -19,10 +19,12 @@ export default {
     try {
       const body = await request.json();
       const image = body && body.image;
+      const licenseImage = body && body.licenseImage;
       if (typeof image !== "string" || !image.startsWith("data:image/")) {
         return json({error:"Image manquante ou format invalide."},400,cors);
       }
       if (image.length > 12_000_000) return json({error:"Photo trop volumineuse. Reprenez une photo nette, sans zoom excessif."},413,cors);
+      if (typeof licenseImage === "string" && licenseImage.length > 12_000_000) return json({error:"Photo recadrée trop volumineuse."},413,cors);
 
       const schema = {
         type:"object",
@@ -74,7 +76,8 @@ export default {
             role:"user",
             content:[
               {type:"input_text",text:prompt},
-              {type:"input_image",image_url:image,detail:"high"}
+              {type:"input_image",image_url:image,detail:"high"},
+              ...(typeof licenseImage === "string" && licenseImage.startsWith("data:image/") ? [{type:"input_image",image_url:licenseImage,detail:"high"}] : [])
             ]
           }],
           text:{format:{type:"json_schema",name:"football_match_sheet",strict:true,schema:schema}},
