@@ -1062,13 +1062,17 @@ function correctCard(index){
  renderCards();saveState();
 }
 function renderGoalsPage(){el("goalsTeamA").textContent=el("teamA").textContent;el("goalsTeamB").textContent=el("teamB").textContent;el("goalsScoreA").textContent=scoreA;el("goalsScoreB").textContent=scoreB;el("goalsClock").textContent=formatMinute(seconds);renderGoals();}
+function isPlayerExpelled(side,index){
+return cards.some(function(card){return card.team===side&&Number(card.number)===index+1&&String(card.type||"").indexOf("🟥 Rouge")===0;});
+}
 function setupGoal(team,label){
+var side=team===playersA?"A":"B";
 readPlayers(team,team===playersA?"playersA":"playersB");
 el("goalTeamLabel").textContent=label;
 var sel=el("goalPlayer");sel.innerHTML="";
 var assist=el("goalAssist");assist.innerHTML='<option value="">Aucun passeur</option>';
 team.forEach(function(p,i){
-if(i<16){
+if(i<16&&!p.role&&!isPlayerExpelled(side,i)){
 var o=document.createElement("option");o.value=i;o.textContent=playerLabel(p,i);
 if(!p.active)o.textContent+=" · remplaçant / sorti";
 sel.appendChild(o);
@@ -1077,18 +1081,19 @@ if(!p.active)a.textContent+=" · remplaçant / sorti";
 assist.appendChild(a);
 }
 });
-if(!sel.options.length){var o=document.createElement("option");o.value="";o.textContent="Aucun joueur";sel.appendChild(o);}
+if(!sel.options.length){var o=document.createElement("option");o.value="";o.disabled=true;o.selected=true;o.textContent="Aucun joueur disponible";sel.appendChild(o);}
 el("goalForm").style.display="block";
-el("goalForm").dataset.team=team===playersA?"A":"B";
+el("goalForm").dataset.team=side;
 }
 function confirmGoal(){
 var side=el("goalForm").dataset.team;
 var team=side==="A"?playersA:playersB;
-var idx=Number(el("goalPlayer").value);
-if(!Number.isInteger(idx)||!team[idx]||idx<0||idx>15||team[idx].role){alert("Choisissez le buteur.");return;}
+var rawGoal=el("goalPlayer").value;
+var idx=rawGoal===""?-1:Number(rawGoal);
+if(!Number.isInteger(idx)||idx<0||idx>15||!team[idx]||team[idx].role||isPlayerExpelled(side,idx)){alert("Un joueur expulsé ou membre du staff ne peut pas être sélectionné comme buteur.");return;}
 var assistValue=el("goalAssist").value;
 var assistIdx=assistValue===""?null:Number(assistValue);
-if(assistIdx!==null&&(!Number.isInteger(assistIdx)||!team[assistIdx]||assistIdx<0||assistIdx>15||team[assistIdx].role)){alert("Choisissez un passeur valide.");return;}
+if(assistIdx!==null&&(!Number.isInteger(assistIdx)||!team[assistIdx]||assistIdx<0||assistIdx>15||team[assistIdx].role||isPlayerExpelled(side,assistIdx))){alert("Choisissez un passeur valide non expulsé.");return;}
 var goalType=el("goalType").value||"Pied";
 if(side==="A"){scoreA++;}else{scoreB++;}
 goals.push({
@@ -1123,7 +1128,7 @@ var a=document.createElement("button");a.textContent="❌";a.title="Annuler le b
 c.appendChild(d);
 });
 }
-function cancelGoal(index){var g=goals[index];if(g.cancelled)return;if(!confirm("Annuler ce but ? Le score sera retiré."))return;if(g.team==="A"){scoreA=Math.max(0,scoreA-1);}else{scoreB=Math.max(0,scoreB-1);}goals.splice(index,1);renderGoals();update();} function correctGoal(index){var g=goals[index];var team=g.team==="A"?playersA:playersB;var sel=prompt("Entrez le numéro du bon buteur (1 à 16) :",String(parseInt((g.player.match(/n°(\d+)/)||[])[1]||"")));if(sel===null)return;var n=Number(sel);if(!Number.isInteger(n)||n<1||n>16||!team[n-1].active){alert("Choisissez le numéro d’un joueur actuellement actif.");return;}g.player=playerLabel(team[n-1],n-1);renderGoals();saveState();} function parseStaffEntry(value){
+function cancelGoal(index){var g=goals[index];if(g.cancelled)return;if(!confirm("Annuler ce but ? Le score sera retiré."))return;if(g.team==="A"){scoreA=Math.max(0,scoreA-1);}else{scoreB=Math.max(0,scoreB-1);}goals.splice(index,1);renderGoals();update();} function correctGoal(index){var g=goals[index];var team=g.team==="A"?playersA:playersB;var sel=prompt("Entrez le numéro du bon buteur (1 à 16) :",String(parseInt((g.player.match(/n°(\d+)/)||[])[1]||"")));if(sel===null)return;var n=Number(sel);if(!Number.isInteger(n)||n<1||n>16||!team[n-1].active||isPlayerExpelled(g.team,n-1)){alert("Choisissez le numéro d’un joueur actif et non expulsé.");return;}g.player=playerLabel(team[n-1],n-1);renderGoals();saveState();} function parseStaffEntry(value){
 var s=String(value||"").trim(),role="";
 var m=s.match(/^(.*?)(?:\s*(?:·|-)\s*)(E|M|A|D\/DR|D)\s*$/i);
 if(m){s=m[1].trim();role=m[2].toUpperCase();}
