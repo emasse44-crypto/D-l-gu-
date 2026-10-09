@@ -133,7 +133,7 @@ input:focus,select:focus{border-color:#60a5fa;box-shadow:0 0 0 3px rgba(96,165,2
 <body>
 <div class="app">
 <h1>⚽ Délégué Football</h1>
-<div class="version">TEST V94</div>
+<div class="version">TEST V95</div>
 <section id="home">
 <div class="card"><div class="teams">
 <div><div class="team" id="teamA">Équipe A</div><div class="score" id="scoreA">0</div></div>
@@ -989,7 +989,7 @@ function setupCard(side,label){
   var sel=el("cardPlayer");sel.innerHTML="";
   team.forEach(function(p,i){
     p=p||{};
-    if(i<16&&!p.role&&!isPlayerExpelled(side,i)&&!isPlayerTemporarilyExcluded(side,i)){
+    if(i<16&&!p.role&&!isPlayerExpelled(side,i)){
       var o=document.createElement("option");o.value=i;
       o.textContent=p.name?playerLabel(p,i):("N°"+(i+1)+" · joueur non renseigné");
       if(p.name&&!p.active)o.textContent+=" · remplaçant / sorti";
@@ -1060,7 +1060,7 @@ return;
 }
 var team=side==="A"?playersA:playersB;
 var idx=Number(raw);
-if(!Number.isInteger(idx)||idx<0||idx>15||!team[idx]||team[idx].role||isPlayerExpelled(side,idx)||isPlayerTemporarilyExcluded(side,idx)){alert("Choisissez un joueur ou un membre du staff non expulsé ni exclu temporairement.");return;}
+if(!Number.isInteger(idx)||idx<0||idx>15||!team[idx]||team[idx].role||isPlayerExpelled(side,idx)){alert("Choisissez un joueur ou un membre du staff qui n’est pas déjà expulsé.");return;}
 var previous=cards.filter(function(x){return x.team===side&&x.number===idx+1&&(x.type==="🟨 Jaune"||x.type==="⚪ Blanc");});
 if(previous.some(function(x){return x.type.indexOf("🟥")===0;})||cards.some(function(x){return x.team===side&&x.number===idx+1&&x.type.indexOf("🟥")===0;})){alert("Ce joueur est déjà expulsé.");return;}
 var hadPrevious=previous.length>0;
