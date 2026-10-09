@@ -788,7 +788,7 @@ var team=side==="A"?data.home:data.away, title=side==="A"?"Équipe A · recevant
 var html='<div class="scan-team-review"><h4>'+title+'</h4>';
 for(var i=0;i<16;i++){
 var p=(team.players||[]).find(function(x){return Number(x.number)===i+1;})||{};
-html+='<div class="scan-row"><div class="scan-num">'+(i+1)+'</div><input type="text" value="'+esc(p.name)+'" data-ai-player="'+side+'" data-ai-index="'+i+'" placeholder="Nom / prénom"></div>';
+html+='<div class="scan-row"><div class="scan-num">'+(i+1)+'</div><input type="text" value="'+esc(p.name)+'" data-ai-player="'+side+'" data-ai-index="'+i+'" placeholder="Nom / prénom"><input type="text" value="'+esc(p.license)+'" data-ai-license="'+side+'" data-ai-index="'+i+'" placeholder="N° licence"></div>';
 }
 html+='<div style="margin-top:10px"><strong>👔 Staff détecté</strong></div>';
 for(var j=0;j<5;j++){
@@ -806,7 +806,7 @@ box.querySelector("#confirmAiVision").onclick=function(){
 var team=side==="A"?playersA:playersB,staff=side==="A"?staffA:staffB;
 box.querySelectorAll('input[data-ai-player="'+side+'"]').forEach(function(input){
 var i=Number(input.getAttribute("data-ai-index"));
-if(i>=0&&i<16){team[i].name=input.value.trim();team[i].license="";team[i].active=i<11;team[i].captain=false;}
+if(i>=0&&i<16){var lic=box.querySelector('input[data-ai-license="'+side+'"][data-ai-index="'+i+'"]');team[i].name=input.value.trim();team[i].license=lic?lic.value.trim():"";team[i].active=i<11;team[i].captain=false;}
 });
 box.querySelectorAll('input[data-ai-staff="'+side+'"]').forEach(function(input){
 var i=Number(input.getAttribute("data-ai-index")),roleBox=box.querySelector('select[data-ai-role="'+side+'"][data-ai-index="'+i+'"]');
