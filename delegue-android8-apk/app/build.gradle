@@ -14,10 +14,14 @@ android {
         versionName '1.0'
     }
 
-    dependencies {\n        implementation 'androidx.core:core:1.12.0'\n    }\n\n    buildTypes {
+    buildTypes {
         release {
             minifyEnabled false
             shrinkResources false
         }
     }
+}
+
+dependencies {
+    implementation 'androidx.core:core:1.12.0'
 }
