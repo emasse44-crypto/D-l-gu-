@@ -42,7 +42,7 @@ public class MainActivity extends Activity {
         settings.setSupportZoom(false);
         settings.setLoadsImagesAutomatically(true);
         settings.setJavaScriptCanOpenWindowsAutomatically(false);
-        settings.setUserAgentString(settings.getUserAgentString() + " DelegueFootballAndroid8/58");
+        settings.setUserAgentString(settings.getUserAgentString() + " DelegueFootballAndroid8/1");
 
         CookieManager.getInstance().setAcceptCookie(true);
 
