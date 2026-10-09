@@ -130,7 +130,7 @@ input:focus,select:focus{border-color:#60a5fa;box-shadow:0 0 0 3px rgba(96,165,2
 <body>
 <div class="app">
 <h1>⚽ Délégué Football</h1>
-<div class="version">TEST V84</div>
+<div class="version">TEST V85</div>
 <section id="home">
 <div class="card"><div class="teams">
 <div><div class="team" id="teamA">Équipe A</div><div class="score" id="scoreA">0</div></div>
@@ -1033,6 +1033,7 @@ var hadPrevious=previous.some(function(x){return x.type==="🟨 Jaune"||x.type==
 if(type==="⚪ Blanc"&&!hadPrevious){
 staffCards.push({team:side,type:type,member:member,number:sidx+1,minute:minute,whiteOnly:true});
 var players=side==="A"?playersA:playersB;
+readPlayers(players,side==="A"?"playersA":"playersB");
 var cap=players.findIndex(function(p){return p.captain;});
 if(cap>=0){
 staffExclusions.push({team:side,number:cap+1,player:playerLabel(players[cap],cap),reason:"Exclusion capitaine suite à blanc staff",start:seconds,end:seconds+600,active:true,playerWasActive:players[cap].active===true});
@@ -1340,6 +1341,7 @@ var hadYellow=previous.some(function(x){return x.type==="🟨 Jaune";});
 if(type==="⚪ Blanc"){
 staffCards.push({team:side,type:type,member:member,number:idx+1,minute:minute,whiteOnly:true});
 var players=side==="A"?playersA:playersB;
+readPlayers(players,side==="A"?"playersA":"playersB");
 var cap=players.findIndex(function(p){return p.captain;});
 if(cap>=0){
 staffExclusions.push({team:side,number:cap+1,player:playerLabel(players[cap],cap),reason:"Exclusion capitaine suite à blanc staff",start:seconds,end:seconds+600,active:true,playerWasActive:players[cap].active===true});
