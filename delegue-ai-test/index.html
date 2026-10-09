@@ -775,7 +775,7 @@ ctx.fillStyle="#fff";ctx.fillRect(0,0,canvas.width,canvas.height);
 ctx.drawImage(img,0,0,canvas.width,canvas.height);
 var full=canvas.toDataURL("image/jpeg",0.94);
 // Ajouter une image recadrée sur la zone des compositions, remplaçants et staff.
-var top=Math.round(canvas.height*0.34),bottom=Math.round(canvas.height*0.88);
+var top=Math.round(canvas.height*0.20),bottom=Math.round(canvas.height*0.98);
 var crop=document.createElement("canvas");
 crop.width=canvas.width;crop.height=Math.max(1,bottom-top);
 crop.getContext("2d").drawImage(canvas,0,top,canvas.width,crop.height,0,0,crop.width,crop.height);
