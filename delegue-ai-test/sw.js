@@ -1,4 +1,4 @@
-const CACHE_NAME = "delegue-ai-vision-v2";
+const CACHE_NAME = "delegue-ai-vision-v3";
 const APP_SHELL = [
   "./",
   "./index.html",
