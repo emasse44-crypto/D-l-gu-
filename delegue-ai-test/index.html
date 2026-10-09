@@ -1077,29 +1077,42 @@ goHome();
 setTimeout(goHome,0);
 }function renderCards(){
  var c=el("cardHistory");c.innerHTML="";
- if(!cards.length){c.innerHTML='<p class="note">Aucune sanction.</p>';return;}
- cards.forEach(function(x,i){
- var d=document.createElement("div");d.className="change-item";
- var line=document.createElement("div");line.textContent=x.minute+" · "+(x.team==="A"?el("teamA").textContent:el("teamB").textContent)+" : "+x.type+" · "+x.player;d.appendChild(line);
- var actions=document.createElement("div");actions.style.display="flex";actions.style.gap="8px";actions.style.flexWrap="wrap";actions.style.marginTop="8px";
- if(!x.auto){
- var b=document.createElement("button");b.textContent="✏️ Corriger";b.onclick=function(){correctCard(i);};actions.appendChild(b);
- var del=document.createElement("button");del.type="button";del.textContent="🗑️ Supprimer";del.className="red";del.onclick=function(){deleteCard(i);};actions.appendChild(del);
- }else{
- var note=document.createElement("span");note.textContent="Automatique";note.className="note";note.style.alignSelf="center";actions.appendChild(note);
- }
- d.appendChild(actions);c.appendChild(d);
+ var all=[];
+ cards.forEach(function(x,i){all.push({kind:"player",item:x,index:i,minute:x.minute||"0:00"});});
+ staffCards.forEach(function(x,i){all.push({kind:"staff",item:x,index:i,minute:x.minute||"0:00"});});
+ all.sort(function(a,b){
+   function sec(v){var m=String(v).match(/^(\\d+)(?::(\\d+))?/);return m?Number(m[1])*60+Number(m[2]||0):0;}
+   return sec(a.minute)-sec(b.minute);
  });
- if(exclusions.length){
- var h=document.createElement("div");h.className="change-item";h.style.marginTop="12px";h.innerHTML="<strong>⚪ Exclusions temporaires</strong>";
- exclusions.forEach(function(x){
- var remaining=Math.max(0,x.end-seconds);
- var p=document.createElement("div");p.style.marginTop="6px";
- p.textContent=x.player+" · "+(remaining>0?Math.ceil(remaining/60)+" min restantes":"exclusion terminée");
- h.appendChild(p);
+ if(!all.length&&!exclusions.length&&!staffExclusions.length){c.innerHTML='<p class="note">Aucune sanction.</p>';return;}
+ all.forEach(function(entry){
+   var x=entry.item,d=document.createElement("div");d.className="change-item";
+   var teamNameText=x.team==="A"?el("teamA").textContent:el("teamB").textContent;
+   var line=document.createElement("div");
+   if(entry.kind==="staff"){
+     line.textContent=entry.minute+" · "+teamNameText+" : "+x.type+" · "+x.member+" (staff "+x.number+")";
+   }else{
+     line.textContent=entry.minute+" · "+teamNameText+" : "+x.type+" · "+x.player;
+   }
+   d.appendChild(line);
+   if(x.auto){var note=document.createElement("div");note.className="note";note.style.marginTop="5px";note.textContent="Sanction automatique";d.appendChild(note);}
+   c.appendChild(d);
  });
- c.appendChild(h);
+ function addExclusions(list,title){
+   var active=list.filter(function(x){return x.active!==false;});
+   if(!active.length)return;
+   var h=document.createElement("div");h.className="change-item";h.style.marginTop="12px";
+   var strong=document.createElement("strong");strong.textContent=title;h.appendChild(strong);
+   active.forEach(function(x){
+     var remaining=Math.max(0,(x.end||seconds)-seconds);
+     var p=document.createElement("div");p.style.marginTop="6px";
+     p.textContent=x.player+" · "+(remaining>0?Math.ceil(remaining/60)+" min restantes":"exclusion terminée");
+     h.appendChild(p);
+   });
+   c.appendChild(h);
  }
+ addExclusions(exclusions,"⚪ Exclusions temporaires des joueurs");
+ addExclusions(staffExclusions,"⚪ Exclusions temporaires des capitaines (carton blanc au staff)");
 }
 function restoreCardPlayer(teamSide,number){
  var team=teamSide==="A"?playersA:playersB;
