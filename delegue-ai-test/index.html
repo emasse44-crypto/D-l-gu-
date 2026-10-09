@@ -133,7 +133,7 @@ input:focus,select:focus{border-color:#60a5fa;box-shadow:0 0 0 3px rgba(96,165,2
 <body>
 <div class="app">
 <h1>⚽ Délégué Football</h1>
-<div class="version">TEST V92</div>
+<div class="version">TEST V93</div>
 <section id="home">
 <div class="card"><div class="teams">
 <div><div class="team" id="teamA">Équipe A</div><div class="score" id="scoreA">0</div></div>
@@ -1501,12 +1501,9 @@ html+=section("🟨🟥⚪ SANCTIONS JOUEURS",cardHtml);
 
 var staffHtml="";
 if(staffCards.length){
-staffHtml=staffCards.map(function(x){return '<div style="margin-top:6px"><strong>'+escapeHtml(x.minute)+'</strong> · '+escapeHtml(teamName(x.team))+' · '+escapeHtml(x.type)+' · <strong>'+escapeHtml(x.member)+'</strong> · Staff '+escapeHtml(String(x.number))+(x.auto?' · automatique':'')+'</div>';}).join("");
+staffHtml=staffCards.map(function(x){var bg=(x.type||"").indexOf("Rouge")>=0?"#ef4444":((x.type||"").indexOf("Blanc")>=0?"#f8fafc":"#facc15");var fg=(x.type||"").indexOf("Blanc")>=0?"#111827":"#ffffff";return '<div style="display:flex;align-items:center;gap:9px;margin-top:7px;padding:9px 10px;background:rgba(7,15,28,.58);border-radius:10px;border-left:4px solid '+bg+'"><span style="display:inline-block;min-width:13px;height:20px;border-radius:3px;background:'+bg+';border:1px solid rgba(255,255,255,.4)"></span><div><strong>'+escapeHtml(x.minute)+'</strong> · '+escapeHtml(teamName(x.team))+'<br><strong>'+escapeHtml(x.member)+'</strong> · '+escapeHtml(x.type)+' · Staff '+escapeHtml(String(x.number))+(x.auto?' · automatique':'')+'</div></div>';}).join("");
 }else staffHtml=empty("Aucune sanction staff.");
-if(staffExclusions.length){
-staffHtml+='<div style="margin-top:10px"><strong>⚪ Exclusions temporaires du capitaine suite à un blanc staff</strong></div>';
-staffExclusions.forEach(function(x){staffHtml+='<div style="margin-top:6px"><strong>'+escapeHtml(formatMinute(x.start))+'</strong> · '+escapeHtml(teamName(x.team))+' · Capitaine : <strong>'+escapeHtml(x.player)+'</strong> · 10 minutes</div>';});
-}
+if(staffExclusions.length){staffHtml+='<div style="margin-top:10px"><strong>⚪ Exclusions temporaires du capitaine suite à un blanc staff</strong></div>';staffExclusions.forEach(function(x){staffHtml+='<div style="display:flex;align-items:center;gap:9px;margin-top:7px;padding:9px 10px;background:rgba(7,15,28,.58);border-radius:10px;border-left:4px solid #f8fafc"><span style="display:inline-block;min-width:13px;height:20px;border-radius:3px;background:#f8fafc;border:1px solid #9ca3af"></span><div><strong>'+escapeHtml(formatMinute(x.start))+'</strong> · '+escapeHtml(teamName(x.team))+'<br>Capitaine : <strong>'+escapeHtml(x.player)+'</strong> · Exclusion 10 minutes</div></div>';});}
 html+=section("👔 SANCTIONS STAFF",staffHtml);
 
 var exclusionHtml="";
