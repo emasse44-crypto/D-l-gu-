@@ -765,14 +765,27 @@ return new Promise(function(resolve,reject){
 var img=new Image(),url=URL.createObjectURL(file);
 img.onload=function(){
 URL.revokeObjectURL(url);
-var max=3000,scale=Math.min(1,max/Math.max(img.naturalWidth||img.width,img.naturalHeight||img.height));
+var iw=img.naturalWidth||img.width,ih=img.naturalHeight||img.height;
+var max=3000,scale=Math.min(1,max/Math.max(iw,ih));
 var canvas=document.createElement("canvas");
-canvas.width=Math.max(1,Math.round((img.naturalWidth||img.width)*scale));
-canvas.height=Math.max(1,Math.round((img.naturalHeight||img.height)*scale));
+canvas.width=Math.max(1,Math.round(iw*scale));
+canvas.height=Math.max(1,Math.round(ih*scale));
 var ctx=canvas.getContext("2d");
 ctx.fillStyle="#fff";ctx.fillRect(0,0,canvas.width,canvas.height);
 ctx.drawImage(img,0,0,canvas.width,canvas.height);
-resolve(canvas.toDataURL("image/jpeg",0.94));
+var full=canvas.toDataURL("image/jpeg",0.94);
+// Ajouter une image recadrée sur la zone des compositions, remplaçants et staff.
+var top=Math.round(canvas.height*0.34),bottom=Math.round(canvas.height*0.88);
+var crop=document.createElement("canvas");
+crop.width=canvas.width;crop.height=Math.max(1,bottom-top);
+crop.getContext("2d").drawImage(canvas,0,top,canvas.width,crop.height,0,0,crop.width,crop.height);
+var factor=Math.min(1.5,3600/Math.max(crop.width,crop.height));
+if(factor>1){
+var enlarged=document.createElement("canvas");
+enlarged.width=Math.round(crop.width*factor);enlarged.height=Math.round(crop.height*factor);
+enlarged.getContext("2d").drawImage(crop,0,0,enlarged.width,enlarged.height);crop=enlarged;
+}
+resolve({image:full,licenseImage:crop.toDataURL("image/jpeg",0.96)});
 };
 img.onerror=function(){URL.revokeObjectURL(url);reject(new Error("image impossible à lire"));};
 img.src=url;
@@ -829,7 +842,7 @@ var status=el("scanStatus"),review=el("scanReview");review.style.display="none";
 status.textContent="⏳ Préparation de la photo…";
 compressScanImage(file).then(function(imageData){
 status.textContent="🤖 Analyse de la feuille par vision IA…";
-return fetch(AI_VISION_ENDPOINT,{method:"POST",headers:{"Content-Type":"application/json"},body:JSON.stringify({image:imageData})});
+return fetch(AI_VISION_ENDPOINT,{method:"POST",headers:{"Content-Type":"application/json"},body:JSON.stringify(imageData)});
 }).then(function(r){
 return r.text().then(function(t){
 var data;
