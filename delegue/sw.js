@@ -1,4 +1,4 @@
-const CACHE_NAME = "delegue-officiel-v66";
+const CACHE_NAME = "delegue-officiel-v1";
 const APP_SHELL = [
   "./",
   "./index.html",
@@ -18,9 +18,7 @@ self.addEventListener("activate", event => {
   event.waitUntil(
     caches.keys().then(keys =>
       Promise.all(
-        keys
-          .filter(key => key !== CACHE_NAME)
-          .map(key => caches.delete(key))
+        keys.filter(key => key !== CACHE_NAME).map(key => caches.delete(key))
       )
     ).then(() => self.clients.claim())
   );
@@ -28,10 +26,9 @@ self.addEventListener("activate", event => {
 
 self.addEventListener("fetch", event => {
   if (event.request.method !== "GET") return;
-
   const url = new URL(event.request.url);
-  const isAppHtml = url.pathname.endsWith("/index.html") || url.pathname.endsWith("/D-l-gu-/") || url.pathname.endsWith("/delegue");
-  const isServiceWorker = url.pathname.endsWith("/sw.js");
+  const isAppHtml = url.pathname.endsWith("/index.html") || url.pathname.endsWith("/delegue/") || url.pathname.endsWith("/delegue");
+  const isServiceWorker = url.pathname.endsWith("/delegue/sw.js");
 
   if (isAppHtml || isServiceWorker) {
     event.respondWith(fetch(event.request).then(response => {
