@@ -133,7 +133,7 @@ input:focus,select:focus{border-color:#60a5fa;box-shadow:0 0 0 3px rgba(96,165,2
 <body>
 <div class="app">
 <h1>⚽ Délégué Football</h1>
-<div class="version">TEST V87</div>
+<div class="version">TEST V88</div>
 <section id="home">
 <div class="card"><div class="teams">
 <div><div class="team" id="teamA">Équipe A</div><div class="score" id="scoreA">0</div></div>
@@ -943,10 +943,10 @@ el("changeTeamLabel").textContent=label;
 var out=el("playerOut"),inn=el("playerIn");out.innerHTML="";inn.innerHTML="";
 team.forEach(function(p,i){
 var sentOff=isPlayerExpelled(side,i),tempExcluded=isPlayerTemporarilyExcluded(side,i);
-if(p.active&&!sentOff&&!tempExcluded){
+if(!p.role&&p.active&&!sentOff&&!tempExcluded){
 var o=document.createElement("option");o.value=i;o.textContent=playerLabel(p,i);out.appendChild(o);
 }
-if(!p.active&&!sentOff&&!tempExcluded){
+if(!p.role&&!p.active&&!sentOff&&!tempExcluded){
 var hasActiveExclusion=exclusions.some(function(x){return x.team===side&&x.number===i+1&&x.active&&seconds<Number(x.end);});
 if(!hasActiveExclusion){
 var q=document.createElement("option");q.value=i;
@@ -967,6 +967,7 @@ if(!Number.isInteger(outIndex)||!Number.isInteger(inIndex)||outIndex<0||outIndex
 alert("Choisissez un joueur sortant et un joueur entrant.");return;
 }
 var outPlayer=team[outIndex],inPlayer=team[inIndex];
+if(outPlayer.role||inPlayer.role){alert("Le staff ne peut pas être sélectionné pour un changement de joueur.");return;}
 var outExcluded=isPlayerTemporarilyExcluded(side,outIndex),inExcluded=isPlayerTemporarilyExcluded(side,inIndex);
 var inSuspended=exclusions.some(function(x){return x.team===side&&x.number===inIndex+1&&x.active&&seconds<Number(x.end);});
 if(!outPlayer.active||isPlayerExpelled(side,outIndex)||outExcluded||inPlayer.active||isPlayerExpelled(side,inIndex)||inExcluded||inSuspended){
