@@ -133,7 +133,7 @@ input:focus,select:focus{border-color:#60a5fa;box-shadow:0 0 0 3px rgba(96,165,2
 <body>
 <div class="app">
 <h1>⚽ Délégué Football</h1>
-<div class="version">TEST V97</div>
+<div class="version">TEST V98</div>
 <section id="home">
 <div class="card"><div class="teams">
 <div><div class="team" id="teamA">Équipe A</div><div class="score" id="scoreA">0</div></div>
@@ -1143,8 +1143,10 @@ function deleteStaffCard(index){
    var hasWhiteYellow=remainingStaff.some(function(item){return item.type==="⚪ Blanc";})&&remainingStaff.some(function(item){return item.type==="🟨 Jaune";});
    staffCards=staffCards.filter(function(item){
      if(!item.auto||item.team!==side||item.number!==number||item.member!==member)return true;
-     if(item.type==="🟥 Rouge (2 jaunes)")return hasTwoYellows;
-     if(item.type==="🟥 Rouge (blanc + jaune)")return hasWhiteYellow;
+     var redType=String(item.type||"").toLowerCase();
+     if(redType.indexOf("rouge")<0)return true;
+     if(redType.indexOf("blanc")>=0)return hasWhiteYellow;
+     if(redType.indexOf("jaune")>=0||redType.indexOf("sanction")>=0)return hasTwoYellows;
      return true;
    });
  }
@@ -1194,8 +1196,10 @@ function deleteCard(index){
  var hasWhiteYellow=remainingPlayerCards.some(function(e){return e.type==="⚪ Blanc";})&&yellowCount>=1;
  cards=cards.filter(function(e){
    if(!e.auto||e.team!==side||e.number!==number)return true;
-   if(e.type==="🟥 Rouge (2 jaunes)")return yellowCount>=2;
-   if(e.type==="🟥 Rouge (blanc + jaune)")return hasWhiteYellow;
+   var redType=String(e.type||"").toLowerCase();
+   if(redType.indexOf("rouge")<0)return true;
+   if(redType.indexOf("blanc")>=0)return hasWhiteYellow;
+   if(redType.indexOf("jaune")>=0||redType.indexOf("sanction")>=0)return yellowCount>=2;
    return true;
  });
  }
