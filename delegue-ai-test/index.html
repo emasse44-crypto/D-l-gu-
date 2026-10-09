@@ -38,6 +38,9 @@ button:active{transform:scale(.97)}
 .buttons{display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-top:16px}
 .buttons button{background:linear-gradient(145deg,#285b7a,#244461)}.buttons button:first-child{border-color:rgba(96,165,250,.28)}.buttons button:last-child{border-color:rgba(74,222,128,.28)}
 .mainbuttons{display:grid;grid-template-columns:1fr 1fr;gap:10px}
+.mainbuttons{grid-template-columns:repeat(3,minmax(0,1fr));gap:6px}
+.mainbuttons button{min-width:0;padding:9px 5px;font-size:13px;line-height:1.2}
+#secondHalf{display:block;width:100%;margin-top:8px;padding:9px 8px;font-size:13px;line-height:1.2;min-height:0}
 .quick-actions{display:grid;grid-template-columns:repeat(3,1fr);gap:9px;margin-top:12px}
 .quick-actions button{min-height:68px;padding:8px 5px;font-size:23px;border-radius:15px;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:4px}
 .quick-actions button span{font-size:12px;letter-spacing:.2px}
@@ -130,7 +133,7 @@ input:focus,select:focus{border-color:#60a5fa;box-shadow:0 0 0 3px rgba(96,165,2
 <body>
 <div class="app">
 <h1>⚽ Délégué Football</h1>
-<div class="version">TEST V86</div>
+<div class="version">TEST V87</div>
 <section id="home">
 <div class="card"><div class="teams">
 <div><div class="team" id="teamA">Équipe A</div><div class="score" id="scoreA">0</div></div>
