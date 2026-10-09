@@ -5,7 +5,7 @@
 
     <application
         android:allowBackup="true"
-        android:label="Délégué Football Android 8"
+        android:label="Délégué Football V1"
         android:theme="@style/AppTheme"
         android:usesCleartextTraffic="false"
         android:resizeableActivity="true">
