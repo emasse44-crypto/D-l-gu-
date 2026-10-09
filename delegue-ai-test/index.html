@@ -1139,7 +1139,7 @@ function deleteStaffCard(index){
    var start=(Number(parts[0])||0)*60+(Number(parts[1])||0);
    for(var j=staffExclusions.length-1;j>=0;j--){
      var ex=staffExclusions[j];
-     if(ex.team===side&&ex.number===number&&ex.reason==="Exclusion capitaine suite à blanc staff"&&Number(ex.start)===start){
+     if(ex.team===side&&ex.reason==="Exclusion capitaine suite à blanc staff"&&Number(ex.start)===start){
        staffExclusions.splice(j,1);
      }
    }
