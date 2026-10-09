@@ -133,7 +133,7 @@ input:focus,select:focus{border-color:#60a5fa;box-shadow:0 0 0 3px rgba(96,165,2
 <body>
 <div class="app">
 <h1>⚽ Délégué Football</h1>
-<div class="version">TEST V95</div>
+<div class="version">TEST V96</div>
 <section id="home">
 <div class="card"><div class="teams">
 <div><div class="team" id="teamA">Équipe A</div><div class="score" id="scoreA">0</div></div>
@@ -1035,6 +1035,7 @@ var member=staff[sidx];
 var previous=staffCards.filter(function(x){return x.team===side&&x.number===sidx+1;});
 if(previous.some(function(x){return x.sentOff;})){alert("Ce membre du staff est déjà expulsé.");return;}
 var hadPrevious=previous.some(function(x){return x.type==="🟨 Jaune"||x.type==="⚪ Blanc"});
+var staffTriggersRed=previous.some(function(x){return (x.type==="🟨 Jaune"&&type==="🟨 Jaune")||(x.type==="⚪ Blanc"&&type==="🟨 Jaune")||(x.type==="🟨 Jaune"&&type==="⚪ Blanc");});
 if(type==="⚪ Blanc"&&!hadPrevious){
 staffCards.push({team:side,type:type,member:member,number:sidx+1,minute:minute,whiteOnly:true});
 var players=side==="A"?playersA:playersB;
@@ -1046,8 +1047,8 @@ players[cap].active=false;
 }
 }else{
 staffCards.push({team:side,type:type,member:member,number:sidx+1,minute:minute,sentOff:type==="🟥 Rouge"});
-if(hadPrevious&&type!=="🟥 Rouge"){
-staffCards.push({team:side,type:"🟥 Rouge ("+(type==="⚪ Blanc"?"blanc + sanction précédente":"2 sanctions")+")",member:member,number:sidx+1,minute:minute,auto:true,sentOff:true});
+if(staffTriggersRed&&type!=="🟥 Rouge"){
+staffCards.push({team:side,type:"🟥 Rouge ("+(type==="⚪ Blanc"?"blanc + jaune":"2 jaunes")+")",member:member,number:sidx+1,minute:minute,auto:true,sentOff:true});
 }
 }
 el("cardForm").style.display="none";
@@ -1064,14 +1065,15 @@ if(!Number.isInteger(idx)||idx<0||idx>15||!team[idx]||team[idx].role||isPlayerEx
 var previous=cards.filter(function(x){return x.team===side&&x.number===idx+1&&(x.type==="🟨 Jaune"||x.type==="⚪ Blanc");});
 if(previous.some(function(x){return x.type.indexOf("🟥")===0;})||cards.some(function(x){return x.team===side&&x.number===idx+1&&x.type.indexOf("🟥")===0;})){alert("Ce joueur est déjà expulsé.");return;}
 var hadPrevious=previous.length>0;
+var triggersRed=previous.some(function(x){return (x.type==="🟨 Jaune"&&type==="🟨 Jaune")||(x.type==="⚪ Blanc"&&type==="🟨 Jaune")||(x.type==="🟨 Jaune"&&type==="⚪ Blanc");});
 cards.push({team:side,type:type,player:playerLabel(team[idx],idx),number:idx+1,minute:minute});
 if(type==="🟥 Rouge"){
 team[idx].active=false;
 }else if(!hadPrevious&&type==="⚪ Blanc"){
 exclusions.push({team:side,number:idx+1,player:playerLabel(team[idx],idx),start:seconds,end:seconds+600,active:true,playerWasActive:team[idx].active===true});
 team[idx].active=false;
-}else if(hadPrevious){
-cards.push({team:side,type:"🟥 Rouge ("+(type==="⚪ Blanc"?"blanc + sanction précédente":"2 sanctions")+")",player:playerLabel(team[idx],idx),number:idx+1,minute:minute,auto:true});
+}else if(triggersRed){
+cards.push({team:side,type:"🟥 Rouge ("+(type==="⚪ Blanc"?"blanc + jaune":"2 jaunes")+")",player:playerLabel(team[idx],idx),number:idx+1,minute:minute,auto:true});
 team[idx].active=false;
 exclusions=exclusions.filter(function(x){return !(x.team===side&&x.number===idx+1&&x.active);});
 }
