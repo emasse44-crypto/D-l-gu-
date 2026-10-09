@@ -51,12 +51,15 @@ export default {
       };
 
       const prompt = [
-        "PRIORITÉ ABSOLUE : lis les numéros de licence dans la colonne située immédiatement à droite du nom de chaque joueur.",
-"Examine attentivement chaque ligne et distingue le nom du joueur de son numéro de licence. Ne confonds jamais le numéro de maillot avec la licence.",
-"Recopie chaque numéro de licence exactement, chiffre par chiffre, pour les titulaires, les remplaçants et les membres du staff.",
-"Si un numéro est partiellement difficile à lire, examine attentivement les chiffres visibles. Ne complète jamais les chiffres manquants par supposition.",
-"Ne laisse une licence vide que si elle est absente ou réellement illisible sur la photo."
-        
+        "Tu analyses une feuille officielle de composition de football photographiée. La première image montre la feuille complète.",
+        "La deuxième image est un recadrage agrandi de la zone des compositions, remplaçants et staff. Utilise impérativement cette deuxième image pour lire les numéros de licence.",
+        "Pour chaque équipe, lis les joueurs dans leur colonne sans mélanger l'équipe recevante à gauche et l'équipe visiteuse à droite. Conserve les numéros de maillot dans le champ number et les noms dans le champ name.",
+        "PRIORITÉ ABSOLUE : lis la licence imprimée dans la colonne immédiatement à droite du nom de chaque joueur. Ne confonds jamais le numéro de maillot avec le numéro de licence.",
+        "Recopie dans le champ license tous les caractères du numéro de licence, exactement et dans le bon ordre, sans espaces. Fais-le pour les titulaires, les remplaçants et les membres du staff lorsque leurs licences sont imprimées.",
+        "Examine la deuxième image ligne par ligne et chiffre par chiffre. Ne complète jamais un chiffre manquant par supposition et n'invente jamais de numéro.",
+        "Si aucun numéro de licence n'est imprimé ou si le numéro est réellement illisible, renvoie une chaîne vide dans license.",
+        "Ignore les titres et les lignes des officiels, arbitres et autres personnes qui ne font pas partie des joueurs ou du staff.",
+        "Renvoye uniquement le résultat conforme au schéma JSON demandé."
       ].join(" ");
 
       const ai = await fetch("https://api.openai.com/v1/responses", {
