@@ -1656,7 +1656,7 @@ function exportWordReport(){
  function minute(v){return value(v||"Minute non renseignée");}
  function lines(items,emptyText){return items.length?items.join("<br>"):wordEscape(emptyText);}
  var arrivalTime="Non calculable";
- if(matchInfo.kickoff&&/^\\d{2}:\\d{2}$/.test(matchInfo.kickoff)){
+ if(matchInfo.kickoff&&/^\d{2}:\d{2}$/.test(matchInfo.kickoff)){
   var p=matchInfo.kickoff.split(":");var m=(Number(p[0])*60+Number(p[1])-120+1440)%1440;
   arrivalTime=String(Math.floor(m/60)).padStart(2,"0")+":"+String(m%60).padStart(2,"0");
  }
