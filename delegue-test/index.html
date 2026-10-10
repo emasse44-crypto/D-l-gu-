@@ -171,7 +171,7 @@ input:focus,select:focus{border-color:#60a5fa;box-shadow:0 0 0 3px rgba(96,165,2
 <button class="green" id="confirmCard" type="button" style="width:100%;margin-top:10px">Valider la sanction</button>
 </div>
 </div>
-<div class="change-item" style="margin-top:16px"><h3>👔 Interventions sur les bancs de touche</h3><p class="note">Enregistre chaque intervention ici, au même endroit que les cartons. Le total par équipe sera repris dans le rapport Word.</p><p>Équipe concernée</p><select id="benchInterventionTeam"><option value="A">Équipe A</option><option value="B">Équipe B</option></select><p>Minute (facultatif)</p><input id="benchInterventionMinute" placeholder="Ex. 32e" maxlength="12"><p>Motif / détail (facultatif)</p><input id="benchInterventionNote" placeholder="Ex. éducateur rappelé à l’ordre" maxlength="180"><button id="addBenchIntervention" class="green" type="button" style="width:100%;margin-top:8px">＋ Ajouter une intervention</button><div id="benchInterventionsList" style="margin-top:10px"></div></div>
+<button type="button" id="toggleBenchInterventions" style="width:100%;margin-top:14px">👔 Interventions sur les bancs de touche ▸</button><div id="benchInterventionsPanel" class="change-item" style="margin-top:10px;display:none"><h3>👔 Interventions sur les bancs de touche</h3><p class="note">Enregistre chaque intervention. Le total par équipe sera repris dans le rapport Word.</p><p>Équipe concernée</p><select id="benchInterventionTeam"><option value="A">Équipe A</option><option value="B">Équipe B</option></select><p>Minute (facultatif)</p><input id="benchInterventionMinute" placeholder="Ex. 32e" maxlength="12"><p>Motif / détail (facultatif)</p><input id="benchInterventionNote" placeholder="Ex. éducateur rappelé à l’ordre" maxlength="180"><button id="addBenchIntervention" class="green" type="button" style="width:100%;margin-top:8px">＋ Ajouter une intervention</button><div id="benchInterventionsList" style="margin-top:10px"></div></div>
 <div class="change-history"><h3>Historique des sanctions</h3><div id="cardHistory"><p class="note">Aucune sanction.</p></div></div>
 </section>
 <section class="page card" id="sanctions"><button class="back">← Retour</button><h2>Sanctions</h2><p>Cette partie sera ajoutée ensuite.</p></section>
@@ -1699,7 +1699,7 @@ function exportWordReport(){
   nodes[0].setAttributeNS("http://www.w3.org/XML/1998/namespace","xml:space","preserve");
   for(var i=1;i<nodes.length;i++)nodes[i].textContent="";
  }
- fetch("./rapport-modele.docx.docx?v=92",{cache:"no-store"}).then(function(r){
+ fetch("./rapport-modele.docx.docx?v=93",{cache:"no-store"}).then(function(r){
   if(!r.ok)throw new Error("Modèle Word introuvable ("+r.status+").");
   return r.arrayBuffer();
  }).then(function(buf){return JSZip.loadAsync(buf);}).then(function(zip){
@@ -1764,6 +1764,7 @@ el("reportHomeBtn").onclick=function(e){e.preventDefault();showPageDirect("repor
 document.querySelectorAll(".back").forEach(function(b){b.onclick=function(){document.querySelectorAll(".page").forEach(function(p){p.classList.remove("active");p.style.removeProperty("display");});el("home").classList.remove("home-hidden");el("home").style.display="block";el("home").hidden=false;window.scrollTo(0,0);};});
 el("commissionerReceptionCheck").onchange=function(){if(this.checked)el("securityReceptionCheck").checked=false;};el("securityReceptionCheck").onchange=function(){if(this.checked)el("commissionerReceptionCheck").checked=false;};
 el("saveNames").onclick=saveMatchInfo;
+ if(el("toggleBenchInterventions"))el("toggleBenchInterventions").onclick=function(){var panel=el("benchInterventionsPanel"),open=panel.style.display!=="none";panel.style.display=open?"none":"block";this.textContent=(open?"👔 Interventions sur les bancs de touche ▸":"👔 Interventions sur les bancs de touche ▾");if(!open)renderBenchInterventions();};
  if(el("addBenchIntervention"))el("addBenchIntervention").onclick=addBenchIntervention;
 el("scanSheetCameraBtn").onclick=function(){el("matchSheetCamera").click();};el("scanSheetGalleryBtn").onclick=function(){el("matchSheetGallery").click();};el("matchSheetCamera").onchange=function(){scanMatchSheet(this.files&&this.files[0]);this.value="";};el("matchSheetGallery").onchange=function(){scanMatchSheet(this.files&&this.files[0]);this.value="";};
 el("saveCompositions").onclick=function(){readPlayers(playersA,"playersA");readPlayers(playersB,"playersB");playersA.forEach(function(p,i){p.active=i<11;});playersB.forEach(function(p,i){p.active=i<11;});renderAllPlayers();saveState();alert("Compositions enregistrées. Les n°1 à 11 sont titulaires, les n°12 à 16 sont remplaçants.");};el("resetComposition").onclick=function(){if(!confirm("Effacer les joueurs, licences et capitaines des deux équipes ?"))return;playersA=Array.from({length:16},function(){return {name:"",license:"",captain:false,active:false,role:""};});playersB=Array.from({length:16},function(){return {name:"",license:"",captain:false,active:false,role:""};});playersA.forEach(function(p,i){p.active=i<11;});playersB.forEach(function(p,i){p.active=i<11;});renderAllPlayers();saveState();alert("Les deux compositions ont été remises à zéro.");};
@@ -1876,7 +1877,7 @@ var _renderStaffHistoryMinute=renderStaffHistory;
 renderStaffHistory=function(){_renderStaffHistoryMinute();refreshStaffCardMinuteEditor();};
 
 loadState();playersA.forEach(function(p,i){if(typeof p.active!=="boolean")p.active=i<11;});playersB.forEach(function(p,i){if(typeof p.active!=="boolean")p.active=i<11;});if(playersA.every(function(p){return p.active===true;})&&playersA.some(function(p){return p.name;})){playersA.forEach(function(p,i){p.active=i<11;});}if(playersB.every(function(p){return p.active===true;})&&playersB.some(function(p){return p.name;})){playersB.forEach(function(p,i){p.active=i<11;});}saveState();if(running&&typeof chronoStartedAt==="number"){startChronoRefresh();syncChrono();}
-if("serviceWorker" in navigator){window.addEventListener("load",function(){navigator.serviceWorker.register("sw.js?v=92").catch(function(){});});}
+if("serviceWorker" in navigator){window.addEventListener("load",function(){navigator.serviceWorker.register("sw.js?v=93").catch(function(){});});}
 renderAllPlayers();update();updateGoalButtonLabels();
 })();
 </script>
