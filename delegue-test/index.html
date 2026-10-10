@@ -1672,7 +1672,7 @@ function exportWordReport(){
   nodes[0].setAttributeNS("http://www.w3.org/XML/1998/namespace","xml:space","preserve");
   for(var i=1;i<nodes.length;i++)nodes[i].textContent="";
  }
- fetch("./rapport-modele.docx.docx?v=88",{cache:"no-store"}).then(function(r){
+ fetch("./rapport-modele.docx.docx?v=89",{cache:"no-store"}).then(function(r){
   if(!r.ok)throw new Error("Modèle Word introuvable ("+r.status+").");
   return r.arrayBuffer();
  }).then(function(buf){return JSZip.loadAsync(buf);}).then(function(zip){
@@ -1683,23 +1683,24 @@ function exportWordReport(){
    var W="http://schemas.openxmlformats.org/wordprocessingml/2006/main";
    var paras=Array.from(doc.getElementsByTagNameNS(W,"p"));
    var sanctionParagraphs=[];
-   var inBeforeMatch=false;
+   var inBeforeMatch=false,arrivalParagraph=null,receptionParagraph=null;
    paras.forEach(function(p){
     var ts=Array.from(p.getElementsByTagNameNS(W,"t"));
     var text=ts.map(function(t){return t.textContent;}).join("").replace(/\s+/g," ").trim();
     if(/^I\s*[–-]\s*AVANT LE MATCH/i.test(text))inBeforeMatch=true;
     else if(/^II\s*[–-]/i.test(text))inBeforeMatch=false;
     if(/^Arrivé à/i.test(text)||/arriv.{0,30}1\s*h(?:eure)?/i.test(text)){
-     if(inBeforeMatch)setParagraphText(p,"Arrivé à "+arrival);
+     if(inBeforeMatch){setParagraphText(p,"Arrivé à "+arrival);arrivalParagraph=p;}
      else p.parentNode.removeChild(p);
     }
-    else if(/accueill|accueil|nous a reç|nous sommes reç|HALGAND/i.test(text)){var receptionName=matchInfo.receptionPerson==="commissioner"?matchInfo.commissioner:(matchInfo.receptionPerson==="security"?matchInfo.security:"");var receptionFunction=matchInfo.receptionPerson==="commissioner"?"commissaire du club":(matchInfo.receptionPerson==="security"?"responsable sécurité":"fonction non renseignée");receptionName=(receptionName||"Nom non renseigné").replace(/^(M\.?|MR|MONSIEUR)\s+/i,"");setParagraphText(p,"Reçu par M. "+receptionName+", "+receptionFunction);}
+    else if(/accueill|accueil|nous a reç|nous sommes reç|HALGAND/i.test(text)){receptionParagraph=p;var receptionName=matchInfo.receptionPerson==="commissioner"?matchInfo.commissioner:(matchInfo.receptionPerson==="security"?matchInfo.security:"");var receptionFunction=matchInfo.receptionPerson==="commissioner"?"commissaire du club":(matchInfo.receptionPerson==="security"?"responsable sécurité":"fonction non renseignée");receptionName=(receptionName||"Nom non renseigné").replace(/^(M\.?|MR|MONSIEUR)\s+/i,"");setParagraphText(p,"Reçu par M. "+receptionName+", "+receptionFunction);}
     else if(/est le commissaire du club pour la rencontre/i.test(text))setParagraphText(p,"-"+(matchInfo.commissioner||"Non renseigné")+" est le commissaire du club pour la rencontre.");
     else if(/mauvaise collaboration/i.test(text))setParagraphText(p,text.replace(/mauvaise collaboration/ig,"bonne collaboration"));
     else if(/est le responsable sécurité pour la rencontre/i.test(text))setParagraphText(p,"-"+(matchInfo.security||"Non renseigné")+" est le responsable sécurité pour la rencontre.");
     else if(/arbitre central de la rencontre/i.test(text)){var refereeName=(matchInfo.referee||"Non renseigné").replace(/^(M\.?|MR|MONSIEUR)\s+/i,"");setParagraphText(p,"Validation des équipements et du terrain par M. "+refereeName+", arbitre central de la rencontre.");}
     else if(/avertissement/i.test(text))sanctionParagraphs.push(p);
    });
+   if(arrivalParagraph&&receptionParagraph&&arrivalParagraph.parentNode===receptionParagraph.parentNode)receptionParagraph.parentNode.insertBefore(arrivalParagraph,receptionParagraph);
    if(sanctionParagraphs.length){
     var lines=sanctionLines("A",teamAName).filter(function(x){return !/^Aucune sanction/.test(x);})
       .concat(sanctionLines("B",teamBName).filter(function(x){return !/^Aucune sanction/.test(x);}));
@@ -1845,7 +1846,7 @@ var _renderStaffHistoryMinute=renderStaffHistory;
 renderStaffHistory=function(){_renderStaffHistoryMinute();refreshStaffCardMinuteEditor();};
 
 loadState();playersA.forEach(function(p,i){if(typeof p.active!=="boolean")p.active=i<11;});playersB.forEach(function(p,i){if(typeof p.active!=="boolean")p.active=i<11;});if(playersA.every(function(p){return p.active===true;})&&playersA.some(function(p){return p.name;})){playersA.forEach(function(p,i){p.active=i<11;});}if(playersB.every(function(p){return p.active===true;})&&playersB.some(function(p){return p.name;})){playersB.forEach(function(p,i){p.active=i<11;});}saveState();if(running&&typeof chronoStartedAt==="number"){startChronoRefresh();syncChrono();}
-if("serviceWorker" in navigator){window.addEventListener("load",function(){navigator.serviceWorker.register("sw.js?v=88").catch(function(){});});}
+if("serviceWorker" in navigator){window.addEventListener("load",function(){navigator.serviceWorker.register("sw.js?v=89").catch(function(){});});}
 renderAllPlayers();update();updateGoalButtonLabels();
 })();
 </script>
