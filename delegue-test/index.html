@@ -1654,9 +1654,14 @@ function exportWordReport(){
   var p=matchInfo.kickoff.split(":");var m=(Number(p[0])*60+Number(p[1])-120+1440)%1440;
   arrival=String(Math.floor(m/60)).padStart(2,"0")+"H"+String(m%60).padStart(2,"0");
  }
- function totalSanctions(side){
-  return cards.filter(function(x){return x.team===side;}).length+
-   staffCards.filter(function(x){return x.team===side;}).length;
+ function sanctionDetails(side,teamName){
+  var all=cards.filter(function(x){return x.team===side;}).concat(staffCards.filter(function(x){return x.team===side;}));
+  function count(words){return all.filter(function(x){var t=String(x.type||"").toLowerCase();return words.some(function(w){return t.indexOf(w)>=0;});}).length;}
+  var yellow=count(["jaune","avertissement"]);
+  var red=count(["rouge","expulsion"]);
+  var white=count(["blanc"]);
+  if(yellow+red+white===0)return teamName+" : Aucune sanction.";
+  return teamName+" : "+yellow+" avertissement(s) / carton(s) jaune(s), "+red+" carton(s) rouge(s), "+white+" carton(s) blanc(s).";
  }
  function xmlEscape(v){return String(v==null?"Non renseigné":v).replace(/&/g,"&amp;").replace(/</g,"&lt;").replace(/>/g,"&gt;");}
  function setParagraphText(p,text){
@@ -1683,8 +1688,12 @@ function exportWordReport(){
     else if(/est le commissaire du club pour la rencontre/i.test(text))setParagraphText(p,"-"+(matchInfo.commissioner||"Non renseigné")+" est le commissaire du club pour la rencontre.");
     else if(/est le responsable sécurité pour la rencontre/i.test(text))setParagraphText(p,"-"+(matchInfo.security||"Non renseigné")+" est le responsable sécurité pour la rencontre.");
     else if(/arbitre central de la rencontre/i.test(text))setParagraphText(p,"Validation des équipements et du terrain par "+(matchInfo.referee||"Non renseigné")+", arbitre central de la rencontre.");
-    else if(/avertissement.*pour La Roche/i.test(text)||/avertissements.*pour La Roche/i.test(text))setParagraphText(p,totalSanctions("A")+" sanction(s) administrative(s) pour "+teamAName);
-    else if(/avertissement.*pour le Poiré/i.test(text)||/avertissements.*pour le Poiré/i.test(text))setParagraphText(p,totalSanctions("B")+" sanction(s) administrative(s) pour "+teamBName);
+    else if(/avertissement/i.test(text)&&(/La Roche/i.test(text)||/Poiré/i.test(text)||/avertissement/i.test(text))){
+     if(!window._rapportSanctionLineCount)window._rapportSanctionLineCount=0;
+     window._rapportSanctionLineCount++;
+     if(window._rapportSanctionLineCount===1)setParagraphText(p,sanctionDetails("A",teamAName));
+     else if(window._rapportSanctionLineCount===2)setParagraphText(p,sanctionDetails("B",teamBName));
+    }
    });
    zip.file("word/document.xml",new XMLSerializer().serializeToString(doc));
    return zip.generateAsync({type:"blob",mimeType:"application/vnd.openxmlformats-officedocument.wordprocessingml.document"});
