@@ -181,7 +181,7 @@ input:focus,select:focus{border-color:#60a5fa;box-shadow:0 0 0 3px rgba(96,165,2
 <section class="page card" id="checklist"><button class="back">← Retour</button><h2>✅ Checklist du délégué</h2><p class="note">Cochez les vérifications réalisées avant le match. L'état est conservé.</p><div id="checklistBox"></div><button id="resetChecklist" class="red" style="width:100%;margin-top:12px">Réinitialiser la checklist</button></section>
 <section class="page card" id="delegateGuide"><button class="back">← Retour</button><h2>🧑‍⚖️ Missions du délégué</h2><div class="change-item"><h3>📋 Checklist jour de match</h3><p class="note">Cochez les actions réalisées. La progression est conservée sur l'appareil.</p><div id="delegateProgress" style="font-weight:bold;margin:8px 0">0/32 vérifications</div><div style="height:10px;background:#374151;border-radius:99px;overflow:hidden"><div id="delegateProgressBar" style="height:100%;width:0%;background:#22c55e"></div></div></div><div id="delegateChecklistBox"></div><button id="resetDelegateChecklist" class="red" style="width:100%;margin-top:12px">Réinitialiser la checklist délégué</button><div class="change-item"><strong>⚠️ Rappel</strong><div class="note" style="margin-top:6px">Le délégué facilite l'organisation, veille à la sécurité et accompagne les officiels. Il ne se substitue pas à l'arbitre.</div></div></section><section class="page card" id="incidents"><button class="back">← Retour</button><h2>🚨 Incidents de match</h2><p class="note">Notez les incidents importants avec la minute et une description.</p><input id="incidentText" placeholder="Description de l'incident"><button id="addIncident" class="green" style="width:100%;margin-top:10px">Ajouter l'incident</button><div id="incidentHistory" class="change-history"></div></section>
 <section class="page card" id="injuries"><button class="back">← Retour</button><h2>🩹 Blessures</h2><p class="note">Enregistrez une blessure et si le joueur a dû sortir.</p><div class="change-grid"><select id="injuryTeam"><option value="A">Équipe A</option><option value="B">Équipe B</option></select><select id="injuryPlayer"><option value="">Choisir un joueur</option></select></div><input id="injuryText" placeholder="Nature / observation" style="margin-top:10px"><label class="check-row"><input type="checkbox" id="injuryOut"> Joueur sorti du terrain</label><button id="addInjury" class="green" style="width:100%;margin-top:10px">Ajouter la blessure</button><div id="injuryHistory" class="change-history"></div></section>
-<section class="page card" id="report"><button class="back">← Retour</button><h2>📄 Rapport final</h2><div id="reportContent"></div><button id="exportWordReport" class="green" style="width:100%;margin-top:12px">📝 Exporter le rapport Word (.docx)</button><button id="printReport" style="width:100%;margin-top:8px">📄 Enregistrer le rapport en PDF</button></section>
+<section class="page card" id="report"><button class="back">← Retour</button><h2>📄 Rapport final</h2><div id="reportContent"></div><button id="saveWordReport" class="green" style="width:100%;margin-top:12px">💾 Enregistrer le rapport Word sur PC</button><button id="emailWordReport" style="width:100%;margin-top:8px">✉️ Envoyer le rapport Word par e-mail (téléphone / tablette)</button><button id="printReport" style="width:100%;margin-top:8px">📄 Enregistrer le rapport en PDF</button></section>
 <section class="page card" id="photos"><button class="back">← Retour</button><h2>📸 Photos du match</h2><p class="note">Ajoutez jusqu’à 12 photos. Elles seront conservées avec le match et apparaîtront dans le rapport final.</p><input id="matchPhotosInput" type="file" accept="image/*" capture="environment" multiple style="display:none"><button id="takePhotosBtn" class="green" style="width:100%">📸 Prendre / choisir des photos</button><div id="photosCount" class="note" style="margin-top:10px"></div><div id="photosGrid" style="display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:10px;margin-top:12px"></div></section>
 <section class="page card" id="settings"><button class="back">← Retour</button><h2>Informations du match</h2><p>Équipe A</p><input id="teamAInput" value="Équipe A"><p>Équipe B</p><input id="teamBInput" value="Équipe B"><p>Compétition</p><input id="competitionInput" placeholder="Coupe de France, championnat..."><p>Date</p><input id="matchDateInput" type="date"><p>Heure du coup d'envoi</p><input id="kickoffInput" type="time"><p>Stade</p><input id="stadiumInput" placeholder="Stade / terrain"><p>Arbitre</p><input id="refereeInput" placeholder="Nom de l'arbitre"><p>Assistant 1</p><input id="assistant1Input" placeholder="Nom de l'assistant 1"><p>Assistant 2</p><input id="assistant2Input" placeholder="Nom de l'assistant 2"><p>Délégué</p><input id="delegateInput" placeholder="Nom du délégué"><p>Délégué adjoint</p><input id="delegateAdjointInput" placeholder="Nom du délégué adjoint"><p style="display:flex;align-items:center;gap:8px;margin-bottom:4px"><input id="commissionerReceptionCheck" type="checkbox" style="width:18px;height:18px;margin:0"> <label for="commissionerReceptionCheck">Commissaire · personne qui me reçoit</label></p><input id="commissionerInput" placeholder="Nom du commissaire"><p style="display:flex;align-items:center;gap:8px;margin-bottom:4px"><input id="securityReceptionCheck" type="checkbox" style="width:18px;height:18px;margin:0"> <label for="securityReceptionCheck">Responsable sécurité · personne qui me reçoit</label></p><input id="securityInput" placeholder="Nom du responsable sécurité"><p>Président recevant</p><input id="presidentRecevantInput" placeholder="Nom du président recevant"><p>Président visiteur</p><input id="presidentVisiteurInput" placeholder="Nom du président visiteur"><p>Observations</p><input id="observationInput" placeholder="Observations générales"><button class="green" id="saveNames" style="width:100%;margin-top:14px">Enregistrer</button></section>
 </div>
@@ -1671,7 +1671,7 @@ document.querySelectorAll("[data-page]").forEach(function(b){b.onclick=function(
 function wordEscape(value){
  return String(value==null?"":value).replace(/&/g,"&amp;").replace(/</g,"&lt;").replace(/>/g,"&gt;").replace(/"/g,"&quot;").replace(/'/g,"&#39;");
 }
-function exportWordReport(){
+function exportWordReport(deliveryMode){
  if(!window.JSZip){alert("Le module Word n’a pas pu se charger. Vérifiez la connexion Internet puis réessayez.");return;}
  renderReport();
  var teamAName=(el("teamA").textContent||"Équipe A").trim();
@@ -1699,7 +1699,7 @@ function exportWordReport(){
   nodes[0].setAttributeNS("http://www.w3.org/XML/1998/namespace","xml:space","preserve");
   for(var i=1;i<nodes.length;i++)nodes[i].textContent="";
  }
- fetch("./rapport-modele.docx.docx?v=94",{cache:"no-store"}).then(function(r){
+ fetch("./rapport-modele.docx.docx?v=95",{cache:"no-store"}).then(function(r){
   if(!r.ok)throw new Error("Modèle Word introuvable ("+r.status+").");
   return r.arrayBuffer();
  }).then(function(buf){return JSZip.loadAsync(buf);}).then(function(zip){
@@ -1751,13 +1751,28 @@ function exportWordReport(){
    return zip.generateAsync({type:"blob",mimeType:"application/vnd.openxmlformats-officedocument.wordprocessingml.document"});
   });
  }).then(function(blob){
-  var url=URL.createObjectURL(blob),a=document.createElement("a");
   var safe=(teamAName+"_"+teamBName).replace(/[^a-z0-9_-]+/gi,"_").replace(/^_+|_+$/g,"")||"match";
-  a.href=url;a.download="Rapport_delegue_"+safe+".docx";document.body.appendChild(a);a.click();a.remove();
-  setTimeout(function(){URL.revokeObjectURL(url);},1500);
+  var filename="Rapport_delegue_"+safe+".docx";
+  if(deliveryMode==="email"){
+   var file;
+   try{file=new File([blob],filename,{type:"application/vnd.openxmlformats-officedocument.wordprocessingml.document"});}catch(e){file=null;}
+   if(file&&navigator.share&&navigator.canShare&&navigator.canShare({files:[file]})){
+    return navigator.share({files:[file],title:"Rapport du match",text:"Rapport du match en pièce jointe."}).catch(function(err){if(err&&err.name==="AbortError")return;downloadWordBlob(blob,filename);alert("Le partage par e-mail n’a pas pu s’ouvrir. Le rapport a été téléchargé : joins-le manuellement à ton e-mail.");});
+   }
+   downloadWordBlob(blob,filename);
+   alert("Le rapport Word a été téléchargé. Ouvre ton application e-mail et joins le fichier depuis le dossier Téléchargements. L’ajout automatique d’une pièce jointe n’est pas pris en charge par ce navigateur.");
+   return;
+  }
+  downloadWordBlob(blob,filename);
  }).catch(function(err){console.error(err);alert("Export Word impossible : "+(err&&err.message?err.message:"erreur inconnue"));});
 }
-el("exportWordReport").onclick=exportWordReport;
+function downloadWordBlob(blob,filename){
+ var url=URL.createObjectURL(blob),a=document.createElement("a");
+ a.href=url;a.download=filename;document.body.appendChild(a);a.click();a.remove();
+ setTimeout(function(){URL.revokeObjectURL(url);},3000);
+}
+el("saveWordReport").onclick=function(){exportWordReport("save");};
+el("emailWordReport").onclick=function(){exportWordReport("email");};
 
 el("printReport").onclick=function(){renderReport();window.print();};
 el("reportHomeBtn").onclick=function(e){e.preventDefault();showPageDirect("report");renderReport();window.scrollTo(0,0);};
@@ -1877,7 +1892,7 @@ var _renderStaffHistoryMinute=renderStaffHistory;
 renderStaffHistory=function(){_renderStaffHistoryMinute();refreshStaffCardMinuteEditor();};
 
 loadState();playersA.forEach(function(p,i){if(typeof p.active!=="boolean")p.active=i<11;});playersB.forEach(function(p,i){if(typeof p.active!=="boolean")p.active=i<11;});if(playersA.every(function(p){return p.active===true;})&&playersA.some(function(p){return p.name;})){playersA.forEach(function(p,i){p.active=i<11;});}if(playersB.every(function(p){return p.active===true;})&&playersB.some(function(p){return p.name;})){playersB.forEach(function(p,i){p.active=i<11;});}saveState();if(running&&typeof chronoStartedAt==="number"){startChronoRefresh();syncChrono();}
-if("serviceWorker" in navigator){window.addEventListener("load",function(){navigator.serviceWorker.register("sw.js?v=94").catch(function(){});});}
+if("serviceWorker" in navigator){window.addEventListener("load",function(){navigator.serviceWorker.register("sw.js?v=95").catch(function(){});});}
 renderAllPlayers();update();updateGoalButtonLabels();
 })();
 </script>
