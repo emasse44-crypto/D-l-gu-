@@ -1762,10 +1762,6 @@ var pendingWordFile=null;\nfunction exportWordReport(deliveryMode){
    return;
   }
   downloadWordBlob(blob,filename);
-   alert("Le rapport Word a été téléchargé. Ouvre ton application e-mail et joins le fichier depuis le dossier Téléchargements. L’ajout automatique d’une pièce jointe n’est pas pris en charge par ce navigateur.");
-   return;
-  }
-  downloadWordBlob(blob,filename);
  }).catch(function(err){console.error(err);alert("Export Word impossible : "+(err&&err.message?err.message:"erreur inconnue"));});
 }
 function downloadWordBlob(blob,filename){
