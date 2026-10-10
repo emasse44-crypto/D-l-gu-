@@ -1654,14 +1654,15 @@ function exportWordReport(){
   var p=matchInfo.kickoff.split(":");var m=(Number(p[0])*60+Number(p[1])-120+1440)%1440;
   arrival=String(Math.floor(m/60)).padStart(2,"0")+"H"+String(m%60).padStart(2,"0");
  }
- function sanctionDetails(side,teamName){
+ function sanctionLines(side,teamName){
   var all=cards.filter(function(x){return x.team===side;}).concat(staffCards.filter(function(x){return x.team===side;}));
   function count(words){return all.filter(function(x){var t=String(x.type||"").toLowerCase();return words.some(function(w){return t.indexOf(w)>=0;});}).length;}
-  var yellow=count(["jaune","avertissement"]);
-  var red=count(["rouge","expulsion"]);
-  var white=count(["blanc"]);
-  if(yellow+red+white===0)return teamName+" : Aucune sanction.";
-  return teamName+" : "+yellow+" avertissement(s) / carton(s) jaune(s), "+red+" carton(s) rouge(s), "+white+" carton(s) blanc(s).";
+  var yellow=count(["jaune","avertissement"]),red=count(["rouge","expulsion"]),white=count(["blanc"]),lines=[];
+  if(yellow)lines.push(yellow+" avertissement"+(yellow>1?"s":"")+" pour "+teamName);
+  if(red)lines.push(red+" rouge"+(red>1?"s":"")+" pour "+teamName);
+  if(white)lines.push(white+" blanc"+(white>1?"s":"")+" pour "+teamName);
+  if(!lines.length)lines.push("Aucune sanction pour "+teamName);
+  return lines;
  }
  function xmlEscape(v){return String(v==null?"Non renseigné":v).replace(/&/g,"&amp;").replace(/</g,"&lt;").replace(/>/g,"&gt;");}
  function setParagraphText(p,text){
@@ -1671,7 +1672,7 @@ function exportWordReport(){
   nodes[0].setAttributeNS("http://www.w3.org/XML/1998/namespace","xml:space","preserve");
   for(var i=1;i<nodes.length;i++)nodes[i].textContent="";
  }
- fetch("./rapport-modele.docx.docx?v=82",{cache:"no-store"}).then(function(r){
+ fetch("./rapport-modele.docx.docx?v=83",{cache:"no-store"}).then(function(r){
   if(!r.ok)throw new Error("Modèle Word introuvable ("+r.status+").");
   return r.arrayBuffer();
  }).then(function(buf){return JSZip.loadAsync(buf);}).then(function(zip){
@@ -1680,8 +1681,8 @@ function exportWordReport(){
    var parser=new DOMParser(),doc=parser.parseFromString(xml,"application/xml");
    if(doc.getElementsByTagName("parsererror").length)throw new Error("Lecture du document Word impossible.");
    var W="http://schemas.openxmlformats.org/wordprocessingml/2006/main";
-   window._rapportSanctionLineCount=0;
    var paras=Array.from(doc.getElementsByTagNameNS(W,"p"));
+   var sanctionParagraphs=[];
    paras.forEach(function(p){
     var ts=Array.from(p.getElementsByTagNameNS(W,"t"));
     var text=ts.map(function(t){return t.textContent;}).join("").replace(/\s+/g," ").trim();
@@ -1690,13 +1691,25 @@ function exportWordReport(){
     else if(/est le commissaire du club pour la rencontre/i.test(text))setParagraphText(p,"-"+(matchInfo.commissioner||"Non renseigné")+" est le commissaire du club pour la rencontre.");
     else if(/est le responsable sécurité pour la rencontre/i.test(text))setParagraphText(p,"-"+(matchInfo.security||"Non renseigné")+" est le responsable sécurité pour la rencontre.");
     else if(/arbitre central de la rencontre/i.test(text))setParagraphText(p,"Validation des équipements et du terrain par "+(matchInfo.referee||"Non renseigné")+", arbitre central de la rencontre.");
-    else if(/avertissement/i.test(text)&&(/La Roche/i.test(text)||/Poiré/i.test(text)||/avertissement/i.test(text))){
-     if(!window._rapportSanctionLineCount)window._rapportSanctionLineCount=0;
-     window._rapportSanctionLineCount++;
-     if(window._rapportSanctionLineCount===1)setParagraphText(p,sanctionDetails("A",teamAName));
-     else if(window._rapportSanctionLineCount===2)setParagraphText(p,sanctionDetails("B",teamBName));
-    }
+    else if(/avertissement/i.test(text))sanctionParagraphs.push(p);
    });
+   if(sanctionParagraphs.length){
+    var lines=sanctionLines("A",teamAName).filter(function(x){return !/^Aucune sanction/.test(x);})
+      .concat(sanctionLines("B",teamBName).filter(function(x){return !/^Aucune sanction/.test(x);}));
+    if(!lines.length)lines=["Aucune sanction pour "+teamAName,"Aucune sanction pour "+teamBName];
+    var anchor=sanctionParagraphs[0];
+    setParagraphText(anchor,lines[0]);
+    for(var si=1;si<lines.length;si++){
+     var template=sanctionParagraphs[Math.min(si,sanctionParagraphs.length-1)];
+     var clone=template.cloneNode(true);
+     setParagraphText(clone,lines[si]);
+     anchor.parentNode.insertBefore(clone,anchor.nextSibling);
+     anchor=clone;
+    }
+    for(var sj=1;sj<sanctionParagraphs.length;sj++){
+     if(sanctionParagraphs[sj].parentNode)sanctionParagraphs[sj].parentNode.removeChild(sanctionParagraphs[sj]);
+    }
+   }
    zip.file("word/document.xml",new XMLSerializer().serializeToString(doc));
    return zip.generateAsync({type:"blob",mimeType:"application/vnd.openxmlformats-officedocument.wordprocessingml.document"});
   });
@@ -1825,7 +1838,7 @@ var _renderStaffHistoryMinute=renderStaffHistory;
 renderStaffHistory=function(){_renderStaffHistoryMinute();refreshStaffCardMinuteEditor();};
 
 loadState();playersA.forEach(function(p,i){if(typeof p.active!=="boolean")p.active=i<11;});playersB.forEach(function(p,i){if(typeof p.active!=="boolean")p.active=i<11;});if(playersA.every(function(p){return p.active===true;})&&playersA.some(function(p){return p.name;})){playersA.forEach(function(p,i){p.active=i<11;});}if(playersB.every(function(p){return p.active===true;})&&playersB.some(function(p){return p.name;})){playersB.forEach(function(p,i){p.active=i<11;});}saveState();if(running&&typeof chronoStartedAt==="number"){startChronoRefresh();syncChrono();}
-if("serviceWorker" in navigator){window.addEventListener("load",function(){navigator.serviceWorker.register("sw.js?v=82").catch(function(){});});}
+if("serviceWorker" in navigator){window.addEventListener("load",function(){navigator.serviceWorker.register("sw.js?v=83").catch(function(){});});}
 renderAllPlayers();update();updateGoalButtonLabels();
 })();
 </script>
