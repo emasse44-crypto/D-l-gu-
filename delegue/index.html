@@ -1483,7 +1483,7 @@ var teamAName=el("teamA").textContent,teamBName=el("teamB").textContent;
 function teamName(side){return side==="A"?teamAName:teamBName;}
 function section(title,content){return '<div class="change-item report-section"><div class="report-title">'+title+'</div>'+content+'</div>';}
 function empty(text){return '<div class="note">'+text+'</div>';}
-var html='<div class="change-item"><div class="report-title">Match</div><div><strong>'+escapeHtml(teamAName)+" "+scoreA+" - "+scoreB+" "+escapeHtml(teamBName)+'</strong></div><div>Compétition : '+escapeHtml(matchInfo.competition||"Non renseignée")+'</div><div>Date : '+escapeHtml(matchInfo.date||"Non renseignée")+' · Coup d’envoi : '+escapeHtml(matchInfo.kickoff||"Non renseigné")+'</div><div>Stade : '+escapeHtml(matchInfo.stadium||"Non renseigné")+'</div><div>Arbitre : '+escapeHtml(matchInfo.referee||"Non renseigné")+'</div><div>Assistant 1 : '+escapeHtml(matchInfo.assistant1||"Non renseigné")+'</div><div>Assistant 2 : '+escapeHtml(matchInfo.assistant2||"Non renseigné")+'</div><div>Délégué : '+escapeHtml(matchInfo.delegate||"Non renseigné")+'</div><div>Délégué adjoint : '+escapeHtml(matchInfo.delegateAdjoint||"Non renseigné")+'</div><div>Commissaire : '+escapeHtml(matchInfo.commissioner||"Non renseigné")+'</div><div>Président recevant : '+escapeHtml(matchInfo.presidentRecevant||"Non renseigné")+'</div><div>Président visiteur : '+escapeHtml(matchInfo.presidentVisiteur||"Non renseigné")+'</div><div>Responsable sécurité : '+escapeHtml(matchInfo.security||"Non renseigné")+'</div></div>';
+var arrivalTime="Non calculable";if(matchInfo.kickoff&&/^\d{2}:\d{2}$/.test(matchInfo.kickoff)){var parts=matchInfo.kickoff.split(":");var mins=(Number(parts[0])*60+Number(parts[1])-120+1440)%1440;arrivalTime=String(Math.floor(mins/60)).padStart(2,"0")+":"+String(mins%60).padStart(2,"0");}var html='<div class="change-item"><div class="report-title">Match</div><div><strong>'+escapeHtml(teamAName)+" "+scoreA+" - "+scoreB+" "+escapeHtml(teamBName)+'</strong></div><div>Compétition : '+escapeHtml(matchInfo.competition||"Non renseignée")+'</div><div>Date : '+escapeHtml(matchInfo.date||"Non renseignée")+' · Arrivée délégué (H-2) : '+escapeHtml(arrivalTime)+' · Coup d’envoi : '+escapeHtml(matchInfo.kickoff||"Non renseigné")+'</div><div>Stade : '+escapeHtml(matchInfo.stadium||"Non renseigné")+'</div><div>Arbitre : '+escapeHtml(matchInfo.referee||"Non renseigné")+'</div><div>Assistant 1 : '+escapeHtml(matchInfo.assistant1||"Non renseigné")+'</div><div>Assistant 2 : '+escapeHtml(matchInfo.assistant2||"Non renseigné")+'</div><div>Délégué : '+escapeHtml(matchInfo.delegate||"Non renseigné")+'</div><div>Délégué adjoint : '+escapeHtml(matchInfo.delegateAdjoint||"Non renseigné")+'</div><div>Commissaire : '+escapeHtml(matchInfo.commissioner||"Non renseigné")+'</div><div>Président recevant : '+escapeHtml(matchInfo.presidentRecevant||"Non renseigné")+'</div><div>Président visiteur : '+escapeHtml(matchInfo.presidentVisiteur||"Non renseigné")+'</div><div>Responsable sécurité : '+escapeHtml(matchInfo.security||"Non renseigné")+'</div></div>';
 
 var goalHtml="";
 if(goals.length){
@@ -1534,11 +1534,13 @@ changeHtml=reportChanges.map(function(x){return '<div style="margin-top:6px"><st
 }else changeHtml=empty("Aucun changement à faire figurer.");
 html+=section("🔄 CHANGEMENTS",changeHtml);
 
-var cardHtml="";
-if(cards.length){
-cardHtml=cards.map(function(x){return '<div style="margin-top:6px"><strong>'+escapeHtml(x.minute)+'</strong> · '+escapeHtml(teamName(x.team))+' · '+escapeHtml(x.type)+' · <strong>'+escapeHtml(x.player)+'</strong>'+(x.auto?' · automatique':'')+'</div>';}).join("");
-}else cardHtml=empty("Aucune sanction joueur.");
-html+=section("🟨🟥⚪ SANCTIONS JOUEURS",cardHtml);
+function renderPlayerSanctions(items,emptyText){if(!items.length)return empty(emptyText);return items.map(function(x){return '<div style="margin-top:6px"><strong>'+escapeHtml(x.minute)+'</strong> · '+escapeHtml(teamName(x.team))+' · '+escapeHtml(x.type)+' · <strong>'+escapeHtml(x.player)+'</strong>'+(x.auto?' · automatique':'')+'</div>';}).join("");}
+var playerWarnings=cards.filter(function(x){var t=String(x.type||"").toLowerCase();return t.indexOf("jaune")>=0;});
+var playerDismissals=cards.filter(function(x){var t=String(x.type||"").toLowerCase();return t.indexOf("rouge")>=0;});
+var playerWhites=cards.filter(function(x){var t=String(x.type||"").toLowerCase();return t.indexOf("blanc")>=0;});
+html+=section("🟨 AVERTISSEMENTS JOUEURS",renderPlayerSanctions(playerWarnings,"Aucun avertissement joueur."));
+html+=section("🟥 EXPULSIONS JOUEURS",renderPlayerSanctions(playerDismissals,"Aucune expulsion joueur."));
+html+=section("⚪ CARTONS BLANCS JOUEURS",renderPlayerSanctions(playerWhites,"Aucun carton blanc joueur."));
 
 var staffHtml="";
 if(staffCards.length){
