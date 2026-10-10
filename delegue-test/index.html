@@ -1549,6 +1549,31 @@ staffHtml=staffCards.map(function(x){var bg=(x.type||"").indexOf("Rouge")>=0?"#e
 if(staffExclusions.length){staffHtml+='<div style="margin-top:10px"><strong>⚪ Exclusions temporaires du capitaine suite à un blanc staff</strong></div>';staffExclusions.forEach(function(x){staffHtml+='<div style="display:flex;align-items:center;gap:9px;margin-top:7px;padding:9px 10px;background:rgba(7,15,28,.58);border-radius:10px;border-left:4px solid #f8fafc"><span style="display:inline-block;min-width:13px;height:20px;border-radius:3px;background:#f8fafc;border:1px solid #9ca3af"></span><div><strong>'+escapeHtml(formatMinute(x.start))+'</strong> · '+escapeHtml(teamName(x.team))+'<br>Capitaine : <strong>'+escapeHtml(x.player)+'</strong> · Exclusion 10 minutes</div></div>';});}
 html+=section("👔 SANCTIONS STAFF",staffHtml);
 
+function countTeamSanctions(list,side,kind){
+ return list.filter(function(x){
+  if(x.team!==side)return false;
+  var t=String(x.type||"").toLowerCase();
+  if(kind==="yellow")return t.indexOf("jaune")>=0;
+  if(kind==="red")return t.indexOf("rouge")>=0;
+  if(kind==="white")return t.indexOf("blanc")>=0;
+  return true;
+ }).length;
+}
+function totalCell(value){return '<td style="padding:8px 6px;text-align:center;border-bottom:1px solid rgba(148,163,184,.2)">'+value+'</td>';}
+var summaryRows="";
+[["A","A"],["B","B"]].forEach(function(item){
+ var side=item[0],name=teamName(side);
+ var yellows=countTeamSanctions(cards,side,"yellow");
+ var reds=countTeamSanctions(cards,side,"red");
+ var whites=countTeamSanctions(cards,side,"white");
+ var playerTotal=yellows+reds+whites;
+ var staffTotal=staffCards.filter(function(x){return x.team===side;}).length;
+ var allTotal=playerTotal+staffTotal;
+ summaryRows+='<tr><th style="padding:8px 6px;text-align:left;border-bottom:1px solid rgba(148,163,184,.2)">'+escapeHtml(name)+'</th>'+totalCell(yellows)+totalCell(reds)+totalCell(whites)+totalCell(playerTotal)+totalCell(staffTotal)+totalCell(allTotal)+'</tr>';
+});
+var sanctionsSummary='<div style="overflow-x:auto"><table style="width:100%;border-collapse:collapse;font-size:13px"><thead><tr><th style="padding:8px 6px;text-align:left">Équipe</th><th style="padding:8px 6px;text-align:center">Avert.</th><th style="padding:8px 6px;text-align:center">Expuls.</th><th style="padding:8px 6px;text-align:center">Blancs</th><th style="padding:8px 6px;text-align:center">Total joueurs</th><th style="padding:8px 6px;text-align:center">Staff</th><th style="padding:8px 6px;text-align:center">Total général</th></tr></thead><tbody>'+summaryRows+'</tbody></table></div><div class="note" style="margin-top:8px">Les sanctions automatiques enregistrées (par exemple, expulsion après deux jaunes) sont comptées dans leur catégorie. Les exclusions temporaires seules ne sont pas ajoutées comme sanctions administratives.</div>';
+html+=section("📊 BILAN DES SANCTIONS ADMINISTRATIVES",sanctionsSummary);
+
 var exclusionHtml="";
 if(exclusions.length){
 exclusionHtml=exclusions.map(function(x){return '<div style="margin-top:6px"><strong>'+escapeHtml(formatMinute(x.start))+'</strong> · '+escapeHtml(teamName(x.team))+' · <strong>'+escapeHtml(x.player)+'</strong> · ⚪ exclusion 10 minutes</div>';}).join("");
