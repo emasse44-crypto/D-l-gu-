@@ -133,7 +133,7 @@ input:focus,select:focus{border-color:#60a5fa;box-shadow:0 0 0 3px rgba(96,165,2
 <body>
 <div class="app">
 <h1>⚽ Délégué Football</h1>
-<div class="version">VERSION TEST · H-2 / SANCTIONS / BANCS</div>
+<div class="version">VERSION TEST v100 · H-2 / SANCTIONS / BANCS</div>
 <section id="home">
 <div class="card"><div class="teams">
 <div><div class="team" id="teamA">Équipe A</div><div class="score" id="scoreA">0</div></div>
@@ -1698,7 +1698,7 @@ function exportWordReport(){ if(!window.JSZip){alert("Le module Word n’a pas p
   nodes[0].setAttributeNS("http://www.w3.org/XML/1998/namespace","xml:space","preserve");
   for(var i=1;i<nodes.length;i++)nodes[i].textContent="";
  }
- fetch("./rapport-modele.docx.docx?v=99",{cache:"no-store"}).then(function(r){
+ fetch("./rapport-modele.docx.docx?v=100",{cache:"no-store"}).then(function(r){
   if(!r.ok)throw new Error("Modèle Word introuvable ("+r.status+").");
   return r.arrayBuffer();
  }).then(function(buf){return JSZip.loadAsync(buf);}).then(function(zip){
@@ -1752,14 +1752,6 @@ function exportWordReport(){ if(!window.JSZip){alert("Le module Word n’a pas p
  }).then(function(blob){
   var safe=(teamAName+"_"+teamBName).replace(/[^a-z0-9_-]+/gi,"_").replace(/^_+|_+$/g,"")||"match";
   var filename="Rapport_delegue_"+safe+".docx";
-  if(deliveryMode==="email"){
-   try{pendingWordFile=new File([blob],filename,{type:"application/vnd.openxmlformats-officedocument.wordprocessingml.document"});}catch(e){pendingWordFile=null;}
-   if(!pendingWordFile){downloadWordBlob(blob,filename);alert("Le rapport a été téléchargé. Le partage de fichier n’est pas disponible sur cet appareil.");return;}
-   el("shareWordReport").style.display="block";
-   el("shareWordReport").textContent="📎 Partager le rapport Word en pièce jointe";
-   alert("Le rapport est prêt. Appuie maintenant sur « Partager le rapport Word en pièce jointe », puis choisis ton application e-mail.");
-   return;
-  }
   downloadWordBlob(blob,filename);
  }).catch(function(err){console.error(err);alert("Export Word impossible : "+(err&&err.message?err.message:"erreur inconnue"));});
 }
@@ -1888,7 +1880,7 @@ var _renderStaffHistoryMinute=renderStaffHistory;
 renderStaffHistory=function(){_renderStaffHistoryMinute();refreshStaffCardMinuteEditor();};
 
 loadState();playersA.forEach(function(p,i){if(typeof p.active!=="boolean")p.active=i<11;});playersB.forEach(function(p,i){if(typeof p.active!=="boolean")p.active=i<11;});if(playersA.every(function(p){return p.active===true;})&&playersA.some(function(p){return p.name;})){playersA.forEach(function(p,i){p.active=i<11;});}if(playersB.every(function(p){return p.active===true;})&&playersB.some(function(p){return p.name;})){playersB.forEach(function(p,i){p.active=i<11;});}saveState();if(running&&typeof chronoStartedAt==="number"){startChronoRefresh();syncChrono();}
-if("serviceWorker" in navigator){window.addEventListener("load",function(){navigator.serviceWorker.register("sw.js?v=99").catch(function(){});});}
+if("serviceWorker" in navigator){window.addEventListener("load",function(){navigator.serviceWorker.register("sw.js?v=100").catch(function(){});});}
 renderAllPlayers();update();updateGoalButtonLabels();
 })();
 </script>
