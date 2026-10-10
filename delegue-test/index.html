@@ -180,11 +180,12 @@ input:focus,select:focus{border-color:#60a5fa;box-shadow:0 0 0 3px rgba(96,165,2
 <section class="page card" id="checklist"><button class="back">← Retour</button><h2>✅ Checklist du délégué</h2><p class="note">Cochez les vérifications réalisées avant le match. L'état est conservé.</p><div id="checklistBox"></div><button id="resetChecklist" class="red" style="width:100%;margin-top:12px">Réinitialiser la checklist</button></section>
 <section class="page card" id="delegateGuide"><button class="back">← Retour</button><h2>🧑‍⚖️ Missions du délégué</h2><div class="change-item"><h3>📋 Checklist jour de match</h3><p class="note">Cochez les actions réalisées. La progression est conservée sur l'appareil.</p><div id="delegateProgress" style="font-weight:bold;margin:8px 0">0/32 vérifications</div><div style="height:10px;background:#374151;border-radius:99px;overflow:hidden"><div id="delegateProgressBar" style="height:100%;width:0%;background:#22c55e"></div></div></div><div id="delegateChecklistBox"></div><button id="resetDelegateChecklist" class="red" style="width:100%;margin-top:12px">Réinitialiser la checklist délégué</button><div class="change-item"><strong>⚠️ Rappel</strong><div class="note" style="margin-top:6px">Le délégué facilite l'organisation, veille à la sécurité et accompagne les officiels. Il ne se substitue pas à l'arbitre.</div></div></section><section class="page card" id="incidents"><button class="back">← Retour</button><h2>🚨 Incidents de match</h2><p class="note">Notez les incidents importants avec la minute et une description.</p><input id="incidentText" placeholder="Description de l'incident"><button id="addIncident" class="green" style="width:100%;margin-top:10px">Ajouter l'incident</button><div id="incidentHistory" class="change-history"></div></section>
 <section class="page card" id="injuries"><button class="back">← Retour</button><h2>🩹 Blessures</h2><p class="note">Enregistrez une blessure et si le joueur a dû sortir.</p><div class="change-grid"><select id="injuryTeam"><option value="A">Équipe A</option><option value="B">Équipe B</option></select><select id="injuryPlayer"><option value="">Choisir un joueur</option></select></div><input id="injuryText" placeholder="Nature / observation" style="margin-top:10px"><label class="check-row"><input type="checkbox" id="injuryOut"> Joueur sorti du terrain</label><button id="addInjury" class="green" style="width:100%;margin-top:10px">Ajouter la blessure</button><div id="injuryHistory" class="change-history"></div></section>
-<section class="page card" id="report"><button class="back">← Retour</button><h2>📄 Rapport final</h2><div id="reportContent"></div><button id="printReport" class="green" style="width:100%;margin-top:12px">📄 Enregistrer le rapport en PDF</button></section>
+<section class="page card" id="report"><button class="back">← Retour</button><h2>📄 Rapport final</h2><div id="reportContent"></div><button id="exportWordReport" class="green" style="width:100%;margin-top:12px">📝 Exporter le rapport Word (.docx)</button><button id="printReport" style="width:100%;margin-top:8px">📄 Enregistrer le rapport en PDF</button></section>
 <section class="page card" id="photos"><button class="back">← Retour</button><h2>📸 Photos du match</h2><p class="note">Ajoutez jusqu’à 12 photos. Elles seront conservées avec le match et apparaîtront dans le rapport final.</p><input id="matchPhotosInput" type="file" accept="image/*" capture="environment" multiple style="display:none"><button id="takePhotosBtn" class="green" style="width:100%">📸 Prendre / choisir des photos</button><div id="photosCount" class="note" style="margin-top:10px"></div><div id="photosGrid" style="display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:10px;margin-top:12px"></div></section>
 <section class="page card" id="settings"><button class="back">← Retour</button><h2>Informations du match</h2><p>Équipe A</p><input id="teamAInput" value="Équipe A"><p>Équipe B</p><input id="teamBInput" value="Équipe B"><p>Compétition</p><input id="competitionInput" placeholder="Coupe de France, championnat..."><p>Date</p><input id="matchDateInput" type="date"><p>Heure du coup d'envoi</p><input id="kickoffInput" type="time"><p>Stade</p><input id="stadiumInput" placeholder="Stade / terrain"><p>Arbitre</p><input id="refereeInput" placeholder="Nom de l'arbitre"><p>Assistant 1</p><input id="assistant1Input" placeholder="Nom de l'assistant 1"><p>Assistant 2</p><input id="assistant2Input" placeholder="Nom de l'assistant 2"><p>Délégué</p><input id="delegateInput" placeholder="Nom du délégué"><p>Délégué adjoint</p><input id="delegateAdjointInput" placeholder="Nom du délégué adjoint"><p>Commissaire</p><input id="commissionerInput" placeholder="Nom du commissaire"><p>Responsable sécurité</p><input id="securityInput" placeholder="Nom du responsable sécurité"><p>Président recevant</p><input id="presidentRecevantInput" placeholder="Nom du président recevant"><p>Président visiteur</p><input id="presidentVisiteurInput" placeholder="Nom du président visiteur"><p>Observations</p><input id="observationInput" placeholder="Observations générales"><button class="green" id="saveNames" style="width:100%;margin-top:14px">Enregistrer</button></section>
 </div>
 <script src="https://cdn.jsdelivr.net/npm/tesseract.js@5/dist/tesseract.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/html-docx-js@0.3.1/dist/html-docx.js"></script>
 <script>
 (function(){
 "use strict";
@@ -1639,6 +1640,63 @@ el("cardTypeYellow").onclick=function(){selectCardType("🟨 Jaune");};
 el("cardTypeWhite").onclick=function(){selectCardType("⚪ Blanc");};
 el("cardTypeRed").onclick=function(){selectCardType("🟥 Rouge");};
 document.querySelectorAll("[data-page]").forEach(function(b){b.onclick=function(){var page=b.getAttribute("data-page");if(page==="compositions")renderAllPlayers();if(page==="changes")renderChanges();if(page==="goals"){renderGoalsPage();}if(page==="events"){renderCards();}if(page==="staff"){renderStaff(staffA,"staffA");renderStaff(staffB,"staffB");renderStaffHistory();}if(page==="sheet"){renderTimeline();renderSheet();}if(page==="checklist"){renderChecklist();}if(page==="delegateGuide"){renderDelegateChecklist();}if(page==="incidents"){renderIncidents();}if(page==="injuries"){renderInjuryPlayers();renderInjuries();}if(page==="report"){renderReport();}if(page==="photos"){renderPhotos();}if(page==="settings"){fillMatchInfo();}el("home").classList.add("home-hidden");el("home").style.display="none";document.querySelectorAll(".page").forEach(function(p){p.classList.remove("active");p.style.display="none";});el(page).classList.add("active");el(page).style.display="block";};});
+
+function wordEscape(value){
+ return String(value==null?"":value).replace(/&/g,"&amp;").replace(/</g,"&lt;").replace(/>/g,"&gt;").replace(/"/g,"&quot;").replace(/'/g,"&#39;");
+}
+function exportWordReport(){
+ if(!window.htmlDocx||typeof window.htmlDocx.asBlob!=="function"){
+  alert("L’export Word n’a pas pu se charger. Vérifiez la connexion Internet puis réessayez.");
+  return;
+ }
+ renderReport();
+ var teamAName=el("teamA").textContent,teamBName=el("teamB").textContent;
+ function teamName(side){return side==="A"?teamAName:teamBName;}
+ function value(v){return wordEscape(v||"Non renseigné");}
+ function minute(v){return value(v||"Minute non renseignée");}
+ function lines(items,emptyText){return items.length?items.join("<br>"):wordEscape(emptyText);}
+ var arrivalTime="Non calculable";
+ if(matchInfo.kickoff&&/^\\d{2}:\\d{2}$/.test(matchInfo.kickoff)){
+  var p=matchInfo.kickoff.split(":");var m=(Number(p[0])*60+Number(p[1])-120+1440)%1440;
+  arrivalTime=String(Math.floor(m/60)).padStart(2,"0")+":"+String(m%60).padStart(2,"0");
+ }
+ function sanctionCounts(side,list){
+  var own=list.filter(function(x){return x.team===side;});
+  return {yellow:own.filter(function(x){return String(x.type||"").toLowerCase().indexOf("jaune")>=0;}).length,
+   red:own.filter(function(x){return String(x.type||"").toLowerCase().indexOf("rouge")>=0;}).length,
+   white:own.filter(function(x){return String(x.type||"").toLowerCase().indexOf("blanc")>=0;}).length};
+ }
+ var ca=sanctionCounts("A",cards),cb=sanctionCounts("B",cards);
+ var sa=sanctionCounts("A",staffCards),sb=sanctionCounts("B",staffCards);
+ function sanctionLine(name,c,staffCount){
+  return name+" : "+c.yellow+" avertissement(s), "+c.red+" expulsion(s), "+c.white+" carton(s) blanc(s)"+(staffCount!==undefined?", staff : "+staffCount+" sanction(s)":"")+".";
+ }
+ var goalsText=goals.length?goals.map(function(g){return minute(g.minute)+" : "+value(teamName(g.team))+" · "+value(g.player)+" · "+value(g.goalType||"Pied")+(g.assist?" · passeur : "+value(g.assist):"")+(g.cancelled?" · BUT ANNULÉ":"");}).join("<br>"):"Aucun but enregistré.";
+ var changesText=changes.filter(function(c){return !c.returning;}).map(function(c){return minute(c.minute)+" : "+value(teamName(c.team))+" · sortie "+value(c.out)+" / entrée "+value(c.in);});
+ var playerSanctions=cards.map(function(c){return minute(c.minute)+" : "+value(teamName(c.team))+" · "+value(c.type)+" · "+value(c.player)+(c.auto?" (sanction automatique)":"");});
+ var staffSanctionLines=staffCards.map(function(c){return minute(c.minute)+" : "+value(teamName(c.team))+" · "+value(c.member)+" · "+value(c.type)+(c.auto?" (automatique)":"");});
+ var tempLines=exclusions.map(function(x){return minute(formatMinute(x.start))+" : "+value(teamName(x.team))+" · "+value(x.player)+" · exclusion temporaire de 10 minutes.";});
+ staffExclusions.forEach(function(x){tempLines.push(minute(formatMinute(x.start))+" : "+value(teamName(x.team))+" · capitaine "+value(x.player)+" · exclusion temporaire après carton blanc au staff.");});
+ var incidentLines=incidents.map(function(x){return minute(x.minute)+" : "+value(x.description||x.type||x.note||JSON.stringify(x));});
+ var injuryLines=injuries.map(function(x){return minute(x.minute)+" : "+value(x.player||x.name)+" · "+value(x.description||x.note||"Blessure signalée");});
+ var staffCountA=sa.yellow+sa.red+sa.white,staffCountB=sb.yellow+sb.red+sb.white;
+ var html='<!DOCTYPE html><html><head><meta charset="utf-8"><style>'+
+ 'body{font-family:Arial,sans-serif;font-size:10.5pt;color:#111;line-height:1.35}h1{text-align:center;font-size:16pt}h2{font-size:13pt;margin-top:18pt;border-bottom:1px solid #333;padding-bottom:4pt}h3{font-size:11pt;margin-bottom:3pt}p{margin:5pt 0}table{border-collapse:collapse;width:100%}td,th{border:1px solid #888;padding:5pt;text-align:left}'+
+ '</style></head><body><h1>RAPPORT DE DÉLÉGUÉ FOOTBALL</h1>'+
+ '<p><b>Match :</b> '+value(teamAName)+' '+scoreA+' - '+scoreB+' '+value(teamBName)+'<br><b>Compétition :</b> '+value(matchInfo.competition)+'<br><b>Date :</b> '+value(matchInfo.date)+' · <b>Coup d’envoi :</b> '+value(matchInfo.kickoff)+' · <b>Arrivée du délégué (H-2) :</b> '+value(arrivalTime)+'<br><b>Stade :</b> '+value(matchInfo.stadium)+'<br><b>Délégué :</b> '+value(matchInfo.delegate)+' · <b>Délégué adjoint :</b> '+value(matchInfo.delegateAdjoint)+'<br><b>Arbitre central :</b> '+value(matchInfo.referee)+'<br><b>Assistants :</b> '+value(matchInfo.assistant1)+' / '+value(matchInfo.assistant2)+'<br><b>Commissaire :</b> '+value(matchInfo.commissioner)+'<br><b>Responsable sécurité :</b> '+value(matchInfo.security)+'<br><b>Présidents :</b> '+value(matchInfo.presidentRecevant)+' / '+value(matchInfo.presidentVisiteur)+'</p>'+
+ '<h2>I – AVANT LE MATCH</h2><p>Arrivée du délégué : '+value(arrivalTime)+'.</p><p>Accueil par le club recevant : '+value(teamAName)+'.</p><p>Visite des installations.</p><h3>Le commissaire du club</h3><p>'+value(matchInfo.commissioner)+' est le commissaire du club pour la rencontre.</p><p>Échange sur la fonction : gestion des ballons, accompagnement des arbitres, etc.</p><p>Collaboration : à compléter.</p><h3>La collaboration avec le responsable sécurité</h3><p>'+value(matchInfo.security)+' est le responsable sécurité pour la rencontre.</p><p>Échange sur son rôle et son positionnement.</p><p>Collaboration : à compléter.</p><h3>Les échanges avec le corps arbitral</h3><p>Validation des équipements et du terrain par '+value(matchInfo.referee)+', arbitre central de la rencontre.</p><p>Échange sur les consignes avec le trio arbitral.</p><p>Collaboration : à compléter.</p><h3>Divers</h3><p>FMI : à confirmer dans les observations du délégué.</p>'+
+ '<h2>II – PENDANT LE MATCH</h2><h3>La gestion des bancs de touche</h3><p>Présence des éducateurs inscrits sur la FMI : à compléter.</p><p>Interventions et incidents enregistrés : '+lines(incidentLines,"Aucun incident enregistré dans l’application.")+'</p><h3>Le comportement des acteurs en fin de rencontre</h3><p>Observations : '+value(matchInfo.observation)+'</p>'+
+ '<h2>III – APRÈS LE MATCH</h2><h3>Les sanctions administratives</h3><p>'+value(sanctionLine(teamAName,ca))+'</p><p>'+value(sanctionLine(teamBName,cb))+'</p><p>'+value(sanctionLine(teamAName,sa,staffCountA))+'</p><p>'+value(sanctionLine(teamBName,sb,staffCountB))+'</p><table><tr><th>Équipe</th><th>Avertissements joueurs</th><th>Expulsions joueurs</th><th>Cartons blancs joueurs</th><th>Sanctions staff</th><th>Total des événements de sanction</th></tr><tr><td>'+value(teamAName)+'</td><td>'+ca.yellow+'</td><td>'+ca.red+'</td><td>'+ca.white+'</td><td>'+staffCountA+'</td><td>'+(ca.yellow+ca.red+ca.white+staffCountA)+'</td></tr><tr><td>'+value(teamBName)+'</td><td>'+cb.yellow+'</td><td>'+cb.red+'</td><td>'+cb.white+'</td><td>'+staffCountB+'</td><td>'+(cb.yellow+cb.red+cb.white+staffCountB)+'</td></tr></table>'+
+ '<h3>Les formalités administratives</h3><p>Rédaction de la FMI avec l’arbitre central, puis prise de connaissance par les dirigeants concernés et signatures.</p><h3>Points à améliorer</h3><p>Débriefing : à compléter. Remerciements : à compléter.</p><p>Départ de l’équipe visiteuse et des arbitres : à compléter.</p>'+
+ '<h2>SYNTHÈSE DES ÉVÉNEMENTS ENREGISTRÉS</h2><h3>Buts</h3><p>'+goalsText+'</p><h3>Changements</h3><p>'+lines(changesText,"Aucun changement enregistré.")+'</p><h3>Sanctions des joueurs</h3><p>'+lines(playerSanctions,"Aucune sanction joueur enregistrée.")+'</p><h3>Sanctions du staff</h3><p>'+lines(staffSanctionLines,"Aucune sanction staff enregistrée.")+'</p><h3>Exclusions temporaires</h3><p>'+lines(tempLines,"Aucune exclusion temporaire enregistrée.")+'</p><h3>Blessures</h3><p>'+lines(injuryLines,"Aucune blessure enregistrée.")+'</p><h3>Observations du délégué</h3><p>'+value(matchInfo.observation)+'</p></body></html>';
+ var blob=window.htmlDocx.asBlob(html);
+ var url=URL.createObjectURL(blob),a=document.createElement("a");
+ var safeName=(teamAName+"_"+teamBName).replace(/[^a-z0-9_-]+/gi,"_").replace(/^_+|_+$/g,"")||"match";
+ a.href=url;a.download="Rapport_delegue_"+safeName+".docx";document.body.appendChild(a);a.click();a.remove();
+ setTimeout(function(){URL.revokeObjectURL(url);},1500);
+}
+el("exportWordReport").onclick=exportWordReport;
+
 el("printReport").onclick=function(){renderReport();window.print();};
 el("reportHomeBtn").onclick=function(e){e.preventDefault();showPageDirect("report");renderReport();window.scrollTo(0,0);};
 document.querySelectorAll(".back").forEach(function(b){b.onclick=function(){document.querySelectorAll(".page").forEach(function(p){p.classList.remove("active");p.style.removeProperty("display");});el("home").classList.remove("home-hidden");el("home").style.display="block";el("home").hidden=false;window.scrollTo(0,0);};});
