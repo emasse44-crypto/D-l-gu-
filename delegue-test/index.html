@@ -1683,6 +1683,7 @@ function exportWordReport(){
    var W="http://schemas.openxmlformats.org/wordprocessingml/2006/main";
    var paras=Array.from(doc.getElementsByTagNameNS(W,"p"));
    var sanctionParagraphs=[];
+   var benchParagraphCount=0;
    var inBeforeMatch=false,arrivalParagraph=null,receptionParagraph=null;
    paras.forEach(function(p){
     var ts=Array.from(p.getElementsByTagNameNS(W,"t"));
@@ -1698,7 +1699,7 @@ function exportWordReport(){
     else if(/mauvaise collaboration/i.test(text))setParagraphText(p,text.replace(/mauvaise collaboration/ig,"bonne collaboration"));
     else if(/est le responsable sécurité pour la rencontre/i.test(text))setParagraphText(p,"-"+(matchInfo.security||"Non renseigné")+" est le responsable sécurité pour la rencontre.");
     else if(/arbitre central de la rencontre/i.test(text)){var refereeName=(matchInfo.referee||"Non renseigné").replace(/^(M\.?|MR|MONSIEUR)\s+/i,"");setParagraphText(p,"Validation des équipements et du terrain par M. "+refereeName+", arbitre central de la rencontre.");}
-    else if(/intervention sur le banc/i.test(text)){var benchCount=/Poiré/i.test(text)?(matchInfo.benchInterventionsB||0):(/La Roche/i.test(text)?(matchInfo.benchInterventionsA||0):0);var benchTeam=/Poiré/i.test(text)?teamBName:teamAName;setParagraphText(p,benchCount+" intervention"+(benchCount>1?"s":"")+" sur le banc de "+benchTeam);}
+    else if(/intervention sur le banc/i.test(text)){benchParagraphCount++;var benchIsA=benchParagraphCount===1;var benchCount=benchIsA?(matchInfo.benchInterventionsA||0):(matchInfo.benchInterventionsB||0);var benchTeam=benchIsA?teamAName:teamBName;setParagraphText(p,benchCount+" intervention"+(benchCount>1?"s":"")+" sur le banc de "+benchTeam);}
     else if(/avertissement/i.test(text))sanctionParagraphs.push(p);
    });
    if(arrivalParagraph&&receptionParagraph&&arrivalParagraph.parentNode===receptionParagraph.parentNode)receptionParagraph.parentNode.insertBefore(arrivalParagraph,receptionParagraph);
