@@ -3,7 +3,8 @@ const APP_SHELL = [
   "./",
   "./index.html",
   "./manifest.webmanifest",
-  "./icon.svg"
+  "./icon.svg",
+  "./rapport-modele.docx.docx"
 ];
 
 self.addEventListener("install", event => {
