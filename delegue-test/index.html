@@ -1671,7 +1671,7 @@ function exportWordReport(){
   nodes[0].setAttributeNS("http://www.w3.org/XML/1998/namespace","xml:space","preserve");
   for(var i=1;i<nodes.length;i++)nodes[i].textContent="";
  }
- fetch("./rapport-modele.docx.docx?v=78",{cache:"no-store"}).then(function(r){
+ fetch("./rapport-modele.docx.docx?v=79",{cache:"no-store"}).then(function(r){
   if(!r.ok)throw new Error("Modèle Word introuvable ("+r.status+").");
   return r.arrayBuffer();
  }).then(function(buf){return JSZip.loadAsync(buf);}).then(function(zip){
@@ -1680,6 +1680,7 @@ function exportWordReport(){
    var parser=new DOMParser(),doc=parser.parseFromString(xml,"application/xml");
    if(doc.getElementsByTagName("parsererror").length)throw new Error("Lecture du document Word impossible.");
    var W="http://schemas.openxmlformats.org/wordprocessingml/2006/main";
+   window._rapportSanctionLineCount=0;
    var paras=Array.from(doc.getElementsByTagNameNS(W,"p"));
    paras.forEach(function(p){
     var ts=Array.from(p.getElementsByTagNameNS(W,"t"));
@@ -1822,7 +1823,7 @@ var _renderStaffHistoryMinute=renderStaffHistory;
 renderStaffHistory=function(){_renderStaffHistoryMinute();refreshStaffCardMinuteEditor();};
 
 loadState();playersA.forEach(function(p,i){if(typeof p.active!=="boolean")p.active=i<11;});playersB.forEach(function(p,i){if(typeof p.active!=="boolean")p.active=i<11;});if(playersA.every(function(p){return p.active===true;})&&playersA.some(function(p){return p.name;})){playersA.forEach(function(p,i){p.active=i<11;});}if(playersB.every(function(p){return p.active===true;})&&playersB.some(function(p){return p.name;})){playersB.forEach(function(p,i){p.active=i<11;});}saveState();if(running&&typeof chronoStartedAt==="number"){startChronoRefresh();syncChrono();}
-if("serviceWorker" in navigator){window.addEventListener("load",function(){navigator.serviceWorker.register("sw.js?v=78").catch(function(){});});}
+if("serviceWorker" in navigator){window.addEventListener("load",function(){navigator.serviceWorker.register("sw.js?v=79").catch(function(){});});}
 renderAllPlayers();update();updateGoalButtonLabels();
 })();
 </script>
