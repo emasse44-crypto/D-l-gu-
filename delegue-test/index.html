@@ -1671,7 +1671,7 @@ function exportWordReport(){
   nodes[0].setAttributeNS("http://www.w3.org/XML/1998/namespace","xml:space","preserve");
   for(var i=1;i<nodes.length;i++)nodes[i].textContent="";
  }
- fetch("./rapport-modele.docx.docx?v=81",{cache:"no-store"}).then(function(r){
+ fetch("./rapport-modele.docx.docx?v=82",{cache:"no-store"}).then(function(r){
   if(!r.ok)throw new Error("Modèle Word introuvable ("+r.status+").");
   return r.arrayBuffer();
  }).then(function(buf){return JSZip.loadAsync(buf);}).then(function(zip){
@@ -1686,7 +1686,7 @@ function exportWordReport(){
     var ts=Array.from(p.getElementsByTagNameNS(W,"t"));
     var text=ts.map(function(t){return t.textContent;}).join("").replace(/\s+/g," ").trim();
     if(/^Arrivé à/i.test(text))setParagraphText(p,"Arrivé à "+arrival);
-    else if(/accueil par le club recevant/i.test(text))setParagraphText(p,"Personne qui m’a reçu : "+(matchInfo.receptionPerson==="commissioner"?(matchInfo.commissioner||"Nom non renseigné"):(matchInfo.receptionPerson==="security"?(matchInfo.security||"Nom non renseigné"):"Non renseignée")));
+    else if(/accueill|accueil|nous a reç|nous sommes reç|HALGAND/i.test(text))setParagraphText(p,"Personne qui m’a reçu : "+(matchInfo.receptionPerson==="commissioner"?(matchInfo.commissioner||"Nom non renseigné"):(matchInfo.receptionPerson==="security"?(matchInfo.security||"Nom non renseigné"):"Non renseignée")));
     else if(/est le commissaire du club pour la rencontre/i.test(text))setParagraphText(p,"-"+(matchInfo.commissioner||"Non renseigné")+" est le commissaire du club pour la rencontre.");
     else if(/est le responsable sécurité pour la rencontre/i.test(text))setParagraphText(p,"-"+(matchInfo.security||"Non renseigné")+" est le responsable sécurité pour la rencontre.");
     else if(/arbitre central de la rencontre/i.test(text))setParagraphText(p,"Validation des équipements et du terrain par "+(matchInfo.referee||"Non renseigné")+", arbitre central de la rencontre.");
@@ -1825,7 +1825,7 @@ var _renderStaffHistoryMinute=renderStaffHistory;
 renderStaffHistory=function(){_renderStaffHistoryMinute();refreshStaffCardMinuteEditor();};
 
 loadState();playersA.forEach(function(p,i){if(typeof p.active!=="boolean")p.active=i<11;});playersB.forEach(function(p,i){if(typeof p.active!=="boolean")p.active=i<11;});if(playersA.every(function(p){return p.active===true;})&&playersA.some(function(p){return p.name;})){playersA.forEach(function(p,i){p.active=i<11;});}if(playersB.every(function(p){return p.active===true;})&&playersB.some(function(p){return p.name;})){playersB.forEach(function(p,i){p.active=i<11;});}saveState();if(running&&typeof chronoStartedAt==="number"){startChronoRefresh();syncChrono();}
-if("serviceWorker" in navigator){window.addEventListener("load",function(){navigator.serviceWorker.register("sw.js?v=81").catch(function(){});});}
+if("serviceWorker" in navigator){window.addEventListener("load",function(){navigator.serviceWorker.register("sw.js?v=82").catch(function(){});});}
 renderAllPlayers();update();updateGoalButtonLabels();
 })();
 </script>
