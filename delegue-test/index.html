@@ -1671,7 +1671,8 @@ document.querySelectorAll("[data-page]").forEach(function(b){b.onclick=function(
 function wordEscape(value){
  return String(value==null?"":value).replace(/&/g,"&amp;").replace(/</g,"&lt;").replace(/>/g,"&gt;").replace(/"/g,"&quot;").replace(/'/g,"&#39;");
 }
-var pendingWordFile=null;\nfunction exportWordReport(deliveryMode){
+var pendingWordFile=null;
+function exportWordReport(deliveryMode){
  if(!window.JSZip){alert("Le module Word n’a pas pu se charger. Vérifiez la connexion Internet puis réessayez.");return;}
  renderReport();
  var teamAName=(el("teamA").textContent||"Équipe A").trim();
@@ -1699,7 +1700,7 @@ var pendingWordFile=null;\nfunction exportWordReport(deliveryMode){
   nodes[0].setAttributeNS("http://www.w3.org/XML/1998/namespace","xml:space","preserve");
   for(var i=1;i<nodes.length;i++)nodes[i].textContent="";
  }
- fetch("./rapport-modele.docx.docx?v=97",{cache:"no-store"}).then(function(r){
+ fetch("./rapport-modele.docx.docx?v=98",{cache:"no-store"}).then(function(r){
   if(!r.ok)throw new Error("Modèle Word introuvable ("+r.status+").");
   return r.arrayBuffer();
  }).then(function(buf){return JSZip.loadAsync(buf);}).then(function(zip){
@@ -1770,7 +1771,8 @@ function downloadWordBlob(blob,filename){
  setTimeout(function(){URL.revokeObjectURL(url);},3000);
 }
 el("saveWordReport").onclick=function(){exportWordReport("save");};
-el("emailWordReport").onclick=function(){exportWordReport("email");};\nel("shareWordReport").onclick=function(){if(!pendingWordFile){alert("Prépare d’abord le rapport Word.");return;}if(navigator.share&&navigator.canShare&&navigator.canShare({files:[pendingWordFile]})){navigator.share({files:[pendingWordFile],title:"Rapport du match",text:"Rapport du match en pièce jointe."}).catch(function(err){if(err&&err.name!=="AbortError")alert("Le partage n’a pas pu s’ouvrir. Essaie le bouton Enregistrer le rapport Word sur PC, puis joins le fichier à ton e-mail.");});}else{alert("Le partage de fichiers n’est pas pris en charge par ce navigateur. Enregistre le rapport puis joins-le manuellement à ton e-mail.");}};
+el("emailWordReport").onclick=function(){exportWordReport("email");};
+el("shareWordReport").onclick=function(){if(!pendingWordFile){alert("Prépare d’abord le rapport Word.");return;}if(navigator.share&&navigator.canShare&&navigator.canShare({files:[pendingWordFile]})){navigator.share({files:[pendingWordFile],title:"Rapport du match",text:"Rapport du match en pièce jointe."}).catch(function(err){if(err&&err.name!=="AbortError")alert("Le partage n’a pas pu s’ouvrir. Essaie le bouton Enregistrer le rapport Word sur PC, puis joins le fichier à ton e-mail.");});}else{alert("Le partage de fichiers n’est pas pris en charge par ce navigateur. Enregistre le rapport puis joins-le manuellement à ton e-mail.");}};
 
 el("printReport").onclick=function(){renderReport();window.print();};
 el("reportHomeBtn").onclick=function(e){e.preventDefault();showPageDirect("report");renderReport();window.scrollTo(0,0);};
@@ -1890,7 +1892,7 @@ var _renderStaffHistoryMinute=renderStaffHistory;
 renderStaffHistory=function(){_renderStaffHistoryMinute();refreshStaffCardMinuteEditor();};
 
 loadState();playersA.forEach(function(p,i){if(typeof p.active!=="boolean")p.active=i<11;});playersB.forEach(function(p,i){if(typeof p.active!=="boolean")p.active=i<11;});if(playersA.every(function(p){return p.active===true;})&&playersA.some(function(p){return p.name;})){playersA.forEach(function(p,i){p.active=i<11;});}if(playersB.every(function(p){return p.active===true;})&&playersB.some(function(p){return p.name;})){playersB.forEach(function(p,i){p.active=i<11;});}saveState();if(running&&typeof chronoStartedAt==="number"){startChronoRefresh();syncChrono();}
-if("serviceWorker" in navigator){window.addEventListener("load",function(){navigator.serviceWorker.register("sw.js?v=97").catch(function(){});});}
+if("serviceWorker" in navigator){window.addEventListener("load",function(){navigator.serviceWorker.register("sw.js?v=98").catch(function(){});});}
 renderAllPlayers();update();updateGoalButtonLabels();
 })();
 </script>
