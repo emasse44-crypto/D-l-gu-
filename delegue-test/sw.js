@@ -1,4 +1,4 @@
-const CACHE_NAME = "delegue-test-v89";
+const CACHE_NAME = "delegue-test-v90";
 const APP_SHELL = [
   "./",
   "./index.html",
