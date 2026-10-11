@@ -43,6 +43,14 @@ jobs:
           gradle --version
           sdkmanager --list_installed
 
+      - name: Préparer les fichiers Word hors ligne
+        run: |
+          mkdir -p delegue-android8-apk/app/src/main/assets
+          cp delegue-test/rapport-modele.docx.docx delegue-android8-apk/app/src/main/assets/rapport-modele.docx.docx
+          curl -fsSL https://cdn.jsdelivr.net/npm/jszip@3.10.1/dist/jszip.min.js -o delegue-android8-apk/app/src/main/assets/jszip.min.js
+          test -s delegue-android8-apk/app/src/main/assets/rapport-modele.docx.docx
+          test -s delegue-android8-apk/app/src/main/assets/jszip.min.js
+
       - name: Construire l'APK Android 8
         working-directory: delegue-android8-apk
         run: gradle --no-daemon --stacktrace :app:assembleDebug
