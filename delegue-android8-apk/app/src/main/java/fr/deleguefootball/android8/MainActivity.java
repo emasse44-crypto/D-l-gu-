@@ -11,6 +11,11 @@ import android.provider.MediaStore;
 import android.print.PrintManager;
 import android.webkit.JavascriptInterface;
 import android.print.PrintDocumentAdapter;
+import android.print.PrintAttributes;
+import android.print.PrintDocumentInfo;
+import android.print.PageRange;
+import android.os.CancellationSignal;
+import android.os.ParcelFileDescriptor;
 import android.content.Context;
 import android.util.Base64;
 import android.content.ContentValues;
@@ -82,8 +87,8 @@ public class MainActivity extends Activity {
                     + "if(kind==='sheet'){document.body.classList.add('print-sheet');}"
                     + "if(window.AndroidBridge&&window.AndroidBridge.printPage){window.AndroidBridge.printPage();}"
                     + "else{window.print();}}catch(e){alert('Impression impossible : '+e.message);}};"
-                    + "var p=document.getElementById('printReport');if(p)p.onclick=function(){try{if(typeof renderReport==='function')renderReport();}catch(e){}window.__deleguePrint('report');};"
-                    + "var c=document.getElementById('printSheet');if(c)c.onclick=function(){try{if(typeof renderSheet==='function')renderSheet();}catch(e){}window.__deleguePrint('sheet');};"
+                    + "var p=document.getElementById('printReport');if(p)p.onclick=function(){try{if(typeof renderReport==='function')renderReport();}catch(e){}document.body.classList.add('print-report');if(window.AndroidBridge&&window.AndroidBridge.exportPdf)window.AndroidBridge.exportPdf('rapport-match.pdf','report');else window.__deleguePrint('report');};"
+                    + "var c=document.getElementById('printSheet');if(c)c.onclick=function(){try{if(typeof renderSheet==='function')renderSheet();}catch(e){}document.body.classList.add('print-sheet');if(window.AndroidBridge&&window.AndroidBridge.exportPdf)window.AndroidBridge.exportPdf('feuille-match.pdf','sheet');else window.__deleguePrint('sheet');};"
                     + "window.addEventListener('afterprint',function(){document.body.classList.remove('print-sheet','print-composition','print-report');});"
                     + "})()", null);
             }
@@ -126,6 +131,75 @@ public class MainActivity extends Activity {
             } catch (Exception e) {
                 android.util.Log.e("DelegueFootball", "Lecture du modèle Word impossible", e);
                 return "";
+            }
+        }
+
+        @JavascriptInterface
+        public void exportPdf(String filename, String kind) {
+            runOnUiThread(() -> {
+                final File pdf = new File(getCacheDir(), filename.replaceAll("[^a-zA-Z0-9._-]", "_"));
+                final PrintAttributes attributes = new PrintAttributes.Builder()
+                    .setMediaSize(PrintAttributes.MediaSize.ISO_A4)
+                    .setResolution(new PrintAttributes.Resolution("pdf", "PDF", 300, 300))
+                    .setMinMargins(PrintAttributes.Margins.NO_MARGINS)
+                    .build();
+                try {
+                    PrintDocumentAdapter adapter = webView.createPrintDocumentAdapter(filename);
+                    adapter.onLayout(null, attributes, new CancellationSignal(),
+                        new PrintDocumentAdapter.LayoutResultCallback() {
+                            @Override public void onLayoutFinished(PrintDocumentInfo info, boolean changed) {
+                                ParcelFileDescriptor descriptor = null;
+                                try {
+                                    descriptor = ParcelFileDescriptor.open(pdf,
+                                        ParcelFileDescriptor.MODE_CREATE | ParcelFileDescriptor.MODE_TRUNCATE | ParcelFileDescriptor.MODE_READ_WRITE);
+                                    final ParcelFileDescriptor out = descriptor;
+                                    adapter.onWrite(new PageRange[]{PageRange.ALL_PAGES}, out, new CancellationSignal(),
+                                        new PrintDocumentAdapter.WriteResultCallback() {
+                                            @Override public void onWriteFinished(PageRange[] pages) {
+                                                try { out.close(); } catch (Exception ignored) {}
+                                                webView.evaluateJavascript("document.body.classList.remove('print-sheet','print-report','print-composition')", null);
+                                                sharePdf(pdf);
+                                            }
+                                            @Override public void onWriteFailed(CharSequence error) {
+                                                try { out.close(); } catch (Exception ignored) {}
+                                                webView.evaluateJavascript("document.body.classList.remove('print-sheet','print-report','print-composition')", null);
+                                                android.util.Log.e("DelegueFootball", "Création PDF échouée: " + error);
+                                                runOnUiThread(() -> android.widget.Toast.makeText(MainActivity.this, "Impossible de créer le PDF", android.widget.Toast.LENGTH_LONG).show());
+                                            }
+                                            @Override public void onWriteCancelled() {
+                                                try { out.close(); } catch (Exception ignored) {}
+                                            }
+                                        });
+                                } catch (Exception e) {
+                                    if (descriptor != null) try { descriptor.close(); } catch (Exception ignored) {}
+                                    android.util.Log.e("DelegueFootball", "Écriture PDF impossible", e);
+                                    android.widget.Toast.makeText(MainActivity.this, "Erreur pendant la création du PDF", android.widget.Toast.LENGTH_LONG).show();
+                                }
+                            }
+                            @Override public void onLayoutFailed(CharSequence error) {
+                                android.util.Log.e("DelegueFootball", "Mise en page PDF impossible: " + error);
+                                android.widget.Toast.makeText(MainActivity.this, "Mise en page PDF impossible", android.widget.Toast.LENGTH_LONG).show();
+                            }
+                        });
+                } catch (Exception e) {
+                    android.util.Log.e("DelegueFootball", "Export PDF impossible", e);
+                    android.widget.Toast.makeText(MainActivity.this, "Export PDF impossible", android.widget.Toast.LENGTH_LONG).show();
+                }
+            });
+        }
+
+        private void sharePdf(File pdf) {
+            try {
+                Uri uri = FileProvider.getUriForFile(MainActivity.this, getPackageName() + ".fileprovider", pdf);
+                Intent intent = new Intent(Intent.ACTION_SEND);
+                intent.setType("application/pdf");
+                intent.putExtra(Intent.EXTRA_STREAM, uri);
+                intent.putExtra(Intent.EXTRA_SUBJECT, pdf.getName());
+                intent.addFlags(Intent.FLAG_GRANT_READ_URI_PERMISSION);
+                startActivity(Intent.createChooser(intent, "Envoyer ou enregistrer le PDF"));
+            } catch (Exception e) {
+                android.util.Log.e("DelegueFootball", "Partage PDF impossible", e);
+                android.widget.Toast.makeText(MainActivity.this, "Impossible de partager le PDF", android.widget.Toast.LENGTH_LONG).show();
             }
         }
 
