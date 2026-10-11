@@ -1677,7 +1677,7 @@ el("cardTypeYellow").onclick=function(){selectCardType("🟨 Jaune");};
 el("cardTypeWhite").onclick=function(){selectCardType("⚪ Blanc");};
 el("cardTypeRed").onclick=function(){selectCardType("🟥 Rouge");};
 document.querySelectorAll("[data-page]").forEach(function(b){b.onclick=function(){var page=b.getAttribute("data-page");if(page==="compositions")renderAllPlayers();if(page==="changes")renderChanges();if(page==="goals"){renderGoalsPage();}if(page==="events"){renderCards();renderBenchInterventions();}if(page==="staff"){renderStaff(staffA,"staffA");renderStaff(staffB,"staffB");renderStaffHistory();}if(page==="sheet"){renderTimeline();renderSheet();}if(page==="checklist"){renderChecklist();}if(page==="delegateGuide"){renderDelegateChecklist();}if(page==="incidents"){renderIncidents();}if(page==="injuries"){renderInjuryPlayers();renderInjuries();}if(page==="report"){renderReport();}if(page==="photos"){renderPhotos();}if(page==="settings"){fillMatchInfo();}el("home").classList.add("home-hidden");el("home").style.display="none";document.querySelectorAll(".page").forEach(function(p){p.classList.remove("active");p.style.display="none";});el(page).classList.add("active");el(page).style.display="block";};});
-el("editCompositionBtn").onclick=function(){var b=document.querySelector('[data-page="compositions"]');if(b)b.click();};
+el("editCompositionBtn").onclick=function(){try{readPlayers(playersA,"playersA");readPlayers(playersB,"playersB");}catch(e){}var b=document.querySelector('[data-page="compositions"]');if(b)b.click();};
 
 function wordEscape(value){
  return String(value==null?"":value).replace(/&/g,"&amp;").replace(/</g,"&lt;").replace(/>/g,"&gt;").replace(/"/g,"&quot;").replace(/'/g,"&#39;");
