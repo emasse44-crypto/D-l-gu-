@@ -89,6 +89,7 @@ public class MainActivity extends Activity {
                     + "else{window.print();}}catch(e){alert('Impression impossible : '+e.message);}};"
                     + "var p=document.getElementById('printReport');if(p)p.onclick=function(){try{if(typeof renderReport==='function')renderReport();}catch(e){}document.body.classList.add('print-report');if(window.AndroidBridge&&window.AndroidBridge.exportPdf)window.AndroidBridge.exportPdf('rapport-match.pdf','report');else window.__deleguePrint('report');};"
                     + "var c=document.getElementById('printSheet');if(c)c.onclick=function(){try{if(typeof renderSheet==='function')renderSheet();}catch(e){}document.body.classList.add('print-sheet');if(window.AndroidBridge&&window.AndroidBridge.exportPdf)window.AndroidBridge.exportPdf('feuille-match.pdf','sheet');else window.__deleguePrint('sheet');};"
+                    + "var comp=document.getElementById('printCompositionOnly');if(comp)comp.onclick=function(){document.body.classList.add('print-composition');if(window.AndroidBridge&&window.AndroidBridge.exportPdf)window.AndroidBridge.exportPdf('composition-equipes.pdf','composition');else window.__deleguePrint('composition');};"
                     + "window.addEventListener('afterprint',function(){document.body.classList.remove('print-sheet','print-composition','print-report');});"
                     + "})()", null);
             }
