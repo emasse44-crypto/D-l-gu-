@@ -1064,15 +1064,20 @@ if(!Number.isInteger(idx)||idx<0||idx>15||!team[idx]||team[idx].role||isPlayerEx
 var previous=cards.filter(function(x){return x.team===side&&x.number===idx+1&&(x.type==="🟨 Jaune"||x.type==="⚪ Blanc");});
 if(previous.some(function(x){return x.type.indexOf("🟥")===0;})||cards.some(function(x){return x.team===side&&x.number===idx+1&&x.type.indexOf("🟥")===0;})){alert("Ce joueur est déjà expulsé.");return;}
 var hadPrevious=previous.length>0;
-var triggersRed=previous.some(function(x){return (x.type==="🟨 Jaune"&&type==="🟨 Jaune")||(x.type==="⚪ Blanc"&&type==="🟨 Jaune")||(x.type==="🟨 Jaune"&&type==="⚪ Blanc");});
+var previousYellow=previous.some(function(x){return String(x.type||"").indexOf("🟨")===0;});
+var previousWhite=previous.some(function(x){return String(x.type||"").indexOf("⚪")===0;});
+var isYellow=String(type).indexOf("🟨")===0;
+var isWhite=String(type).indexOf("⚪")===0;
+var triggersRed=(isYellow&&previousYellow)||(isWhite&&previousYellow)||(isYellow&&previousWhite);
 cards.push({team:side,type:type,player:playerLabel(team[idx],idx),number:idx+1,minute:minute});
 if(type==="🟥 Rouge"){
 team[idx].active=false;
-}else if(!hadPrevious&&type==="⚪ Blanc"){
+}else if(isWhite&&!hadPrevious){
 exclusions.push({team:side,number:idx+1,player:playerLabel(team[idx],idx),start:seconds,end:seconds+600,active:true,playerWasActive:team[idx].active===true});
 team[idx].active=false;
 }else if(triggersRed){
-cards.push({team:side,type:"🟥 Rouge ("+(type==="⚪ Blanc"?"blanc + jaune":"2 jaunes")+")",player:playerLabel(team[idx],idx),number:idx+1,minute:minute,auto:true});
+var automaticRedType="🟥 Rouge ("+(isWhite&&previousYellow||isYellow&&previousWhite?"blanc + jaune":"2 jaunes")+")";
+cards.push({team:side,type:automaticRedType,player:playerLabel(team[idx],idx),number:idx+1,minute:minute,auto:true});
 team[idx].active=false;
 exclusions=exclusions.filter(function(x){return !(x.team===side&&x.number===idx+1&&x.active);});
 }
