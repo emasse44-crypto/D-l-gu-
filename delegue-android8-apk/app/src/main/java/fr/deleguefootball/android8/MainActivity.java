@@ -114,6 +114,20 @@ public class MainActivity extends Activity {
 
     private class AndroidBridge {
         @JavascriptInterface
+        public String getWordTemplateBase64() {
+            try (java.io.InputStream input = getAssets().open("rapport-modele.docx.docx");
+                 java.io.ByteArrayOutputStream output = new java.io.ByteArrayOutputStream()) {
+                byte[] buffer = new byte[8192];
+                int read;
+                while ((read = input.read(buffer)) != -1) output.write(buffer, 0, read);
+                return Base64.encodeToString(output.toByteArray(), Base64.NO_WRAP);
+            } catch (Exception e) {
+                android.util.Log.e("DelegueFootball", "Lecture du modèle Word impossible", e);
+                return "";
+            }
+        }
+
+        @JavascriptInterface
         public void printPage() {
             runOnUiThread(() -> {
                 try {
