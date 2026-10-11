@@ -1742,13 +1742,10 @@ function exportWordReport(deliveryMode){ if(!window.JSZip){alert("Le module Word
    if(sanctionParagraphs.length){
     var lines=sanctionLines("A",teamAName).filter(function(x){return !/^Aucune sanction/.test(x);})
       .concat(sanctionLines("B",teamBName).filter(function(x){return !/^Aucune sanction/.test(x);}));
-    function staffRoleLabel(role){
-     return ({E:"Éducateur",M:"Médecin",A:"Assistant",D:"Dirigeant","D/DR":"Dirigeant / dirigeant responsable"})[String(role||"").toUpperCase()]||role||"fonction non renseignée";
-    }
-    staffCards.filter(function(x){return String(x.type||"").toLowerCase().indexOf("blanc")>=0;}).forEach(function(x){
-     var club=x.team==="A"?teamAName:teamBName;
-     lines.push("Carton blanc staff · "+club+" · "+(x.member||"Nom non renseigné")+" · Fonction : "+staffRoleLabel(x.role)+" · minute "+(x.minute||"non renseignée"));
-    });
+    var staffWhiteA=staffCards.filter(function(x){return x.team==="A"&&String(x.type||"").toLowerCase().indexOf("blanc")>=0;}).length;
+    var staffWhiteB=staffCards.filter(function(x){return x.team==="B"&&String(x.type||"").toLowerCase().indexOf("blanc")>=0;}).length;
+    if(staffWhiteA)lines.push(staffWhiteA+" carton"+(staffWhiteA>1?"s":"")+" blanc"+(staffWhiteA>1?"s":"")+" staff pour "+teamAName);
+    if(staffWhiteB)lines.push(staffWhiteB+" carton"+(staffWhiteB>1?"s":"")+" blanc"+(staffWhiteB>1?"s":"")+" staff pour "+teamBName);
     if(!lines.length)lines=["Aucune sanction pour "+teamAName,"Aucune sanction pour "+teamBName];
     var anchor=sanctionParagraphs[0];
     setParagraphText(anchor,lines[0]);
