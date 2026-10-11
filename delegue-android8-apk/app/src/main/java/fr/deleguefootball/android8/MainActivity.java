@@ -137,70 +137,23 @@ public class MainActivity extends Activity {
         @JavascriptInterface
         public void exportPdf(String filename, String kind) {
             runOnUiThread(() -> {
-                final File pdf = new File(getCacheDir(), filename.replaceAll("[^a-zA-Z0-9._-]", "_"));
-                final PrintAttributes attributes = new PrintAttributes.Builder()
-                    .setMediaSize(PrintAttributes.MediaSize.ISO_A4)
-                    .setResolution(new PrintAttributes.Resolution("pdf", "PDF", 300, 300))
-                    .setMinMargins(PrintAttributes.Margins.NO_MARGINS)
-                    .build();
                 try {
+                    PrintManager printManager = (PrintManager) getSystemService(Context.PRINT_SERVICE);
+                    if (printManager == null) {
+                        android.widget.Toast.makeText(MainActivity.this, "Service PDF indisponible", android.widget.Toast.LENGTH_LONG).show();
+                        return;
+                    }
                     PrintDocumentAdapter adapter = webView.createPrintDocumentAdapter(filename);
-                    adapter.onLayout(null, attributes, new CancellationSignal(),
-                        new PrintDocumentAdapter.LayoutResultCallback() {
-                            @Override public void onLayoutFinished(PrintDocumentInfo info, boolean changed) {
-                                ParcelFileDescriptor descriptor = null;
-                                try {
-                                    descriptor = ParcelFileDescriptor.open(pdf,
-                                        ParcelFileDescriptor.MODE_CREATE | ParcelFileDescriptor.MODE_TRUNCATE | ParcelFileDescriptor.MODE_READ_WRITE);
-                                    final ParcelFileDescriptor out = descriptor;
-                                    adapter.onWrite(new PageRange[]{PageRange.ALL_PAGES}, out, new CancellationSignal(),
-                                        new PrintDocumentAdapter.WriteResultCallback() {
-                                            @Override public void onWriteFinished(PageRange[] pages) {
-                                                try { out.close(); } catch (Exception ignored) {}
-                                                webView.evaluateJavascript("document.body.classList.remove('print-sheet','print-report','print-composition')", null);
-                                                sharePdf(pdf);
-                                            }
-                                            @Override public void onWriteFailed(CharSequence error) {
-                                                try { out.close(); } catch (Exception ignored) {}
-                                                webView.evaluateJavascript("document.body.classList.remove('print-sheet','print-report','print-composition')", null);
-                                                android.util.Log.e("DelegueFootball", "Création PDF échouée: " + error);
-                                                runOnUiThread(() -> android.widget.Toast.makeText(MainActivity.this, "Impossible de créer le PDF", android.widget.Toast.LENGTH_LONG).show());
-                                            }
-                                            @Override public void onWriteCancelled() {
-                                                try { out.close(); } catch (Exception ignored) {}
-                                            }
-                                        });
-                                } catch (Exception e) {
-                                    if (descriptor != null) try { descriptor.close(); } catch (Exception ignored) {}
-                                    android.util.Log.e("DelegueFootball", "Écriture PDF impossible", e);
-                                    android.widget.Toast.makeText(MainActivity.this, "Erreur pendant la création du PDF", android.widget.Toast.LENGTH_LONG).show();
-                                }
-                            }
-                            @Override public void onLayoutFailed(CharSequence error) {
-                                android.util.Log.e("DelegueFootball", "Mise en page PDF impossible: " + error);
-                                android.widget.Toast.makeText(MainActivity.this, "Mise en page PDF impossible", android.widget.Toast.LENGTH_LONG).show();
-                            }
-                        });
+                    printManager.print("Enregistrer en PDF", adapter,
+                        new PrintAttributes.Builder()
+                            .setMediaSize(PrintAttributes.MediaSize.ISO_A4)
+                            .setMinMargins(PrintAttributes.Margins.NO_MARGINS)
+                            .build());
                 } catch (Exception e) {
-                    android.util.Log.e("DelegueFootball", "Export PDF impossible", e);
-                    android.widget.Toast.makeText(MainActivity.this, "Export PDF impossible", android.widget.Toast.LENGTH_LONG).show();
+                    android.util.Log.e("DelegueFootball", "Ouverture de l'export PDF impossible", e);
+                    android.widget.Toast.makeText(MainActivity.this, "Impossible d'ouvrir l'export PDF", android.widget.Toast.LENGTH_LONG).show();
                 }
             });
-        }
-
-        private void sharePdf(File pdf) {
-            try {
-                Uri uri = FileProvider.getUriForFile(MainActivity.this, getPackageName() + ".fileprovider", pdf);
-                Intent intent = new Intent(Intent.ACTION_SEND);
-                intent.setType("application/pdf");
-                intent.putExtra(Intent.EXTRA_STREAM, uri);
-                intent.putExtra(Intent.EXTRA_SUBJECT, pdf.getName());
-                intent.addFlags(Intent.FLAG_GRANT_READ_URI_PERMISSION);
-                startActivity(Intent.createChooser(intent, "Envoyer ou enregistrer le PDF"));
-            } catch (Exception e) {
-                android.util.Log.e("DelegueFootball", "Partage PDF impossible", e);
-                android.widget.Toast.makeText(MainActivity.this, "Impossible de partager le PDF", android.widget.Toast.LENGTH_LONG).show();
-            }
         }
 
         @JavascriptInterface
