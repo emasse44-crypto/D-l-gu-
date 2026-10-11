@@ -196,6 +196,17 @@ body.print-composition #compositionPrintArea{width:100%!important}
  body.print-composition .print-player-row{border-bottom:1px solid #999!important}
  body.print-composition .print-license{color:#333!important}
 }
+
+/* Impression directe de la feuille de match complète */
+@media print{
+ body.print-sheet{margin:0!important;padding:0!important;background:#fff!important;color:#111!important}
+ body.print-sheet .app{display:block!important;width:100%!important;max-width:none!important;margin:0!important;padding:0!important;background:#fff!important;box-shadow:none!important}
+ body.print-sheet .app>*{display:none!important}
+ body.print-sheet #sheet{display:block!important;position:static!important;width:100%!important;max-width:none!important;margin:0!important;padding:8mm!important;border:0!important;border-radius:0!important;box-shadow:none!important;background:#fff!important;color:#111!important;overflow:visible!important}
+ body.print-sheet #sheet>.back,body.print-sheet #sheet button{display:none!important}
+ body.print-sheet #sheet .change-item{break-inside:avoid!important;page-break-inside:avoid!important;background:#fff!important;color:#111!important;border:1px solid #bbb!important;box-shadow:none!important}
+ body.print-sheet #sheet h2,body.print-sheet #sheet h3{color:#111!important}
+}
 </style>
 </head>
 <body>
