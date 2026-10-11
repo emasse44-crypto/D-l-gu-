@@ -69,6 +69,22 @@ public class MainActivity extends Activity {
             public boolean shouldOverrideUrlLoading(WebView view, WebResourceRequest request) {
                 return false;
             }
+
+            @Override
+            public void onPageFinished(WebView view, String url) {
+                super.onPageFinished(view, url);
+                // Le HTML attribue deux fois le bouton PDF; ce correctif natif rétablit
+                // l'impression Android après l'exécution de tous les scripts de la page.
+                view.evaluateJavascript("(function(){"
+                    + "window.__deleguePrint=function(kind){"
+                    + "try{if(kind==='report'){document.body.classList.add('print-report');}"
+                    + "if(kind==='composition'){document.body.classList.add('print-composition');}"
+                    + "if(window.AndroidBridge&&window.AndroidBridge.printPage){window.AndroidBridge.printPage();}"
+                    + "else{window.print();}}catch(e){alert('Impression impossible : '+e.message);}};"
+                    + "var p=document.getElementById('printReport');if(p)p.onclick=function(){try{if(typeof renderReport==='function')renderReport();}catch(e){}window.__deleguePrint('report');};"
+                    + "var c=document.getElementById('printSheet');if(c)c.onclick=function(){try{if(typeof renderSheet==='function')renderSheet();}catch(e){}window.__deleguePrint('composition');};"
+                    + "})()", null);
+            }
         });
 
         webView.setWebChromeClient(new WebChromeClient() {
