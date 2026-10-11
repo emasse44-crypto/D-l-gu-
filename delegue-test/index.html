@@ -139,7 +139,24 @@ body.print-report #reportContent tr,body.print-report #reportContent .change-ite
 body.print-report #reportContent th,body.print-report #reportContent td{padding:5px!important;border-bottom:1px solid #d7dee8!important;text-align:left!important;vertical-align:top!important}
 body.print-report #reportContent .report-card,body.print-report #reportContent .section,body.print-report #reportContent .change-item{box-shadow:none!important}
 }
-@page{size:A4 landscape;margin:5mm}
+@page{size:A4 portrait;margin:8mm}
+@media print{
+body.print-composition #compositionView{font-family:Arial,Helvetica,sans-serif!important}
+body.print-composition .print-composition-header{margin:0 0 6mm!important;padding:0 0 4mm!important;border-bottom:2px solid #1f2937!important}
+body.print-composition .print-composition-header h2{font-size:19pt!important;margin:0 0 2mm!important}
+body.print-composition .print-composition-header .print-match-meta{font-size:10pt!important}
+body.print-composition .print-composition-grid{display:flex!important;flex-direction:row!important;gap:5mm!important;width:100%!important;align-items:stretch!important}
+body.print-composition .print-team{flex:1 1 0!important;width:50%!important;border:1px solid #cbd5e1!important;border-radius:7px!important}
+body.print-composition .print-team-head{font-size:12pt!important;padding:7px 4px!important}
+body.print-composition .print-captain{font-size:9pt!important;padding:5px!important}
+body.print-composition .print-player-group{padding:5px 6px!important}
+body.print-composition .print-group-title{font-size:8.5pt!important;margin-bottom:4px!important}
+body.print-composition .print-player-row{grid-template-columns:19px minmax(0,1fr) 48px!important;gap:3px!important;padding:3px 1px!important;min-height:0!important}
+body.print-composition .print-number{font-size:8.5pt!important}
+body.print-composition .print-player-name{font-size:8.5pt!important;line-height:1.25!important;overflow-wrap:anywhere!important}
+body.print-composition .print-license{font-size:6.5pt!important}
+body.print-composition #compositionPrintArea{width:100%!important}
+}
 @media print{html,body{width:100%!important;height:auto!important;min-height:0!important;overflow:visible!important}body.print-composition{background:#fff!important;padding:0!important;margin:0!important}body.print-composition .app{display:block!important;width:100%!important;max-width:none!important;height:auto!important;min-height:0!important;margin:0!important;padding:0!important;overflow:visible!important}body.print-composition *{visibility:hidden!important}body.print-composition #compositionView,body.print-composition #compositionView *{visibility:visible!important}body.print-composition #compositionView{display:block!important;position:static!important;left:auto!important;top:auto!important;width:100%!important;height:auto!important;min-height:0!important;max-height:none!important;overflow:visible!important;max-width:none!important;padding:0!important;margin:0!important;border:0!important;box-shadow:none!important;background:#fff!important;color:#111!important}body.print-composition #compositionView .back,body.print-composition #printCompositionOnly,body.print-composition #compositionView>.note,body.print-composition #compositionView>h2{display:none!important}body.print-composition #compositionPrintArea{display:block!important;width:100%!important;height:auto!important;margin:0!important;padding:0!important;overflow:visible!important}body.print-composition .print-composition-header{display:block!important;width:100%!important;margin:0 0 3mm!important;padding:0 0 2mm!important;break-after:avoid!important;page-break-after:avoid!important}body.print-composition .print-composition-grid{display:flex!important;flex-direction:row!important;align-items:flex-start!important;gap:4mm!important;width:100%!important;height:auto!important;overflow:visible!important;break-inside:avoid!important;page-break-inside:avoid!important}body.print-composition .print-team{display:block!important;flex:1 1 0!important;width:49%!important;min-width:0!important;height:auto!important;min-height:0!important;margin:0!important;break-inside:avoid!important;page-break-inside:avoid!important}body.print-composition .print-player-row{break-inside:avoid!important;page-break-inside:avoid!important;padding:1px 2px!important;min-height:0!important}body.print-composition .print-player-name{font-size:10pt!important}body.print-composition .print-team-head{font-size:13pt!important;padding:4px!important}body.print-composition #compositionPrintArea,body.print-composition .print-composition-header,body.print-composition .print-composition-grid{page-break-before:avoid!important}body.print-composition .print-composition-grid{page-break-after:avoid!important}}
 </style>
 </head>
