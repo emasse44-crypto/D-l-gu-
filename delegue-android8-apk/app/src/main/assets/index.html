@@ -183,12 +183,25 @@ body.print-composition #compositionPrintArea{width:100%!important}
  body.print-composition .print-captain{font-size:9pt!important;padding:2mm!important}
  body.print-composition .print-group-title{font-size:9pt!important;margin-bottom:2mm!important}
 }
+
+/* Impression officielle : noir et blanc, pleine page A4 paysage */
+@page{size:A4 landscape;margin:4mm}
+@media print{
+ body.print-composition #printCompositionOnly{display:none!important;visibility:hidden!important}
+ body.print-composition .print-team-head,
+ body.print-composition .print-team:nth-child(2) .print-team-head{background:#222!important;color:#fff!important;-webkit-print-color-adjust:exact;print-color-adjust:exact}
+ body.print-composition .print-captain,
+ body.print-composition .print-group-title{background:#eee!important;color:#111!important}
+ body.print-composition .print-team{border:1px solid #222!important;box-shadow:none!important;background:#fff!important;color:#111!important}
+ body.print-composition .print-player-row{border-bottom:1px solid #999!important}
+ body.print-composition .print-license{color:#333!important}
+}
 </style>
 </head>
 <body>
 <div class="app">
 <h1>⚽ Délégué Football</h1>
-<div class="version">VERSION TEST ANDROID 8 · WORD / PDF / COMPOSITION PAYSAGE</div>
+<div class="version">VERSION OFFICIELLE V2 · ANDROID 8</div>
 <section id="home">
 <div class="card"><div class="teams">
 <div><div class="team" id="teamA">Équipe A</div><div class="score" id="scoreA">0</div></div>
