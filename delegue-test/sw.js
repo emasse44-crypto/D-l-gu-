@@ -1,9 +1,10 @@
-const CACHE_NAME = "delegue-test-v103";
+const CACHE_NAME = "delegue-test-v104";
 const APP_SHELL = [
   "./",
   "./index.html",
   "./manifest.webmanifest",
   "./icon.svg",
+  "./guide-utilisation.pdf",
   "./rapport-modele.docx.docx"
 ];
 
