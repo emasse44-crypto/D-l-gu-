@@ -1729,7 +1729,7 @@ el("cardTypeRed").onclick=function(){selectCardType("🟥 Rouge");};
 document.querySelectorAll("[data-page]").forEach(function(b){b.onclick=function(){var page=b.getAttribute("data-page");if(page==="compositions")renderAllPlayers();if(page==="compositionView"){renderSheet();el("compositionPrintArea").innerHTML="";var ph=document.createElement("div");ph.className="print-composition-header";ph.innerHTML="<h2>FEUILLE DE COMPOSITION DES ÉQUIPES</h2><div class=\"print-match-meta\"></div>";ph.querySelector(".print-match-meta").textContent=el("teamA").textContent+" · "+el("teamB").textContent+" · "+(el("matchDate")?el("matchDate").value:"");el("compositionPrintArea").appendChild(ph);var pg=document.createElement("div");pg.className="print-composition-grid";Array.from(el("sheetCompositions").children).forEach(function(c){pg.appendChild(c.cloneNode(true));});el("compositionPrintArea").appendChild(pg);}if(page==="changes")renderChanges();if(page==="goals"){renderGoalsPage();}if(page==="events"){renderCards();renderBenchInterventions();}if(page==="staff"){renderStaff(staffA,"staffA");renderStaff(staffB,"staffB");renderStaffHistory();}if(page==="sheet"){renderTimeline();renderSheet();}if(page==="checklist"){renderChecklist();}if(page==="delegateGuide"){renderDelegateChecklist();}if(page==="incidents"){renderIncidents();}if(page==="injuries"){renderInjuryPlayers();renderInjuries();}if(page==="report"){renderReport();}if(page==="photos"){renderPhotos();}if(page==="settings"){fillMatchInfo();}el("home").classList.add("home-hidden");el("home").style.display="none";document.querySelectorAll(".page").forEach(function(p){p.classList.remove("active");p.style.display="none";});el(page).classList.add("active");el(page).style.display="block";};});
 
 
-el("printCompositionOnly").onclick=function(){document.body.classList.add("print-composition");window.print();document.body.classList.remove("print-composition");};window.addEventListener("afterprint",function(){document.body.classList.remove("print-composition","print-report");});
+el("printCompositionOnly").onclick=function(){document.body.classList.add("print-composition");printCurrentPage();document.body.classList.remove("print-composition");};window.addEventListener("afterprint",function(){document.body.classList.remove("print-composition","print-report");});
 function wordEscape(value){
  return String(value==null?"":value).replace(/&/g,"&amp;").replace(/</g,"&lt;").replace(/>/g,"&gt;").replace(/"/g,"&quot;").replace(/'/g,"&#39;");
 }
@@ -1839,6 +1839,13 @@ function exportWordReport(deliveryMode){ if(!window.JSZip){alert("Le module Word
  }).catch(function(err){console.error(err);alert("Export Word impossible : "+(err&&err.message?err.message:"erreur inconnue"));});
 }
 function downloadWordBlob(blob,filename){
+ if(window.AndroidBridge&&window.AndroidBridge.shareFile){
+  var reader=new FileReader();
+  reader.onload=function(){var data=String(reader.result||"").split(",")[1]||"";window.AndroidBridge.shareFile(data,filename,"application/vnd.openxmlformats-officedocument.wordprocessingml.document");};
+  reader.onerror=function(){alert("Impossible de préparer le document Word.");};
+  reader.readAsDataURL(blob);
+  return;
+ }
  var url=URL.createObjectURL(blob),a=document.createElement("a");
  a.href=url;a.download=filename;document.body.appendChild(a);a.click();a.remove();
  setTimeout(function(){URL.revokeObjectURL(url);},3000);
@@ -1846,7 +1853,11 @@ function downloadWordBlob(blob,filename){
 el("exportWordReport").onclick=function(){exportWordReport("download");};
 el("emailWordReport").onclick=function(){exportWordReport("email");};
 
-el("printReport").onclick=function(){renderReport();document.body.classList.add("print-report");window.print();};
+function printCurrentPage(){
+ if(window.AndroidBridge&&window.AndroidBridge.printPage){window.AndroidBridge.printPage();}
+ else{window.print();}
+}
+el("printReport").onclick=function(){renderReport();document.body.classList.add("print-report");printCurrentPage();};
 el("reportHomeBtn").onclick=function(e){e.preventDefault();showPageDirect("report");renderReport();window.scrollTo(0,0);};
 document.querySelectorAll(".back").forEach(function(b){b.onclick=function(){document.querySelectorAll(".page").forEach(function(p){p.classList.remove("active");p.style.removeProperty("display");});el("home").classList.remove("home-hidden");el("home").style.display="block";el("home").hidden=false;window.scrollTo(0,0);};});
 el("commissionerReceptionCheck").onchange=function(){if(this.checked)el("securityReceptionCheck").checked=false;};el("securityReceptionCheck").onchange=function(){if(this.checked)el("commissionerReceptionCheck").checked=false;};
