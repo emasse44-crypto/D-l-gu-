@@ -173,6 +173,37 @@ public class MainActivity extends Activity {
         }
 
         @JavascriptInterface
+        public void saveCompositionImage(String base64, String filename) {
+            runOnUiThread(() -> {
+                try {
+                    byte[] bytes = Base64.decode(base64, Base64.DEFAULT);
+                    File directory = getExternalFilesDir(Environment.DIRECTORY_PICTURES);
+                    if (directory == null) throw new IOException("Dossier photo indisponible");
+                    if (!directory.exists() && !directory.mkdirs()) throw new IOException("Création du dossier photo impossible");
+                    String safeName = filename == null ? "composition-equipes.png" : filename.replaceAll("[^a-zA-Z0-9._-]", "_");
+                    if (!safeName.toLowerCase(Locale.ROOT).endsWith(".png")) safeName += ".png";
+                    File file = new File(directory, safeName);
+                    try (FileOutputStream stream = new FileOutputStream(file)) {
+                        stream.write(bytes);
+                    }
+                    Uri uri = FileProvider.getUriForFile(MainActivity.this, getPackageName() + ".fileprovider", file);
+                    android.widget.Toast.makeText(MainActivity.this,
+                        "Photo enregistrée. Choisissez où la partager ou l’envoyer.", android.widget.Toast.LENGTH_LONG).show();
+                    Intent intent = new Intent(Intent.ACTION_SEND);
+                    intent.setType("image/png");
+                    intent.putExtra(Intent.EXTRA_STREAM, uri);
+                    intent.putExtra(Intent.EXTRA_SUBJECT, "Composition des équipes");
+                    intent.addFlags(Intent.FLAG_GRANT_READ_URI_PERMISSION);
+                    startActivity(Intent.createChooser(intent, "Partager la composition"));
+                } catch (Exception e) {
+                    android.util.Log.e("DelegueFootball", "Enregistrement de la composition impossible", e);
+                    android.widget.Toast.makeText(MainActivity.this,
+                        "Impossible d’enregistrer la photo de composition", android.widget.Toast.LENGTH_LONG).show();
+                }
+            });
+        }
+
+        @JavascriptInterface
         public void shareFile(String base64, String filename, String mimeType) {
             runOnUiThread(() -> {
                 try {
