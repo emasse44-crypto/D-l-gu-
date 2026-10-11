@@ -1377,7 +1377,9 @@ var idx=Number(el("staffPlayer").value);
 if(!Number.isInteger(idx)||!team[idx]){alert("Choisissez un membre du staff.");return;}
 var type=el("staffForm").dataset.type;
 var minute=Math.floor(seconds/60)+":"+String(seconds%60).padStart(2,"0");
-var member=team[idx];
+var parsedMember=parseStaffEntry(team[idx]);
+var member=parsedMember.name||team[idx];
+var memberRole=parsedMember.role||"";
 var previous=staffCards.filter(function(x){return x.team===side&&x.number===idx+1;});
 var alreadySentOff=previous.some(function(x){return x.sentOff;});
 if(alreadySentOff){alert("Ce membre du staff est déjà expulsé.");return;}
@@ -1385,7 +1387,7 @@ var hadWhite=previous.some(function(x){return x.type==="⚪ Blanc"||x.whiteOnly;
 var hadYellow=previous.some(function(x){return x.type==="🟨 Jaune";});
 
 if(type==="⚪ Blanc"){
-staffCards.push({team:side,type:type,member:member,number:idx+1,minute:minute,whiteOnly:true});
+staffCards.push({team:side,type:type,member:member,role:memberRole,number:idx+1,minute:minute,whiteOnly:true});
 var players=side==="A"?playersA:playersB;
 readPlayers(players,side==="A"?"playersA":"playersB");
 var cap=players.findIndex(function(p){return p.captain;});
@@ -1404,7 +1406,7 @@ staffCards.push({team:side,type:"🟥 Rouge (blanc + jaune staff)",member:member
 staffCards.push({team:side,type:"🟥 Rouge (2 jaunes)",member:member,number:idx+1,minute:minute,auto:true,sentOff:true});
 }
 }else{
-staffCards.push({team:side,type:type,member:member,number:idx+1,minute:minute,sentOff:type==="🟥 Rouge"});
+staffCards.push({team:side,type:type,member:member,role:memberRole,number:idx+1,minute:minute,sentOff:type==="🟥 Rouge"});
 }
 el("staffForm").style.display="none";
 renderStaffHistory();
@@ -1571,7 +1573,7 @@ html+=section("⚪ CARTONS BLANCS JOUEURS",renderPlayerSanctions(playerWhites,"A
 
 var staffHtml="";
 if(staffCards.length){
-staffHtml=staffCards.map(function(x){var bg=(x.type||"").indexOf("Rouge")>=0?"#ef4444":((x.type||"").indexOf("Blanc")>=0?"#f8fafc":"#facc15");var fg=(x.type||"").indexOf("Blanc")>=0?"#111827":"#ffffff";return '<div style="display:flex;align-items:center;gap:9px;margin-top:7px;padding:9px 10px;background:rgba(7,15,28,.58);border-radius:10px;border-left:4px solid '+bg+'"><span style="display:inline-block;min-width:13px;height:20px;border-radius:3px;background:'+bg+';border:1px solid rgba(255,255,255,.4)"></span><div><strong>'+escapeHtml(x.minute)+'</strong> · '+escapeHtml(teamName(x.team))+'<br><strong>'+escapeHtml(x.member)+'</strong> · '+escapeHtml(x.type)+' · Staff '+escapeHtml(String(x.number))+(x.auto?' · automatique':'')+'</div></div>';}).join("");
+staffHtml=staffCards.map(function(x){var bg=(x.type||"").indexOf("Rouge")>=0?"#ef4444":((x.type||"").indexOf("Blanc")>=0?"#f8fafc":"#facc15");var fg=(x.type||"").indexOf("Blanc")>=0?"#111827":"#ffffff";return '<div style="display:flex;align-items:center;gap:9px;margin-top:7px;padding:9px 10px;background:rgba(7,15,28,.58);border-radius:10px;border-left:4px solid '+bg+'"><span style="display:inline-block;min-width:13px;height:20px;border-radius:3px;background:'+bg+';border:1px solid rgba(255,255,255,.4)"></span><div><strong>'+escapeHtml(x.minute)+'</strong> · '+escapeHtml(teamName(x.team))+'<br><strong>'+escapeHtml(x.member)+'</strong> · '+escapeHtml(x.type)+' · '+escapeHtml(({E:'Éducateur',M:'Médecin',A:'Assistant',D:'Dirigeant','D/DR':'Dirigeant / dirigeant responsable'})[x.role]||x.role||'Fonction non renseignée')+' · Staff '+escapeHtml(String(x.number))+(x.auto?' · automatique':'')+'</div></div>';}).join("");
 }else staffHtml=empty("Aucune sanction staff.");
 if(staffExclusions.length){staffHtml+='<div style="margin-top:10px"><strong>⚪ Exclusions temporaires du capitaine suite à un blanc staff</strong></div>';staffExclusions.forEach(function(x){staffHtml+='<div style="display:flex;align-items:center;gap:9px;margin-top:7px;padding:9px 10px;background:rgba(7,15,28,.58);border-radius:10px;border-left:4px solid #f8fafc"><span style="display:inline-block;min-width:13px;height:20px;border-radius:3px;background:#f8fafc;border:1px solid #9ca3af"></span><div><strong>'+escapeHtml(formatMinute(x.start))+'</strong> · '+escapeHtml(teamName(x.team))+'<br>Capitaine : <strong>'+escapeHtml(x.player)+'</strong> · Exclusion 10 minutes</div></div>';});}
 html+=section("👔 SANCTIONS STAFF",staffHtml);
