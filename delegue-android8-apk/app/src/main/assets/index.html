@@ -221,7 +221,7 @@ body.print-composition #compositionPrintArea{width:100%!important}
 <section class="page card" id="settings"><button class="back">← Retour</button><h2>Informations du match</h2><p>Équipe A</p><input id="teamAInput" value="Équipe A"><p>Équipe B</p><input id="teamBInput" value="Équipe B"><p>Compétition</p><input id="competitionInput" placeholder="Coupe de France, championnat..."><p>Date</p><input id="matchDateInput" type="date"><p>Heure du coup d'envoi</p><input id="kickoffInput" type="time"><p>Stade</p><input id="stadiumInput" placeholder="Stade / terrain"><p>Arbitre</p><input id="refereeInput" placeholder="Nom de l'arbitre"><p>Assistant 1</p><input id="assistant1Input" placeholder="Nom de l'assistant 1"><p>Assistant 2</p><input id="assistant2Input" placeholder="Nom de l'assistant 2"><p>Délégué</p><input id="delegateInput" placeholder="Nom du délégué"><p>Délégué adjoint</p><input id="delegateAdjointInput" placeholder="Nom du délégué adjoint"><p style="display:flex;align-items:center;gap:8px;margin-bottom:4px"><input id="commissionerReceptionCheck" type="checkbox" style="width:18px;height:18px;margin:0"> <label for="commissionerReceptionCheck">Commissaire · personne qui me reçoit</label></p><input id="commissionerInput" placeholder="Nom du commissaire"><p style="display:flex;align-items:center;gap:8px;margin-bottom:4px"><input id="securityReceptionCheck" type="checkbox" style="width:18px;height:18px;margin:0"> <label for="securityReceptionCheck">Responsable sécurité · personne qui me reçoit</label></p><input id="securityInput" placeholder="Nom du responsable sécurité"><p>Président recevant</p><input id="presidentRecevantInput" placeholder="Nom du président recevant"><p>Président visiteur</p><input id="presidentVisiteurInput" placeholder="Nom du président visiteur"><p>Observations</p><input id="observationInput" placeholder="Observations générales"><button class="green" id="saveNames" style="width:100%;margin-top:14px">Enregistrer</button></section>
 </div>
 <script src="https://cdn.jsdelivr.net/npm/tesseract.js@5/dist/tesseract.min.js"></script>
-<script src="https://cdn.jsdelivr.net/npm/jszip@3.10.1/dist/jszip.min.js"></script>
+<script src="jszip.min.js"></script>
 <script>
 (function(){
 "use strict";
@@ -1760,10 +1760,12 @@ function exportWordReport(deliveryMode){ if(!window.JSZip){alert("Le module Word
   nodes[0].setAttributeNS("http://www.w3.org/XML/1998/namespace","xml:space","preserve");
   for(var i=1;i<nodes.length;i++)nodes[i].textContent="";
  }
- fetch("https://emasse44-crypto.github.io/D-l-gu-/delegue-test/rapport-modele.docx.docx?v=124",{cache:"no-store"}).then(function(r){
-  if(!r.ok)throw new Error("Modèle Word introuvable ("+r.status+").");
-  return r.arrayBuffer();
- }).then(function(buf){return JSZip.loadAsync(buf);}).then(function(zip){
+ Promise.resolve().then(function(){
+  if(!window.AndroidBridge||!window.AndroidBridge.getWordTemplateBase64)throw new Error("Modèle Word intégré introuvable.");
+  var encoded=window.AndroidBridge.getWordTemplateBase64();if(!encoded)throw new Error("Le modèle Word intégré est vide.");
+  var binary=atob(encoded),bytes=new Uint8Array(binary.length);for(var i=0;i<binary.length;i++)bytes[i]=binary.charCodeAt(i);
+  return JSZip.loadAsync(bytes);
+ }).then(function(zip){
   var file=zip.file("word/document.xml");if(!file)throw new Error("Le document Word est invalide.");
   return file.async("string").then(function(xml){
    var parser=new DOMParser(),doc=parser.parseFromString(xml,"application/xml");
