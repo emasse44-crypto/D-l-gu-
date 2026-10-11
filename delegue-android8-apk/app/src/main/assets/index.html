@@ -1830,6 +1830,21 @@ function exportWordReport(deliveryMode){ if(!window.JSZip){alert("Le module Word
  }).then(function(blob){
   var safe=(teamAName+"_"+teamBName).replace(/[^a-z0-9_-]+/gi,"_").replace(/^_+|_+$/g,"")||"match";
   var filename="Rapport_delegue_"+safe+".docx";
+  if(window.AndroidBridge&&window.AndroidBridge.shareFile){
+   var reader=new FileReader();
+   reader.onload=function(){
+    try{
+     var dataUrl=String(reader.result||"");
+     var comma=dataUrl.indexOf(",");
+     var base64=comma>=0?dataUrl.substring(comma+1):"";
+     if(!base64)throw new Error("Le fichier Word est vide.");
+     window.AndroidBridge.shareFile(base64,filename,"application/vnd.openxmlformats-officedocument.wordprocessingml.document");
+    }catch(e){alert("Impossible de transmettre le rapport Word à Android : "+(e&&e.message?e.message:"erreur"));}
+   };
+   reader.onerror=function(){alert("Impossible de préparer le fichier Word.");};
+   reader.readAsDataURL(blob);
+   return;
+  }
   if(deliveryMode==="email"){
    var wordFile;
    try{wordFile=new File([blob],filename,{type:"application/vnd.openxmlformats-officedocument.wordprocessingml.document"});}catch(e){wordFile=null;}
