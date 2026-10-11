@@ -178,7 +178,7 @@ body.print-composition #compositionPrintArea{width:100%!important}
 <div class="card menu"><button data-page="compositions">👥 Compositions</button><button data-page="compositionView">🖨️ Voir / imprimer la composition</button><button data-page="changes">🔄 Changements</button><button data-page="goals">⚽ Buts</button><button data-page="events">🟨 Cartons</button><button data-page="staff">👔 Staff</button><button data-page="settings">⚙️ Match</button><button data-page="photos">📸 Photos</button><button id="reportHomeBtn" data-page="report">📄 Rapport</button></div>
 </section>
 <section class="page card" id="compositions"><button class="back">← Retour</button><h2>Compositions</h2><p class="note">1 à 11 : titulaires · 12 à 16 : remplaçants. Le staff est renseigné séparément dans la rubrique 👔 Staff. Le capitaine est sélectionnable.</p><div class="change-item"><strong>📷 Scanner une composition</strong><p class="note">Prenez une photo d'une composition. Le scanner essaie de récupérer les numéros, noms, licences et le capitaine. Vérifiez toujours le résultat avant validation.</p><input id="matchSheetCamera" type="file" accept="image/*" capture="environment" style="display:none"><input id="matchSheetGallery" type="file" accept="image/*" style="display:none"><div style="display:grid;grid-template-columns:1fr 1fr;gap:8px;margin-top:8px"><button id="scanSheetCameraBtn" class="green">📷 Prendre une photo</button><button id="scanSheetGalleryBtn">🖼️ Choisir une photo</button></div><div id="scanStatus" class="note" style="margin-top:8px"></div><div id="scanReview" style="display:none;margin-top:12px"></div></div><div class="composition-team"><h3>Équipe A</h3><div id="playersA"></div></div><div class="composition-team"><h3>Équipe B</h3><div id="playersB"></div></div><button class="green" id="saveCompositions" style="width:100%;margin-top:18px">Enregistrer les compositions</button><button class="red" id="resetComposition" style="width:100%;margin-top:10px">🗑️ Remise à zéro des compositions</button></section>
-<section class="page card" id="compositionView"><button class="back">← Retour</button><h2>👥 Composition des équipes</h2><p class="note">Vue complète des deux équipes, prête à imprimer.</p><div id="compositionPrintArea"></div><button class="green" id="printCompositionOnly" style="width:100%;margin-top:12px">🖨️ Imprimer la composition</button></section>
+<section class="page card" id="compositionView"><button class="back">← Retour</button><h2>👥 Composition des équipes</h2><p class="note">Vue complète des deux équipes, prête à imprimer.</p><div id="compositionPrintArea"></div><button class="green" id="printCompositionOnly" style="width:100%;margin-top:12px">📷 Enregistrer la composition en photo</button></section>
 <section class="page card" id="changes"><button class="back">← Retour</button><h2>Changements</h2><p class="note">Effectuez une sortie puis une entrée. Le numéro du joueur suffit, le nom est facultatif.</p><div class="change-grid"><div><div class="change-title" id="changeTitleA">Équipe A</div><button id="changeA" style="width:100%">🔄 Faire un changement · Équipe A</button></div><div><div class="change-title" id="changeTitleB">Équipe B</div><button id="changeB" style="width:100%">🔄 Faire un changement · Équipe B</button></div></div><div id="changeForm" style="display:none;margin-top:18px"><p id="changeTeamLabel" class="change-title"></p><p>Joueur qui sort</p><select id="playerOut"></select><p>Remplaçant qui entre</p><select id="playerIn"></select><button class="green" id="confirmChange" style="width:100%;margin-top:10px">Valider le changement</button></div><div class="change-history"><h3>Historique</h3><div id="changeHistory"><p class="note">Aucun changement.</p></div></div></section>
 <section class="page card" id="goals"><button class="back">← Retour</button><h2>⚽ Buts du match</h2><div class="teams" style="margin-bottom:14px"><div><div class="team" id="goalsTeamA">Équipe A</div><div class="score" id="goalsScoreA">0</div></div><div><div class="clock" id="goalsClock">00:00</div></div><div><div class="team" id="goalsTeamB">Équipe B</div><div class="score" id="goalsScoreB">0</div></div></div><div class="buttons"><button id="goalPageA">+ But A</button><button id="goalPageB">+ But B</button></div><div id="goalForm" style="display:none;margin-top:14px"><p id="goalTeamLabel" class="change-title"></p><p>Buteur</p><select id="goalPlayer"></select><p style="margin-top:10px">Passeur</p><select id="goalAssist"><option value="">Aucun passeur</option></select><p style="margin-top:10px">Type de but</p><select id="goalType"><option value="Pied">👟 Pied</option><option value="Tête">🧠 Tête</option><option value="Penalty">⚽ Penalty</option></select><button class="green" id="confirmGoal" style="width:100%;margin-top:10px">Valider le but</button></div><div style="margin-top:18px"><div class="change-title">Chronologie des buts</div><div id="goalHistory"><p class="note">Aucun but.</p></div></div></section>
 <section class="page card" id="events">
@@ -1729,7 +1729,70 @@ el("cardTypeRed").onclick=function(){selectCardType("🟥 Rouge");};
 document.querySelectorAll("[data-page]").forEach(function(b){b.onclick=function(){var page=b.getAttribute("data-page");if(page==="compositions")renderAllPlayers();if(page==="compositionView"){renderSheet();el("compositionPrintArea").innerHTML="";var ph=document.createElement("div");ph.className="print-composition-header";ph.innerHTML="<h2>FEUILLE DE COMPOSITION DES ÉQUIPES</h2><div class=\"print-match-meta\"></div>";ph.querySelector(".print-match-meta").textContent=el("teamA").textContent+" · "+el("teamB").textContent+" · "+(el("matchDate")?el("matchDate").value:"");el("compositionPrintArea").appendChild(ph);var pg=document.createElement("div");pg.className="print-composition-grid";Array.from(el("sheetCompositions").children).forEach(function(c){pg.appendChild(c.cloneNode(true));});el("compositionPrintArea").appendChild(pg);}if(page==="changes")renderChanges();if(page==="goals"){renderGoalsPage();}if(page==="events"){renderCards();renderBenchInterventions();}if(page==="staff"){renderStaff(staffA,"staffA");renderStaff(staffB,"staffB");renderStaffHistory();}if(page==="sheet"){renderTimeline();renderSheet();}if(page==="checklist"){renderChecklist();}if(page==="delegateGuide"){renderDelegateChecklist();}if(page==="incidents"){renderIncidents();}if(page==="injuries"){renderInjuryPlayers();renderInjuries();}if(page==="report"){renderReport();}if(page==="photos"){renderPhotos();}if(page==="settings"){fillMatchInfo();}el("home").classList.add("home-hidden");el("home").style.display="none";document.querySelectorAll(".page").forEach(function(p){p.classList.remove("active");p.style.display="none";});el(page).classList.add("active");el(page).style.display="block";};});
 
 
-el("printCompositionOnly").onclick=function(){document.body.classList.add("print-composition");window.print();document.body.classList.remove("print-composition");};window.addEventListener("afterprint",function(){document.body.classList.remove("print-composition","print-report");});
+function saveCompositionAsImage(){
+ try{
+  readPlayers(playersA,"playersA");readPlayers(playersB,"playersB");
+  readStaff(staffA,"staffA");readStaff(staffB,"staffB");saveState();
+  var canvas=document.createElement("canvas");canvas.width=1600;canvas.height=1131;
+  var ctx=canvas.getContext("2d");ctx.fillStyle="#fff";ctx.fillRect(0,0,canvas.width,canvas.height);
+  ctx.fillStyle="#111";ctx.textAlign="center";ctx.font="bold 34px Arial";
+  ctx.fillText("FEUILLE DE COMPOSITION DES ÉQUIPES",800,54);
+  ctx.font="22px Arial";
+  ctx.fillText((el("teamA").textContent||"Équipe A")+"  -  "+(el("teamB").textContent||"Équipe B")+"   ·   "+(el("matchDate")?el("matchDate").value:""),800,91);
+  function drawTeam(team,staff,licenses,name,x){
+   var y=125,w=760;
+   ctx.strokeStyle="#111";ctx.lineWidth=2;ctx.strokeRect(x,y,w,850);
+   ctx.fillStyle="#e5e7eb";ctx.fillRect(x,y,w,55);ctx.strokeRect(x,y,w,55);
+   ctx.fillStyle="#111";ctx.font="bold 29px Arial";ctx.textAlign="center";ctx.fillText(name||"Équipe",x+w/2,y+36);
+   var yy=y+85;ctx.textAlign="left";ctx.font="bold 21px Arial";ctx.fillText("TITULAIRES",x+20,yy);yy+=15;
+   function drawPlayer(p,i){
+    yy+=31;ctx.strokeStyle="#d1d5db";ctx.lineWidth=1;ctx.beginPath();ctx.moveTo(x+15,yy+7);ctx.lineTo(x+w-15,yy+7);ctx.stroke();
+    ctx.fillStyle="#111";ctx.font="bold 19px Arial";ctx.textAlign="right";ctx.fillText(String(i+1)+(p.captain?" (C)":""),x+55,yy);
+    ctx.textAlign="left";ctx.font="19px Arial";ctx.fillText(String(p.name||"—").slice(0,42),x+70,yy);
+    ctx.textAlign="right";ctx.font="14px Arial";ctx.fillText(String(playerLicense(p)||"").slice(-22),x+w-18,yy);
+   }
+   for(var i=0;i<11;i++)drawPlayer(team[i]||{},i);
+   yy+=28;ctx.textAlign="left";ctx.font="bold 21px Arial";ctx.fillText("REMPLAÇANTS",x+20,yy);
+   for(var j=11;j<16;j++)drawPlayer(team[j]||{},j);
+   yy+=37;ctx.textAlign="left";ctx.font="bold 21px Arial";ctx.fillText("ENCADREMENT",x+20,yy);
+   yy+=29;ctx.font="16px Arial";
+   var count=0;
+   (staff||[]).forEach(function(value,i){
+    var parsed=parseStaffEntry(value),lic=String((licenses||[])[i]||"").trim();
+    if(!parsed.name&&!parsed.role&&!lic)return;
+    if(yy>y+815)return;
+    var role=parsed.role?(" · "+parsed.role):"";
+    ctx.textAlign="left";ctx.fillText((i+1)+". "+(parsed.name||"Membre du staff")+role,x+22,yy,500);
+    ctx.textAlign="right";ctx.font="13px Arial";ctx.fillText(lic,x+w-18,yy,190);ctx.font="16px Arial";
+    yy+=25;count++;
+   });
+   if(!count){ctx.textAlign="left";ctx.font="16px Arial";ctx.fillText("Aucun membre renseigné",x+22,yy);}
+  }
+  drawTeam(playersA,staffA,staffLicensesA,el("teamA").textContent||"Équipe A",35);
+  drawTeam(playersB,staffB,staffLicensesB,el("teamB").textContent||"Équipe B",805);
+  canvas.toBlob(function(blob){
+   if(!blob){alert("Impossible de créer l’image. Réessayez.");return;}
+   var safe=((el("teamA").textContent||"EquipeA")+"_"+(el("teamB").textContent||"EquipeB")).replace(/[^a-z0-9_-]+/gi,"_").replace(/^_+|_+$/g,"")||"match";
+   var filename="Composition_"+safe+".png";
+   var file;
+   try{file=new File([blob],filename,{type:"image/png"});}catch(e){file=null;}
+   if(file&&navigator.share&&navigator.canShare&&navigator.canShare({files:[file]})){
+    navigator.share({files:[file],title:"Composition des équipes",text:"Composition du match"}).catch(function(err){
+     if(err&&err.name==="AbortError")return;
+     downloadCompositionBlob(blob,filename);
+     alert("Le partage n’a pas abouti. L’image a été téléchargée.");
+    });
+   }else{
+    downloadCompositionBlob(blob,filename);
+    alert("Composition enregistrée en image PNG.");
+   }
+  },"image/png");
+ }catch(err){console.error(err);alert("Impossible d’enregistrer la composition : "+(err&&err.message?err.message:"erreur inconnue"));}
+}
+function downloadCompositionBlob(blob,filename){
+ var url=URL.createObjectURL(blob),a=document.createElement("a");a.href=url;a.download=filename;document.body.appendChild(a);a.click();a.remove();setTimeout(function(){URL.revokeObjectURL(url);},3000);
+}
+el("printCompositionOnly").onclick=function(){saveCompositionAsImage();};window.addEventListener("afterprint",function(){document.body.classList.remove("print-composition","print-report");});
 function wordEscape(value){
  return String(value==null?"":value).replace(/&/g,"&amp;").replace(/</g,"&lt;").replace(/>/g,"&gt;").replace(/"/g,"&quot;").replace(/'/g,"&#39;");
 }
@@ -1964,7 +2027,7 @@ var _renderStaffHistoryMinute=renderStaffHistory;
 renderStaffHistory=function(){_renderStaffHistoryMinute();refreshStaffCardMinuteEditor();};
 
 loadState();playersA.forEach(function(p,i){if(typeof p.active!=="boolean")p.active=i<11;});playersB.forEach(function(p,i){if(typeof p.active!=="boolean")p.active=i<11;});if(playersA.every(function(p){return p.active===true;})&&playersA.some(function(p){return p.name;})){playersA.forEach(function(p,i){p.active=i<11;});}if(playersB.every(function(p){return p.active===true;})&&playersB.some(function(p){return p.name;})){playersB.forEach(function(p,i){p.active=i<11;});}saveState();if(running&&typeof chronoStartedAt==="number"){startChronoRefresh();syncChrono();}
-if("serviceWorker" in navigator){window.addEventListener("load",function(){navigator.serviceWorker.register("sw.js?v=103").catch(function(){});});}
+if("serviceWorker" in navigator){window.addEventListener("load",function(){navigator.serviceWorker.register("sw.js?v=104").catch(function(){});});}
 renderAllPlayers();update();updateGoalButtonLabels();
 })();
 </script>
