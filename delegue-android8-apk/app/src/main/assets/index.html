@@ -163,46 +163,13 @@ body.print-composition #compositionPrintArea{width:100%!important}
 }
 @media print{html,body{width:100%!important;height:auto!important;min-height:0!important;overflow:visible!important}body.print-composition{background:#fff!important;padding:0!important;margin:0!important}body.print-composition .app{display:block!important;width:100%!important;max-width:none!important;height:auto!important;min-height:0!important;margin:0!important;padding:0!important;overflow:visible!important}body.print-composition *{visibility:hidden!important}body.print-composition #compositionView,body.print-composition #compositionView *{visibility:visible!important}body.print-composition #compositionView{display:block!important;position:static!important;left:auto!important;top:auto!important;width:100%!important;height:auto!important;min-height:0!important;max-height:none!important;overflow:visible!important;max-width:none!important;padding:0!important;margin:0!important;border:0!important;box-shadow:none!important;background:#fff!important;color:#111!important}body.print-composition #compositionView .back,body.print-composition #printCompositionOnly,body.print-composition #compositionView>.note,body.print-composition #compositionView>h2{display:none!important}body.print-composition #compositionPrintArea{display:block!important;width:100%!important;height:auto!important;margin:0!important;padding:0!important;overflow:visible!important}body.print-composition .print-composition-header{display:block!important;width:100%!important;margin:0 0 3mm!important;padding:0 0 2mm!important;break-after:avoid!important;page-break-after:avoid!important}body.print-composition .print-composition-grid{display:flex!important;flex-direction:row!important;align-items:flex-start!important;gap:4mm!important;width:100%!important;height:auto!important;overflow:visible!important;break-inside:avoid!important;page-break-inside:avoid!important}body.print-composition .print-team{display:block!important;flex:1 1 0!important;width:49%!important;min-width:0!important;height:auto!important;min-height:0!important;margin:0!important;break-inside:avoid!important;page-break-inside:avoid!important}body.print-composition .print-player-row{break-inside:avoid!important;page-break-inside:avoid!important;padding:1px 2px!important;min-height:0!important}body.print-composition .print-player-name{font-size:10pt!important}body.print-composition .print-team-head{font-size:13pt!important;padding:4px!important}body.print-composition #compositionPrintArea,body.print-composition .print-composition-header,body.print-composition .print-composition-grid{page-break-before:avoid!important}body.print-composition .print-composition-grid{page-break-after:avoid!important}}
 
-/* Composition: utiliser toute la page A4 paysage, pas seulement le haut de la feuille */
-@page{size:A4 landscape;margin:4mm}
-@media print{
- body.print-composition,body.print-composition html{margin:0!important;padding:0!important;background:#fff!important}
- body.print-composition #compositionView{width:100%!important;min-height:0!important}
- body.print-composition #compositionPrintArea{width:100%!important;min-height:188mm!important;padding:0!important;margin:0!important}
- body.print-composition .print-composition-header{margin:0 0 3mm!important;padding:0 0 2mm!important}
- body.print-composition .print-composition-header h2{font-size:17pt!important}
- body.print-composition .print-composition-grid{height:178mm!important;min-height:178mm!important;align-items:stretch!important;gap:4mm!important}
- body.print-composition .print-team{height:100%!important;display:flex!important;flex-direction:column!important;overflow:hidden!important}
- body.print-composition .print-player-group{flex:1 1 auto!important;display:flex!important;flex-direction:column!important;min-height:0!important;padding:5mm 5mm!important}
- body.print-composition .print-player-list{flex:1 1 auto!important;display:flex!important;flex-direction:column!important;justify-content:space-evenly!important}
- body.print-composition .print-player-row{flex:1 1 auto!important;min-height:0!important;padding:1.5mm 1mm!important;grid-template-columns:8mm minmax(0,1fr) 32mm!important;gap:2mm!important}
- body.print-composition .print-number{font-size:10pt!important}
- body.print-composition .print-player-name{font-size:10pt!important;line-height:1.2!important;overflow-wrap:normal!important}
- body.print-composition .print-license{font-size:7pt!important}
- body.print-composition .print-team-head{font-size:14pt!important;padding:4mm!important}
- body.print-composition .print-captain{font-size:9pt!important;padding:2mm!important}
- body.print-composition .print-group-title{font-size:9pt!important;margin-bottom:2mm!important}
-}
-
-/* Impression officielle : noir et blanc, pleine page A4 paysage */
-@page{size:A4 landscape;margin:4mm}
-@media print{
- body.print-composition #printCompositionOnly{display:none!important;visibility:hidden!important}
- body.print-composition .print-team-head,
- body.print-composition .print-team:nth-child(2) .print-team-head{background:#222!important;color:#fff!important;-webkit-print-color-adjust:exact;print-color-adjust:exact}
- body.print-composition .print-captain,
- body.print-composition .print-group-title{background:#eee!important;color:#111!important}
- body.print-composition .print-team{border:1px solid #222!important;box-shadow:none!important;background:#fff!important;color:#111!important}
- body.print-composition .print-player-row{border-bottom:1px solid #999!important}
- body.print-composition .print-license{color:#333!important}
-}
-
-/* Impression directe de la feuille de match complète */
+/* Android 8 : impression PDF de la feuille de match */
+@page{size:A4 landscape;margin:6mm}
 @media print{
  body.print-sheet{margin:0!important;padding:0!important;background:#fff!important;color:#111!important}
  body.print-sheet .app{display:block!important;width:100%!important;max-width:none!important;margin:0!important;padding:0!important;background:#fff!important;box-shadow:none!important}
  body.print-sheet .app>*{display:none!important}
- body.print-sheet #sheet{display:block!important;position:static!important;width:100%!important;max-width:none!important;margin:0!important;padding:8mm!important;border:0!important;border-radius:0!important;box-shadow:none!important;background:#fff!important;color:#111!important;overflow:visible!important}
+ body.print-sheet #sheet{display:block!important;position:static!important;width:100%!important;max-width:none!important;margin:0!important;padding:6mm!important;border:0!important;border-radius:0!important;box-shadow:none!important;background:#fff!important;color:#111!important;overflow:visible!important}
  body.print-sheet #sheet>.back,body.print-sheet #sheet button{display:none!important}
  body.print-sheet #sheet .change-item{break-inside:avoid!important;page-break-inside:avoid!important;background:#fff!important;color:#111!important;border:1px solid #bbb!important;box-shadow:none!important}
  body.print-sheet #sheet h2,body.print-sheet #sheet h3{color:#111!important}
@@ -212,7 +179,7 @@ body.print-composition #compositionPrintArea{width:100%!important}
 <body>
 <div class="app">
 <h1>⚽ Délégué Football</h1>
-<div class="version">VERSION OFFICIELLE V2 · ANDROID 8</div>
+<div class="version">VERSION OFFICIELLE v2 · H-2 / SANCTIONS / BANCS</div>
 <section id="home">
 <div class="card"><div class="teams">
 <div><div class="team" id="teamA">Équipe A</div><div class="score" id="scoreA">0</div></div>
@@ -256,12 +223,12 @@ body.print-composition #compositionPrintArea{width:100%!important}
 </section>
 <section class="page card" id="sanctions"><button class="back">← Retour</button><h2>Sanctions</h2><p>Cette partie sera ajoutée ensuite.</p></section>
 <section class="page card" id="chrono"><button class="back">← Retour</button><h2>Chronomètre</h2><div class="clock" id="clockPage">00:00</div><button class="green" id="startPage">▶ Démarrer</button><button id="pausePage">⏸ Pause</button></section>
-<section class="page card" id="sheet"><button class="back">← Retour</button><h2>📋 Feuille de match</h2><div class="change-item" id="sheetHeaderInfo"><div><strong>Match officiel</strong></div><div id="sheetPrintedAt" style="margin-top:6px"></div></div><h3>⏱️ Chronologie du match</h3><div id="sheetTimeline"></div><div class="change-item"><strong id="sheetTeams">Équipe A 0 - 0 Équipe B</strong><div id="sheetTime" style="margin-top:6px">Durée : 00:00</div></div><div class="change-item"><h3>👥 Compositions</h3><div id="sheetCompositions"><p class="note">Aucune composition.</p></div></div><div class="change-item"><h3>👔 Staff</h3><div id="sheetStaffNames"><p class="note">Aucun staff renseigné.</p></div></div><div class="change-item"><h3>⚽ Buts</h3><div id="sheetGoals"><p class="note">Aucun but.</p></div></div><div class="change-item"><h3>🔄 Changements</h3><div id="sheetChanges"><p class="note">Aucun changement.</p></div></div><div class="change-item"><h3>🟨🟥⚪ Sanctions joueurs</h3><div id="sheetCards"><p class="note">Aucune sanction.</p></div></div><div class="change-item"><h3>👔 Sanctions staff</h3><div id="sheetStaff"><p class="note">Aucune sanction.</p></div></div><button class="green" id="printSheet" style="width:100%;margin-top:10px">📄 Envoyer la feuille en PDF</button></section>
+<section class="page card" id="sheet"><button class="back">← Retour</button><h2>📋 Feuille de match</h2><div class="change-item" id="sheetHeaderInfo"><div><strong>Match officiel</strong></div><div id="sheetPrintedAt" style="margin-top:6px"></div></div><h3>⏱️ Chronologie du match</h3><div id="sheetTimeline"></div><div class="change-item"><strong id="sheetTeams">Équipe A 0 - 0 Équipe B</strong><div id="sheetTime" style="margin-top:6px">Durée : 00:00</div></div><div class="change-item"><h3>👥 Compositions</h3><div id="sheetCompositions"><p class="note">Aucune composition.</p></div></div><div class="change-item"><h3>👔 Staff</h3><div id="sheetStaffNames"><p class="note">Aucun staff renseigné.</p></div></div><div class="change-item"><h3>⚽ Buts</h3><div id="sheetGoals"><p class="note">Aucun but.</p></div></div><div class="change-item"><h3>🔄 Changements</h3><div id="sheetChanges"><p class="note">Aucun changement.</p></div></div><div class="change-item"><h3>🟨🟥⚪ Sanctions joueurs</h3><div id="sheetCards"><p class="note">Aucune sanction.</p></div></div><div class="change-item"><h3>👔 Sanctions staff</h3><div id="sheetStaff"><p class="note">Aucune sanction.</p></div></div><button class="green" id="printSheet" style="width:100%;margin-top:10px">🖨️ Imprimer la feuille</button></section>
 <section class="page card" id="staff"><button class="back">← Retour</button><h2>👔 Staff</h2><p class="note">Jusqu'à 5 membres du staff par équipe. Les sanctions peuvent être enregistrées pendant le match.</p><div class="change-item"><strong>📷 Scanner la feuille de match du staff</strong><p class="note">Prenez une photo de la partie staff. La reconnaissance OCR récupérera les noms visibles. Vérifiez le résultat avant d’enregistrer.</p><input id="staffSheetPhoto" type="file" accept="image/*" capture="environment" style="display:none"><button id="scanStaffBtn" style="width:100%;margin-top:8px">📷 Prendre / choisir une photo</button><div id="staffScanStatus" class="note" style="margin-top:8px"></div></div><div class="composition-team"><h3>Équipe A</h3><div id="staffA"></div></div><div class="composition-team"><h3>Équipe B</h3><div id="staffB"></div></div><button class="green" id="saveStaff" style="width:100%;margin-top:18px">Enregistrer le staff</button><div class="change-grid" style="margin-top:18px"><button id="staffYellowA">🟨 Jaune A</button><button id="staffYellowB">🟨 Jaune B</button><button id="staffRedA" class="red">🟥 Rouge A</button><button id="staffRedB" class="red">🟥 Rouge B</button><button id="staffWhiteA">⚪ Blanc A</button><button id="staffWhiteB">⚪ Blanc B</button></div><div id="staffForm" style="display:none;margin-top:18px"><p id="staffTeamLabel" class="change-title"></p><p>Membre du staff</p><select id="staffPlayer"></select><button class="green" id="confirmStaffCard" style="width:100%;margin-top:10px">Valider la sanction</button></div><div class="change-history"><h3>Historique du staff</h3><div id="staffHistory"><p class="note">Aucune sanction.</p></div></div></section>
 <section class="page card" id="checklist"><button class="back">← Retour</button><h2>✅ Checklist du délégué</h2><p class="note">Cochez les vérifications réalisées avant le match. L'état est conservé.</p><div id="checklistBox"></div><button id="resetChecklist" class="red" style="width:100%;margin-top:12px">Réinitialiser la checklist</button></section>
 <section class="page card" id="delegateGuide"><button class="back">← Retour</button><h2>🧑‍⚖️ Missions du délégué</h2><div class="change-item"><h3>📋 Checklist jour de match</h3><p class="note">Cochez les actions réalisées. La progression est conservée sur l'appareil.</p><div id="delegateProgress" style="font-weight:bold;margin:8px 0">0/32 vérifications</div><div style="height:10px;background:#374151;border-radius:99px;overflow:hidden"><div id="delegateProgressBar" style="height:100%;width:0%;background:#22c55e"></div></div></div><div id="delegateChecklistBox"></div><button id="resetDelegateChecklist" class="red" style="width:100%;margin-top:12px">Réinitialiser la checklist délégué</button><div class="change-item"><strong>⚠️ Rappel</strong><div class="note" style="margin-top:6px">Le délégué facilite l'organisation, veille à la sécurité et accompagne les officiels. Il ne se substitue pas à l'arbitre.</div></div></section><section class="page card" id="incidents"><button class="back">← Retour</button><h2>🚨 Incidents de match</h2><p class="note">Notez les incidents importants avec la minute et une description.</p><input id="incidentText" placeholder="Description de l'incident"><button id="addIncident" class="green" style="width:100%;margin-top:10px">Ajouter l'incident</button><div id="incidentHistory" class="change-history"></div></section>
 <section class="page card" id="injuries"><button class="back">← Retour</button><h2>🩹 Blessures</h2><p class="note">Enregistrez une blessure et si le joueur a dû sortir.</p><div class="change-grid"><select id="injuryTeam"><option value="A">Équipe A</option><option value="B">Équipe B</option></select><select id="injuryPlayer"><option value="">Choisir un joueur</option></select></div><input id="injuryText" placeholder="Nature / observation" style="margin-top:10px"><label class="check-row"><input type="checkbox" id="injuryOut"> Joueur sorti du terrain</label><button id="addInjury" class="green" style="width:100%;margin-top:10px">Ajouter la blessure</button><div id="injuryHistory" class="change-history"></div></section>
-<section class="page card" id="report"><button class="back">← Retour</button><h2>📄 Rapport final</h2><div id="reportContent"></div><button id="exportWordReport" class="green" style="width:100%;margin-top:12px">💾 Télécharger le rapport Word (.docx)</button><button id="emailWordReport" style="width:100%;margin-top:8px">📧 Envoyer le rapport Word par e-mail</button><p class="note">Sur téléphone ou tablette, le partage ouvre les applications compatibles et joint le fichier Word si elles le permettent. Sur PC, le fichier sera téléchargé pour être joint manuellement.</p><button id="printReport" style="width:100%;margin-top:8px">📄 Envoyer le rapport en PDF</button></section>
+<section class="page card" id="report"><button class="back">← Retour</button><h2>📄 Rapport final</h2><div id="reportContent"></div><button id="exportWordReport" class="green" style="width:100%;margin-top:12px">💾 Télécharger le rapport Word (.docx)</button><button id="emailWordReport" style="width:100%;margin-top:8px">📧 Envoyer le rapport Word par e-mail</button><p class="note">Sur téléphone ou tablette, le partage ouvre les applications compatibles et joint le fichier Word si elles le permettent. Sur PC, le fichier sera téléchargé pour être joint manuellement.</p><button id="printReport" style="width:100%;margin-top:8px">📄 Enregistrer le rapport en PDF</button></section>
 <section class="page card" id="photos"><button class="back">← Retour</button><h2>📸 Photos du match</h2><p class="note">Ajoutez jusqu’à 12 photos. Elles seront conservées avec le match et apparaîtront dans le rapport final.</p><input id="matchPhotosInput" type="file" accept="image/*" capture="environment" multiple style="display:none"><button id="takePhotosBtn" class="green" style="width:100%">📸 Prendre / choisir des photos</button><div id="photosCount" class="note" style="margin-top:10px"></div><div id="photosGrid" style="display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:10px;margin-top:12px"></div></section>
 <section class="page card" id="settings"><button class="back">← Retour</button><h2>Informations du match</h2><p>Équipe A</p><input id="teamAInput" value="Équipe A"><p>Équipe B</p><input id="teamBInput" value="Équipe B"><p>Compétition</p><input id="competitionInput" placeholder="Coupe de France, championnat..."><p>Date</p><input id="matchDateInput" type="date"><p>Heure du coup d'envoi</p><input id="kickoffInput" type="time"><p>Stade</p><input id="stadiumInput" placeholder="Stade / terrain"><p>Arbitre</p><input id="refereeInput" placeholder="Nom de l'arbitre"><p>Assistant 1</p><input id="assistant1Input" placeholder="Nom de l'assistant 1"><p>Assistant 2</p><input id="assistant2Input" placeholder="Nom de l'assistant 2"><p>Délégué</p><input id="delegateInput" placeholder="Nom du délégué"><p>Délégué adjoint</p><input id="delegateAdjointInput" placeholder="Nom du délégué adjoint"><p style="display:flex;align-items:center;gap:8px;margin-bottom:4px"><input id="commissionerReceptionCheck" type="checkbox" style="width:18px;height:18px;margin:0"> <label for="commissionerReceptionCheck">Commissaire · personne qui me reçoit</label></p><input id="commissionerInput" placeholder="Nom du commissaire"><p style="display:flex;align-items:center;gap:8px;margin-bottom:4px"><input id="securityReceptionCheck" type="checkbox" style="width:18px;height:18px;margin:0"> <label for="securityReceptionCheck">Responsable sécurité · personne qui me reçoit</label></p><input id="securityInput" placeholder="Nom du responsable sécurité"><p>Président recevant</p><input id="presidentRecevantInput" placeholder="Nom du président recevant"><p>Président visiteur</p><input id="presidentVisiteurInput" placeholder="Nom du président visiteur"><p>Observations</p><input id="observationInput" placeholder="Observations générales"><button class="green" id="saveNames" style="width:100%;margin-top:14px">Enregistrer</button></section>
 </div>
@@ -1774,7 +1741,7 @@ el("cardTypeRed").onclick=function(){selectCardType("🟥 Rouge");};
 document.querySelectorAll("[data-page]").forEach(function(b){b.onclick=function(){var page=b.getAttribute("data-page");if(page==="compositions")renderAllPlayers();if(page==="compositionView"){renderSheet();el("compositionPrintArea").innerHTML="";var ph=document.createElement("div");ph.className="print-composition-header";ph.innerHTML="<h2>FEUILLE DE COMPOSITION DES ÉQUIPES</h2><div class=\"print-match-meta\"></div>";ph.querySelector(".print-match-meta").textContent=el("teamA").textContent+" · "+el("teamB").textContent+" · "+(el("matchDate")?el("matchDate").value:"");el("compositionPrintArea").appendChild(ph);var pg=document.createElement("div");pg.className="print-composition-grid";Array.from(el("sheetCompositions").children).forEach(function(c){pg.appendChild(c.cloneNode(true));});el("compositionPrintArea").appendChild(pg);}if(page==="changes")renderChanges();if(page==="goals"){renderGoalsPage();}if(page==="events"){renderCards();renderBenchInterventions();}if(page==="staff"){renderStaff(staffA,"staffA");renderStaff(staffB,"staffB");renderStaffHistory();}if(page==="sheet"){renderTimeline();renderSheet();}if(page==="checklist"){renderChecklist();}if(page==="delegateGuide"){renderDelegateChecklist();}if(page==="incidents"){renderIncidents();}if(page==="injuries"){renderInjuryPlayers();renderInjuries();}if(page==="report"){renderReport();}if(page==="photos"){renderPhotos();}if(page==="settings"){fillMatchInfo();}el("home").classList.add("home-hidden");el("home").style.display="none";document.querySelectorAll(".page").forEach(function(p){p.classList.remove("active");p.style.display="none";});el(page).classList.add("active");el(page).style.display="block";};});
 
 
-el("printCompositionOnly").onclick=function(){document.body.classList.add("print-composition");printCurrentPage();};window.addEventListener("afterprint",function(){document.body.classList.remove("print-composition","print-report");});
+el("printCompositionOnly").onclick=function(){document.body.classList.add("print-composition");window.print();document.body.classList.remove("print-composition");};window.addEventListener("afterprint",function(){document.body.classList.remove("print-composition","print-report");});
 function wordEscape(value){
  return String(value==null?"":value).replace(/&/g,"&amp;").replace(/</g,"&lt;").replace(/>/g,"&gt;").replace(/"/g,"&quot;").replace(/'/g,"&#39;");
 }
@@ -1805,12 +1772,10 @@ function exportWordReport(deliveryMode){ if(!window.JSZip){alert("Le module Word
   nodes[0].setAttributeNS("http://www.w3.org/XML/1998/namespace","xml:space","preserve");
   for(var i=1;i<nodes.length;i++)nodes[i].textContent="";
  }
- Promise.resolve().then(function(){
-  if(!window.AndroidBridge||!window.AndroidBridge.getWordTemplateBase64)throw new Error("Modèle Word intégré introuvable.");
-  var encoded=window.AndroidBridge.getWordTemplateBase64();if(!encoded)throw new Error("Le modèle Word intégré est vide.");
-  var binary=atob(encoded),bytes=new Uint8Array(binary.length);for(var i=0;i<binary.length;i++)bytes[i]=binary.charCodeAt(i);
-  return JSZip.loadAsync(bytes);
- }).then(function(zip){
+ Promise.resolve().then(function(){if(window.AndroidBridge&&window.AndroidBridge.getWordTemplateBase64){var b64=window.AndroidBridge.getWordTemplateBase64();if(!b64)throw new Error("Modèle Word intégré introuvable.");var bin=atob(b64),bytes=new Uint8Array(bin.length);for(var i=0;i<bin.length;i++)bytes[i]=bin.charCodeAt(i);return bytes.buffer;}return fetch("../delegue-test/rapport-modele.docx.docx?v=124",{cache:"no-store"}).then(function(r){
+  if(!r.ok)throw new Error("Modèle Word introuvable ("+r.status+").");
+  return r.arrayBuffer();
+ });}).then(function(buf){return JSZip.loadAsync(buf);}).then(function(zip){
   var file=zip.file("word/document.xml");if(!file)throw new Error("Le document Word est invalide.");
   return file.async("string").then(function(xml){
    var parser=new DOMParser(),doc=parser.parseFromString(xml,"application/xml");
@@ -1886,13 +1851,6 @@ function exportWordReport(deliveryMode){ if(!window.JSZip){alert("Le module Word
  }).catch(function(err){console.error(err);alert("Export Word impossible : "+(err&&err.message?err.message:"erreur inconnue"));});
 }
 function downloadWordBlob(blob,filename){
- if(window.AndroidBridge&&window.AndroidBridge.shareFile){
-  var reader=new FileReader();
-  reader.onload=function(){var data=String(reader.result||"").split(",")[1]||"";window.AndroidBridge.shareFile(data,filename,"application/vnd.openxmlformats-officedocument.wordprocessingml.document");};
-  reader.onerror=function(){alert("Impossible de préparer le document Word.");};
-  reader.readAsDataURL(blob);
-  return;
- }
  var url=URL.createObjectURL(blob),a=document.createElement("a");
  a.href=url;a.download=filename;document.body.appendChild(a);a.click();a.remove();
  setTimeout(function(){URL.revokeObjectURL(url);},3000);
@@ -1900,11 +1858,7 @@ function downloadWordBlob(blob,filename){
 el("exportWordReport").onclick=function(){exportWordReport("download");};
 el("emailWordReport").onclick=function(){exportWordReport("email");};
 
-function printCurrentPage(){
- if(window.AndroidBridge&&window.AndroidBridge.printPage){window.AndroidBridge.printPage();}
- else{window.print();}
-}
-el("printReport").onclick=function(){renderReport();document.body.classList.add("print-report");printCurrentPage();};
+el("printReport").onclick=function(){renderReport();document.body.classList.add("print-report");window.print();};
 el("reportHomeBtn").onclick=function(e){e.preventDefault();showPageDirect("report");renderReport();window.scrollTo(0,0);};
 document.querySelectorAll(".back").forEach(function(b){b.onclick=function(){document.querySelectorAll(".page").forEach(function(p){p.classList.remove("active");p.style.removeProperty("display");});el("home").classList.remove("home-hidden");el("home").style.display="block";el("home").hidden=false;window.scrollTo(0,0);};});
 el("commissionerReceptionCheck").onchange=function(){if(this.checked)el("securityReceptionCheck").checked=false;};el("securityReceptionCheck").onchange=function(){if(this.checked)el("commissionerReceptionCheck").checked=false;};
