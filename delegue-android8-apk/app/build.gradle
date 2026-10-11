@@ -7,11 +7,11 @@ android {
     compileSdk 35
 
     defaultConfig {
-        applicationId 'fr.deleguefootball.android8.test'
+        applicationId 'fr.deleguefootball.android8.official'
         minSdk 26
         targetSdk 28
-        versionCode 3
-        versionName '3.0-test'
+        versionCode 4
+        versionName '2.0-official'
     }
 
     buildTypes {
