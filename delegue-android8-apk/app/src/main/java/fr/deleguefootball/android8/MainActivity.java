@@ -79,10 +79,12 @@ public class MainActivity extends Activity {
                     + "window.__deleguePrint=function(kind){"
                     + "try{if(kind==='report'){document.body.classList.add('print-report');}"
                     + "if(kind==='composition'){document.body.classList.add('print-composition');}"
+                    + "if(kind==='sheet'){document.body.classList.add('print-sheet');}"
                     + "if(window.AndroidBridge&&window.AndroidBridge.printPage){window.AndroidBridge.printPage();}"
                     + "else{window.print();}}catch(e){alert('Impression impossible : '+e.message);}};"
                     + "var p=document.getElementById('printReport');if(p)p.onclick=function(){try{if(typeof renderReport==='function')renderReport();}catch(e){}window.__deleguePrint('report');};"
-                    + "var c=document.getElementById('printSheet');if(c)c.onclick=function(){try{if(typeof renderSheet==='function')renderSheet();}catch(e){}window.__deleguePrint('composition');};"
+                    + "var c=document.getElementById('printSheet');if(c)c.onclick=function(){try{if(typeof renderSheet==='function')renderSheet();}catch(e){}window.__deleguePrint('sheet');};"
+                    + "window.addEventListener('afterprint',function(){document.body.classList.remove('print-sheet','print-composition','print-report');});"
                     + "})()", null);
             }
         });
