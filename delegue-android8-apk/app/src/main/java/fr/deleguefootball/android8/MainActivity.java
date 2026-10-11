@@ -8,6 +8,11 @@ import android.net.Uri;
 import android.os.Bundle;
 import android.os.Environment;
 import android.provider.MediaStore;
+import android.print.PrintManager;
+import android.webkit.JavascriptInterface;
+import android.print.PrintDocumentAdapter;
+import android.content.Context;
+import android.util.Base64;
 import android.content.ContentValues;
 import android.webkit.CookieManager;
 import android.webkit.ValueCallback;
@@ -20,6 +25,7 @@ import androidx.core.content.FileProvider;
 
 import java.io.File;
 import java.io.IOException;
+import java.io.FileOutputStream;
 import java.text.SimpleDateFormat;
 import java.util.Date;
 import java.util.Locale;
@@ -56,6 +62,7 @@ public class MainActivity extends Activity {
         settings.setUserAgentString(settings.getUserAgentString() + " DelegueFootballAndroid8/1");
 
         CookieManager.getInstance().setAcceptCookie(true);
+        webView.addJavascriptInterface(new AndroidBridge(), "AndroidBridge");
 
         webView.setWebViewClient(new android.webkit.WebViewClient() {
             @Override
@@ -87,6 +94,44 @@ public class MainActivity extends Activity {
         });
 
         webView.loadUrl("file:///android_asset/index.html");
+    }
+
+    private class AndroidBridge {
+        @JavascriptInterface
+        public void printPage() {
+            runOnUiThread(() -> {
+                try {
+                    PrintManager printManager = (PrintManager) getSystemService(Context.PRINT_SERVICE);
+                    if (printManager != null) {
+                        PrintDocumentAdapter adapter = webView.createPrintDocumentAdapter("DelegueFootball");
+                        printManager.print("Délégué Football", adapter, new android.print.PrintAttributes.Builder().build());
+                    }
+                } catch (Exception e) {
+                    android.util.Log.e("DelegueFootball", "Impression impossible", e);
+                }
+            });
+        }
+
+        @JavascriptInterface
+        public void shareFile(String base64, String filename, String mimeType) {
+            runOnUiThread(() -> {
+                try {
+                    byte[] bytes = Base64.decode(base64, Base64.DEFAULT);
+                    File file = new File(getCacheDir(), filename.replaceAll("[^a-zA-Z0-9._-]", "_"));
+                    try (FileOutputStream stream = new FileOutputStream(file)) {
+                        stream.write(bytes);
+                    }
+                    Uri uri = FileProvider.getUriForFile(MainActivity.this, getPackageName() + ".fileprovider", file);
+                    Intent intent = new Intent(Intent.ACTION_SEND);
+                    intent.setType(mimeType);
+                    intent.putExtra(Intent.EXTRA_STREAM, uri);
+                    intent.addFlags(Intent.FLAG_GRANT_READ_URI_PERMISSION);
+                    startActivity(Intent.createChooser(intent, "Enregistrer ou partager le document"));
+                } catch (Exception e) {
+                    android.util.Log.e("DelegueFootball", "Partage du fichier impossible", e);
+                }
+            });
+        }
     }
 
     private boolean acceptsImages(WebChromeClient.FileChooserParams params) {
