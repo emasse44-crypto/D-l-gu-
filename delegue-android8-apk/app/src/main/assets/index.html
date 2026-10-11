@@ -162,6 +162,27 @@ body.print-composition .print-license{font-size:6.5pt!important}
 body.print-composition #compositionPrintArea{width:100%!important}
 }
 @media print{html,body{width:100%!important;height:auto!important;min-height:0!important;overflow:visible!important}body.print-composition{background:#fff!important;padding:0!important;margin:0!important}body.print-composition .app{display:block!important;width:100%!important;max-width:none!important;height:auto!important;min-height:0!important;margin:0!important;padding:0!important;overflow:visible!important}body.print-composition *{visibility:hidden!important}body.print-composition #compositionView,body.print-composition #compositionView *{visibility:visible!important}body.print-composition #compositionView{display:block!important;position:static!important;left:auto!important;top:auto!important;width:100%!important;height:auto!important;min-height:0!important;max-height:none!important;overflow:visible!important;max-width:none!important;padding:0!important;margin:0!important;border:0!important;box-shadow:none!important;background:#fff!important;color:#111!important}body.print-composition #compositionView .back,body.print-composition #printCompositionOnly,body.print-composition #compositionView>.note,body.print-composition #compositionView>h2{display:none!important}body.print-composition #compositionPrintArea{display:block!important;width:100%!important;height:auto!important;margin:0!important;padding:0!important;overflow:visible!important}body.print-composition .print-composition-header{display:block!important;width:100%!important;margin:0 0 3mm!important;padding:0 0 2mm!important;break-after:avoid!important;page-break-after:avoid!important}body.print-composition .print-composition-grid{display:flex!important;flex-direction:row!important;align-items:flex-start!important;gap:4mm!important;width:100%!important;height:auto!important;overflow:visible!important;break-inside:avoid!important;page-break-inside:avoid!important}body.print-composition .print-team{display:block!important;flex:1 1 0!important;width:49%!important;min-width:0!important;height:auto!important;min-height:0!important;margin:0!important;break-inside:avoid!important;page-break-inside:avoid!important}body.print-composition .print-player-row{break-inside:avoid!important;page-break-inside:avoid!important;padding:1px 2px!important;min-height:0!important}body.print-composition .print-player-name{font-size:10pt!important}body.print-composition .print-team-head{font-size:13pt!important;padding:4px!important}body.print-composition #compositionPrintArea,body.print-composition .print-composition-header,body.print-composition .print-composition-grid{page-break-before:avoid!important}body.print-composition .print-composition-grid{page-break-after:avoid!important}}
+
+/* Composition: utiliser toute la page A4 paysage, pas seulement le haut de la feuille */
+@page{size:A4 landscape;margin:4mm}
+@media print{
+ body.print-composition,body.print-composition html{margin:0!important;padding:0!important;background:#fff!important}
+ body.print-composition #compositionView{width:100%!important;min-height:0!important}
+ body.print-composition #compositionPrintArea{width:100%!important;min-height:188mm!important;padding:0!important;margin:0!important}
+ body.print-composition .print-composition-header{margin:0 0 3mm!important;padding:0 0 2mm!important}
+ body.print-composition .print-composition-header h2{font-size:17pt!important}
+ body.print-composition .print-composition-grid{height:178mm!important;min-height:178mm!important;align-items:stretch!important;gap:4mm!important}
+ body.print-composition .print-team{height:100%!important;display:flex!important;flex-direction:column!important;overflow:hidden!important}
+ body.print-composition .print-player-group{flex:1 1 auto!important;display:flex!important;flex-direction:column!important;min-height:0!important;padding:5mm 5mm!important}
+ body.print-composition .print-player-list{flex:1 1 auto!important;display:flex!important;flex-direction:column!important;justify-content:space-evenly!important}
+ body.print-composition .print-player-row{flex:1 1 auto!important;min-height:0!important;padding:1.5mm 1mm!important;grid-template-columns:8mm minmax(0,1fr) 32mm!important;gap:2mm!important}
+ body.print-composition .print-number{font-size:10pt!important}
+ body.print-composition .print-player-name{font-size:10pt!important;line-height:1.2!important;overflow-wrap:normal!important}
+ body.print-composition .print-license{font-size:7pt!important}
+ body.print-composition .print-team-head{font-size:14pt!important;padding:4mm!important}
+ body.print-composition .print-captain{font-size:9pt!important;padding:2mm!important}
+ body.print-composition .print-group-title{font-size:9pt!important;margin-bottom:2mm!important}
+}
 </style>
 </head>
 <body>
