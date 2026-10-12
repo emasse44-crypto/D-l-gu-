@@ -1983,6 +1983,16 @@ function saveCompositionAsImage(){
  }catch(err){console.error(err);alert("Impossible d’enregistrer la composition : "+(err&&err.message?err.message:"erreur inconnue"));}
 }
 function downloadCompositionBlob(blob,filename){
+ if(window.AndroidBridge&&window.AndroidBridge.shareFile){
+  var reader=new FileReader();
+  reader.onload=function(){
+   var data=String(reader.result||"").split(",")[1]||"";
+   window.AndroidBridge.shareFile(data,filename,"image/png");
+  };
+  reader.onerror=function(){alert("Impossible de préparer la photo de composition.");};
+  reader.readAsDataURL(blob);
+  return;
+ }
  var url=URL.createObjectURL(blob),a=document.createElement("a");a.href=url;a.download=filename;document.body.appendChild(a);a.click();a.remove();setTimeout(function(){URL.revokeObjectURL(url);},3000);
 }
 el("downloadCompositionPhoto").onclick=function(){window.__compositionPhotoMode="download";saveCompositionAsImage();};el("sendCompositionPhoto").onclick=function(){window.__compositionPhotoMode="send";saveCompositionAsImage();};window.addEventListener("afterprint",function(){document.body.classList.remove("print-composition","print-report");});
