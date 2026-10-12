@@ -167,7 +167,7 @@ body.print-composition #compositionPrintArea{width:100%!important}
 <body>
 <div class="app">
 <h1>⚽ Délégué Football</h1>
-<div class="version">VERSION TEST v128 · MOTIFS FMI / H-2 / SANCTIONS / BANCS</div>
+<div class="version">VERSION TEST v129 · MOTIFS MODIFIABLES / RAPPORT</div>
 <section id="home">
 <div class="card"><div class="teams">
 <div><div class="team" id="teamA">Équipe A</div><div class="score" id="scoreA">0</div></div>
@@ -1170,7 +1170,10 @@ setTimeout(goHome,0);
    if(x.auto){var note=document.createElement("div");note.className="note";note.style.marginTop="5px";note.textContent="Sanction automatique";d.appendChild(note);}
    var actions=document.createElement("div");actions.style.display="flex";actions.style.gap="8px";actions.style.flexWrap="wrap";actions.style.marginTop="8px";
    if(entry.kind==="player"&&!x.auto){
-     var edit=document.createElement("button");edit.type="button";edit.textContent="✏️ Corriger";edit.onclick=function(){correctCard(entry.index);};actions.appendChild(edit);
+     var edit=document.createElement("button");edit.type="button";edit.textContent="✏️ Corriger joueur";edit.onclick=function(){correctCard(entry.index);};actions.appendChild(edit);
+     if(String(x.type||"").indexOf("🟨")===0){
+       var editReason=document.createElement("button");editReason.type="button";editReason.textContent="✏️ Modifier motif";editReason.onclick=function(){editCardReason(entry.index);};actions.appendChild(editReason);
+     }
    }
    if(!x.auto){
      var del=document.createElement("button");del.type="button";del.textContent="🗑️ Supprimer";del.className="red";del.onclick=function(){
@@ -1273,6 +1276,17 @@ function deleteCard(index){
  }
  restoreCardPlayer(side,number);
  renderCards();saveState();
+}
+function editCardReason(index){
+ var x=cards[index];if(!x||String(x.type||"").indexOf("🟨")!==0)return;
+ var current=String(x.reason||"J1 · Comportement antisportif");
+ var choice=prompt("Modifier le motif de l’avertissement.\n\nSaisissez le code et le motif (J1 à J9) ou le motif exact indiqué par l’arbitre :",current);
+ if(choice===null)return;
+ choice=choice.trim();
+ if(!choice){alert("Le motif ne peut pas être vide.");return;}
+ x.reason=choice;
+ renderCards();saveState();
+ if(typeof renderReport==="function")renderReport();
 }
 function correctCard(index){
  var x=cards[index];var team=x.team==="A"?playersA:playersB;
@@ -1601,7 +1615,7 @@ function renderPlayerSanctions(items,side,emptyText){
   var lower=typeText.toLowerCase();
   var label=lower.indexOf("jaune")>=0?"Avertissement":(lower.indexOf("rouge")>=0?"Expulsion":(lower.indexOf("blanc")>=0?"Carton blanc":typeText));
   if(x.auto&&lower.indexOf("rouge")>=0)label="Expulsion automatique";
-  return '<div class="change-item" style="display:flex;align-items:center;gap:14px;flex-wrap:wrap;width:100%;margin-top:7px;border-left:4px solid '+(lower.indexOf("rouge")>=0?'#ef4444':(lower.indexOf("blanc")>=0?'#f8fafc':'#facc15'))+'"><strong style="white-space:nowrap">'+escapeHtml(x.minute)+'</strong><strong>N°'+escapeHtml(x.number||"—")+' · '+escapeHtml(x.player||"Nom non renseigné")+'</strong><span>'+escapeHtml(label)+'</span>'+(lower.indexOf("blanc")>=0?'<span>Exclusion temporaire : 10 minutes</span>':'')+'</div>';
+  return '<div class="change-item" style="display:flex;align-items:center;gap:14px;flex-wrap:wrap;width:100%;margin-top:7px;border-left:4px solid '+(lower.indexOf("rouge")>=0?'#ef4444':(lower.indexOf("blanc")>=0?'#f8fafc':'#facc15'))+'"><strong style="white-space:nowrap">'+escapeHtml(x.minute)+'</strong><strong>N°'+escapeHtml(x.number||"—")+' · '+escapeHtml(x.player||"Nom non renseigné")+'</strong><span>'+escapeHtml(label)+'</span>'+(x.reason&&lower.indexOf("jaune")>=0?'<div style="width:100%;margin-top:4px"><strong>Motif FMI :</strong> '+escapeHtml(x.reason)+'</div>':'')+(lower.indexOf("blanc")>=0?'<span>Exclusion temporaire : 10 minutes</span>':'')+'</div>';
  }).join("");
 }
 function renderSanctionTeams(items,emptyText){
@@ -1811,6 +1825,8 @@ function exportWordReport(deliveryMode){ if(!window.JSZip){alert("Le module Word
   if(red)lines.push(red+" rouge"+(red>1?"s":"")+" pour "+teamName);
   if(white)lines.push(white+" blanc"+(white>1?"s":"")+" pour "+teamName);
   if(!lines.length)lines.push("Aucune sanction pour "+teamName);
+  var warnings=cards.filter(function(x){return x.team===side&&String(x.type||"").indexOf("🟨")===0&&String(x.reason||"").trim();});
+  warnings.forEach(function(x){lines.push("Motif avertissement ("+(x.minute||"minute non renseignée")+", "+(x.player||"joueur non renseigné")+") : "+x.reason);});
   return lines;
  }
  function xmlEscape(v){return String(v==null?"Non renseigné":v).replace(/&/g,"&amp;").replace(/</g,"&lt;").replace(/>/g,"&gt;");}
