@@ -1591,7 +1591,13 @@ html+=section("🔄 CHANGEMENTS",changeHtml);
 function renderPlayerSanctions(items,side,emptyText){
  var filtered=items.filter(function(x){return x.team===side;}).slice().sort(function(a,b){return minuteSortValue(a.minute)-minuteSortValue(b.minute);});
  if(!filtered.length)return empty(emptyText+" · "+teamName(side)+".");
- return filtered.map(function(x){return '<div class="change-item" style="margin-top:7px;border-left:4px solid '+(String(x.type||"").toLowerCase().indexOf("rouge")>=0?'#ef4444':(String(x.type||"").toLowerCase().indexOf("blanc")>=0?'#f8fafc':'#facc15'))+'"><strong>'+escapeHtml(x.minute)+'</strong><br><strong>N°'+escapeHtml(x.number||"—")+' · '+escapeHtml(x.player||"Nom non renseigné")+'</strong><div style="margin-top:4px">'+escapeHtml(x.type)+(x.auto?' · expulsion automatique':'')+(String(x.type||"").toLowerCase().indexOf("blanc")>=0?' · exclusion temporaire 10 minutes':'')+'</div></div>';}).join("");
+ return filtered.map(function(x){
+  var typeText=String(x.type||"");
+  var lower=typeText.toLowerCase();
+  var label=lower.indexOf("jaune")>=0?"Avertissement":(lower.indexOf("rouge")>=0?"Expulsion":(lower.indexOf("blanc")>=0?"Carton blanc":typeText));
+  if(x.auto&&lower.indexOf("rouge")>=0)label="Expulsion automatique";
+  return '<div class="change-item" style="margin-top:7px;border-left:4px solid '+(lower.indexOf("rouge")>=0?'#ef4444':(lower.indexOf("blanc")>=0?'#f8fafc':'#facc15'))+'"><strong>'+escapeHtml(x.minute)+'</strong><br><strong>N°'+escapeHtml(x.number||"—")+' · '+escapeHtml(x.player||"Nom non renseigné")+'</strong><div style="margin-top:4px">'+escapeHtml(label)+(lower.indexOf("blanc")>=0?' · exclusion temporaire 10 minutes':'')+'</div></div>';
+ }).join("");
 }
 function renderSanctionTeams(items,emptyText){
  return '<div class="report-title">'+escapeHtml(teamName("A"))+'</div>'+renderPlayerSanctions(items,"A",emptyText)+'<div class="report-title" style="margin-top:14px">'+escapeHtml(teamName("B"))+'</div>'+renderPlayerSanctions(items,"B",emptyText);
