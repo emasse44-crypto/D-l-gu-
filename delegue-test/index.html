@@ -174,7 +174,7 @@ body.print-composition #compositionPrintArea{width:100%!important}
 <body>
 <div class="app">
 <h1>⚽ Délégué Football</h1>
-<div class="version">VERSION TEST v149 · COMMENTAIRES ET CORRECTION SANCTIONS</div>
+<div class="version">VERSION TEST v150 · COMMENTAIRE SUR UNE LIGNE</div>
 <section id="home">
 <div class="card"><div class="teams">
 <div><div class="team" id="teamA">Équipe A</div><div class="score" id="scoreA">0</div></div>
@@ -1738,7 +1738,7 @@ function renderPlayerSanctions(items,side,emptyText){
   if(x.auto&&lower.indexOf("rouge")>=0)label="Expulsion automatique";
   var color=lower.indexOf("rouge")>=0?'#ef4444':(lower.indexOf("blanc")>=0?'#f8fafc':'#facc15');
   var reason=(x.reason&&(lower.indexOf("jaune")>=0||lower.indexOf("rouge")>=0)?'<div style="width:100%;margin-top:4px"><strong>Motif FMI :</strong> '+escapeHtml(x.reason)+'</div>':'');
-  var comment='<div style="width:100%;margin-top:8px"><label style="display:block;font-weight:700;margin-bottom:4px">Observation du délégué / commentaire</label><textarea data-sanction-comment="player" data-sanction-index="'+idx+'" rows="2" style="width:100%;padding:8px;border-radius:8px" placeholder="Ajouter une observation au rapport…">'+escapeHtml(x.comment||"")+'</textarea><button type="button" data-save-comment="player" data-sanction-index="'+idx+'" style="margin-top:5px">Enregistrer le commentaire</button>'+(x.auto?'':' <button type="button" data-correct-sanction="player" data-sanction-index="'+idx+'" style="margin-top:5px">Corriger la saisie</button>')+'</div>';
+  var comment='<div style="width:100%;margin-top:8px"><label style="display:block;font-weight:700;margin-bottom:4px">Observation du délégué / commentaire</label><textarea data-sanction-comment="player" data-sanction-index="'+idx+'" rows="1" style="width:100%;height:38px;min-height:38px;resize:vertical;padding:8px;border-radius:8px" placeholder="Commentaire du délégué…">'+escapeHtml(x.comment||"")+'</textarea><button type="button" data-save-comment="player" data-sanction-index="'+idx+'" style="margin-top:5px;display:inline-block">Enregistrer</button>'+(x.auto?'':' <button type="button" data-correct-sanction="player" data-sanction-index="'+idx+'" style="margin-top:5px;display:inline-block">Modifier la sanction</button>')+'</div>';
   return '<div class="change-item" style="display:flex;align-items:center;gap:14px;flex-wrap:wrap;width:100%;margin-top:7px;border-left:4px solid '+color+'"><strong style="white-space:nowrap">'+escapeHtml(x.minute)+'</strong><strong>N°'+escapeHtml(x.number||"—")+' · '+escapeHtml(x.player||"Nom non renseigné")+'</strong><span>'+escapeHtml(label)+'</span>'+reason+(lower.indexOf("blanc")>=0?'<span>Exclusion temporaire : 10 minutes</span>':'')+comment+'</div>';
  }).join("");
 }
