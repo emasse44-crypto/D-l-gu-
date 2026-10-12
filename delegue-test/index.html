@@ -174,7 +174,7 @@ body.print-composition #compositionPrintArea{width:100%!important}
 <body>
 <div class="app">
 <h1>⚽ Délégué Football</h1>
-<div class="version">VERSION TEST v148 · MOTIFS FMI STAFF JAUNE ET ROUGE</div>
+<div class="version">VERSION TEST v149 · COMMENTAIRES ET CORRECTION SANCTIONS</div>
 <section id="home">
 <div class="card"><div class="teams">
 <div><div class="team" id="teamA">Équipe A</div><div class="score" id="scoreA">0</div></div>
@@ -1729,14 +1729,17 @@ var changeHtml='<div class="report-title">'+escapeHtml(teamName("A"))+'</div>'+r
 html+=section("🔄 CHANGEMENTS",changeHtml);
 
 function renderPlayerSanctions(items,side,emptyText){
- var filtered=items.filter(function(x){return x.team===side;}).slice().sort(function(a,b){return minuteSortValue(a.minute)-minuteSortValue(b.minute);});
+ var filtered=items.map(function(x){return {x:x,index:items===cards?cards.indexOf(x):cards.indexOf(x)};}).filter(function(o){return o.x.team===side;}).sort(function(a,b){return minuteSortValue(a.x.minute)-minuteSortValue(b.x.minute);});
  if(!filtered.length)return empty(emptyText+" · "+teamName(side)+".");
- return filtered.map(function(x){
-  var typeText=String(x.type||"");
-  var lower=typeText.toLowerCase();
+ return filtered.map(function(o){
+  var x=o.x,idx=cards.indexOf(x);
+  var typeText=String(x.type||""),lower=typeText.toLowerCase();
   var label=lower.indexOf("jaune")>=0?"Avertissement":(lower.indexOf("rouge")>=0?"Expulsion":(lower.indexOf("blanc")>=0?"Carton blanc":typeText));
   if(x.auto&&lower.indexOf("rouge")>=0)label="Expulsion automatique";
-  return '<div class="change-item" style="display:flex;align-items:center;gap:14px;flex-wrap:wrap;width:100%;margin-top:7px;border-left:4px solid '+(lower.indexOf("rouge")>=0?'#ef4444':(lower.indexOf("blanc")>=0?'#f8fafc':'#facc15'))+'"><strong style="white-space:nowrap">'+escapeHtml(x.minute)+'</strong><strong>N°'+escapeHtml(x.number||"—")+' · '+escapeHtml(x.player||"Nom non renseigné")+'</strong><span>'+escapeHtml(label)+'</span>'+(x.reason&&(lower.indexOf("jaune")>=0||lower.indexOf("rouge")>=0)?'<div style="width:100%;margin-top:4px"><strong>Motif FMI :</strong> '+escapeHtml(x.reason)+'</div>':'')+(lower.indexOf("blanc")>=0?'<span>Exclusion temporaire : 10 minutes</span>':'')+'</div>';
+  var color=lower.indexOf("rouge")>=0?'#ef4444':(lower.indexOf("blanc")>=0?'#f8fafc':'#facc15');
+  var reason=(x.reason&&(lower.indexOf("jaune")>=0||lower.indexOf("rouge")>=0)?'<div style="width:100%;margin-top:4px"><strong>Motif FMI :</strong> '+escapeHtml(x.reason)+'</div>':'');
+  var comment='<div style="width:100%;margin-top:8px"><label style="display:block;font-weight:700;margin-bottom:4px">Observation du délégué / commentaire</label><textarea data-sanction-comment="player" data-sanction-index="'+idx+'" rows="2" style="width:100%;padding:8px;border-radius:8px" placeholder="Ajouter une observation au rapport…">'+escapeHtml(x.comment||"")+'</textarea><button type="button" data-save-comment="player" data-sanction-index="'+idx+'" style="margin-top:5px">Enregistrer le commentaire</button>'+(x.auto?'':' <button type="button" data-correct-sanction="player" data-sanction-index="'+idx+'" style="margin-top:5px">Corriger la saisie</button>')+'</div>';
+  return '<div class="change-item" style="display:flex;align-items:center;gap:14px;flex-wrap:wrap;width:100%;margin-top:7px;border-left:4px solid '+color+'"><strong style="white-space:nowrap">'+escapeHtml(x.minute)+'</strong><strong>N°'+escapeHtml(x.number||"—")+' · '+escapeHtml(x.player||"Nom non renseigné")+'</strong><span>'+escapeHtml(label)+'</span>'+reason+(lower.indexOf("blanc")>=0?'<span>Exclusion temporaire : 10 minutes</span>':'')+comment+'</div>';
  }).join("");
 }
 function renderSanctionTeams(items,emptyText){
@@ -1753,7 +1756,7 @@ function renderStaffSanctionsByTeam(side){
  var items=staffCards.filter(function(x){return x.team===side;}).slice().sort(function(a,b){return minuteSortValue(a.minute)-minuteSortValue(b.minute);});
  var staffHtml="";
  if(items.length){
- staffHtml=items.map(function(x){var typeText=String(x.type||"");var lower=typeText.toLowerCase();var bg=lower.indexOf("rouge")>=0?"#ef4444":(lower.indexOf("blanc")>=0?"#f8fafc":"#facc15");var reason=(x.reason&&(lower.indexOf("jaune")>=0||lower.indexOf("rouge")>=0))?'<div style="margin-top:5px"><strong>Motif FMI :</strong> '+escapeHtml(x.reason)+'</div>':"";return '<div class="change-item" style="margin-top:7px;border-left:4px solid '+bg+'"><strong>'+escapeHtml(x.minute)+'</strong><br><strong>'+escapeHtml(x.member||"Staff non renseigné")+'</strong> · '+escapeHtml(typeText)+'<div style="margin-top:4px">'+escapeHtml(({E:'Éducateur',M:'Médecin',A:'Assistant',D:'Dirigeant','D/DR':'Dirigeant / dirigeant responsable'})[x.role]||x.role||'Fonction non renseignée')+' · Staff N°'+escapeHtml(String(x.number))+(x.auto?' · automatique':'')+'</div>'+reason+'</div>';}).join("");
+ staffHtml=items.map(function(x){var idx=staffCards.indexOf(x);var typeText=String(x.type||"");var lower=typeText.toLowerCase();var bg=lower.indexOf("rouge")>=0?"#ef4444":(lower.indexOf("blanc")>=0?"#f8fafc":"#facc15");var reason=(x.reason&&(lower.indexOf("jaune")>=0||lower.indexOf("rouge")>=0))?'<div style="margin-top:5px"><strong>Motif FMI :</strong> '+escapeHtml(x.reason)+'</div>':"";var comment='<div style="margin-top:8px"><label style="display:block;font-weight:700;margin-bottom:4px">Observation du délégué / commentaire</label><textarea data-sanction-comment="staff" data-sanction-index="'+idx+'" rows="2" style="width:100%;padding:8px;border-radius:8px" placeholder="Ajouter une observation au rapport…">'+escapeHtml(x.comment||"")+'</textarea><button type="button" data-save-comment="staff" data-sanction-index="'+idx+'" style="margin-top:5px">Enregistrer le commentaire</button>'+(x.auto?'':' <button type="button" data-correct-sanction="staff" data-sanction-index="'+idx+'" style="margin-top:5px">Corriger la saisie</button>')+'</div>';return '<div class="change-item" style="margin-top:7px;border-left:4px solid '+bg+'"><strong>'+escapeHtml(x.minute)+'</strong><br><strong>'+escapeHtml(x.member||"Staff non renseigné")+'</strong> · '+escapeHtml(typeText)+'<div style="margin-top:4px">'+escapeHtml(({E:'Éducateur',M:'Médecin',A:'Assistant',D:'Dirigeant','D/DR':'Dirigeant / dirigeant responsable'})[x.role]||x.role||'Fonction non renseignée')+' · Staff N°'+escapeHtml(String(x.number))+(x.auto?' · automatique':'')+'</div>'+reason+comment+'</div>';}).join("");
  }else staffHtml=empty("Aucune sanction staff pour "+teamName(side)+".");
  var related=staffExclusions.filter(function(x){return x.team===side;});
  if(related.length){staffHtml+='<div style="margin-top:10px"><strong>⚪ Exclusions temporaires du capitaine suite à un blanc staff</strong></div>';related.forEach(function(x){staffHtml+='<div class="change-item" style="margin-top:7px;border-left:4px solid #f8fafc"><strong>'+escapeHtml(formatMinute(x.start))+'</strong><br>Capitaine : <strong>'+escapeHtml(x.player)+'</strong><div>Exclusion 10 minutes</div></div>';});}
@@ -1793,6 +1796,8 @@ exclusionHtml=exclusions.map(function(x){return '<div style="margin-top:6px"><st
 html+=section("📸 PHOTOS DU MATCH",renderPhotosInReport());
 
 box.innerHTML=html;
+ box.querySelectorAll("[data-save-comment]").forEach(function(btn){btn.addEventListener("click",function(){var kind=btn.dataset.saveComment,idx=Number(btn.dataset.sanctionIndex);var list=kind==="staff"?staffCards:cards;var item=list[idx];var area=box.querySelector('textarea[data-sanction-comment="'+kind+'"][data-sanction-index="'+idx+'"]');if(!item||!area)return;item.comment=area.value.trim();saveState();renderReport();});});
+ box.querySelectorAll("[data-correct-sanction]").forEach(function(btn){btn.addEventListener("click",function(){var kind=btn.dataset.correctSanction,idx=Number(btn.dataset.sanctionIndex);var list=kind==="staff"?staffCards:cards;var item=list[idx];if(!item||item.auto)return;var current=String(item.type||"");var isStaff=kind==="staff";var isYellow=current.toLowerCase().indexOf("jaune")>=0;var newType=prompt("Correction de saisie uniquement.\nTape 1 pour "+(isStaff?"carton jaune staff":"avertissement jaune")+", 2 pour "+(isStaff?"carton rouge staff":"expulsion rouge")+".\nLa décision officielle de l’arbitre reste celle réellement prononcée.",isYellow?"1":"2");if(newType===null)return;newType=newType.trim();if(newType!=="1"&&newType!=="2"){alert("Choisis 1 ou 2.");return;}item.type=newType==="1"?(isStaff?"🟨 Jaune":"🟨 Jaune"):(isStaff?"🟥 Rouge":"🟥 Rouge");var defaultKey=isStaff?(newType==="1"?"staffJaune":"staffRouge"):(newType==="1"?"joueurJaune":"joueurRouge");var options=sanctionMotifsFMI[defaultKey]||[];var choices=options.map(function(m){return m[0]+" · "+m[1];});var chosen=prompt("Motif FMI (copie le code ou le libellé exact) :\n"+choices.join("\n"),item.reason||choices[0]||"");if(chosen===null)return;if(choices.indexOf(chosen.trim())>=0)item.reason=chosen.trim();else if(chosen.trim())item.reason=chosen.trim();saveState();renderReport();});});
 }function goHome(){var pages=document.querySelectorAll(".page");pages.forEach(function(p){p.classList.remove("active");p.style.removeProperty("display");});var home=el("home");home.classList.remove("home-hidden");home.style.display="block";home.hidden=false;window.scrollTo(0,0);}function showPageDirect(pageId){var pages=document.querySelectorAll(".page");pages.forEach(function(p){p.classList.remove("active");p.style.display="none";});var home=document.getElementById("home");if(home)home.style.display="none";var page=document.getElementById(pageId);if(!page)return;page.classList.add("active");page.style.display="block";if(pageId==="changes")renderChanges();if(pageId==="events")renderCards();}
 function rebuildActiveStates(){
   [playersA,playersB].forEach(function(team){
