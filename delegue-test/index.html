@@ -167,7 +167,7 @@ body.print-composition #compositionPrintArea{width:100%!important}
 <body>
 <div class="app">
 <h1>⚽ Délégué Football</h1>
-<div class="version">VERSION TEST v137 · MOTIFS FMI JOUEURS ET STAFF</div>
+<div class="version">VERSION TEST v138 · MOTIFS STAFF CORRIGÉS</div>
 <section id="home">
 <div class="card"><div class="teams">
 <div><div class="team" id="teamA">Équipe A</div><div class="score" id="scoreA">0</div></div>
@@ -1079,17 +1079,22 @@ var sanctionMotifsFMI={
 };
 function actualiserListeMotifsFMI(){
  var type=String(el("cardForm").dataset.type||"");
- var value=String(el("cardPlayer").value||"");
- var staff=value.indexOf("staff-")===0;
- var yellow=type.indexOf("🟨")===0, red=type.indexOf("🟥")===0;
+ var person=el("cardPlayer");
+ var value=String(person.value||"");
+ var selected=person.options&&person.selectedIndex>=0?person.options[person.selectedIndex]:null;
+ var groupLabel=selected&&selected.parentElement&&selected.parentElement.tagName==="OPTGROUP"?String(selected.parentElement.label||""):"";
+ var selectedLabel=selected?String(selected.textContent||""):"";
+ var staff=value.indexOf("staff-")===0||/staff/i.test(groupLabel)||/·\\s*STAFF\\s*$/i.test(selectedLabel);
+ var yellow=type.indexOf("🟨")===0||/jaune/i.test(type);
+ var red=type.indexOf("🟥")===0||/rouge/i.test(type);
  var wrap=el("yellowReasonWrap"),select=el("yellowReason");
  if(!yellow&&!red){wrap.style.display="none";return;}
  wrap.style.display="block";
- el("reasonTitle").textContent=(yellow?"Avertissement":"Expulsion")+" · "+(staff?"staff / dirigeant":"joueur");
+ el("reasonTitle").textContent=(yellow?"Motif de l’avertissement":"Motif de l’expulsion")+" (FMI) · "+(staff?"staff / dirigeant":"joueur");
  var key=staff?(yellow?"staffJaune":"staffRouge"):(yellow?"joueurJaune":"joueurRouge");
  var previous=select.value;
  select.innerHTML="";
- sanctionMotifsFMI[key].forEach(function(m){var op=document.createElement("option");op.value=m[0]+" · "+m[1];op.textContent=m[0]+" · "+m[1];select.appendChild(op);});
+ (sanctionMotifsFMI[key]||[]).forEach(function(m){var op=document.createElement("option");op.value=m[0]+" · "+m[1];op.textContent=m[0]+" · "+m[1];select.appendChild(op);});
  var other=document.createElement("option");other.value="Autre motif";other.textContent="Autre motif";select.appendChild(other);
  if(Array.from(select.options).some(function(o){return o.value===previous;}))select.value=previous;
  el("yellowOtherWrap").style.display=select.value==="Autre motif"?"block":"none";
