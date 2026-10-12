@@ -167,7 +167,7 @@ body.print-composition #compositionPrintArea{width:100%!important}
 <body>
 <div class="app">
 <h1>⚽ Délégué Football</h1>
-<div class="version">VERSION TEST v135 · MOTIFS JS1-JS9 STAFF VALIDÉS</div>
+<div class="version">VERSION TEST v136 · LISTE STAFF AVERTISSEMENT CORRIGÉE</div>
 <section id="home">
 <div class="card"><div class="teams">
 <div><div class="team" id="teamA">Équipe A</div><div class="score" id="scoreA">0</div></div>
@@ -1059,6 +1059,7 @@ function setupCard(side,label){
 function selectCardType(type){
   var form=el("cardForm");
   form.dataset.type=type;
+  el("yellowReasonWrap").style.display=(String(type).indexOf("🟨")===0||String(type).indexOf("🟥")===0)?"block":"none";
   form.dataset.team="";
   el("cardSimpleLabel").textContent=type+" · Choisissez l'équipe";
   el("cardSimplePanel").style.display="block";
@@ -1089,7 +1090,7 @@ function actualiserListeMotifsFMI(){
  if(Array.from(select.options).some(function(o){return o.value===previous;}))select.value=previous;
  el("yellowOtherWrap").style.display=select.value==="Autre motif"?"block":"none";
 }
-el("cardPlayer").addEventListener("change",actualiserListeMotifsFMI);
+el("cardPlayer").addEventListener("change",function(){actualiserListeMotifsFMI();});
 el("yellowReason").addEventListener("change",function(){el("yellowOtherWrap").style.display=this.value==="Autre motif"?"block":"none";});
 function confirmCard(){
 var side=el("cardForm").dataset.team;
