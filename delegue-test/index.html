@@ -1565,8 +1565,13 @@ function section(title,content){return '<div class="change-item report-section">
 function empty(text){return '<div class="note">'+text+'</div>';}
 var arrivalTime="Non calculable";if(matchInfo.kickoff&&/^\d{2}:\d{2}$/.test(matchInfo.kickoff)){var parts=matchInfo.kickoff.split(":");var mins=(Number(parts[0])*60+Number(parts[1])-120+1440)%1440;arrivalTime=String(Math.floor(mins/60)).padStart(2,"0")+":"+String(mins%60).padStart(2,"0");}var html='<div class="change-item"><div class="report-title">Match</div><div><strong>'+escapeHtml(teamAName)+" "+scoreA+" - "+scoreB+" "+escapeHtml(teamBName)+'</strong></div><div>Compétition : '+escapeHtml(matchInfo.competition||"Non renseignée")+'</div><div>Date : '+escapeHtml(matchInfo.date||"Non renseignée")+' · Arrivée délégué (H-2) : '+escapeHtml(arrivalTime)+' · Coup d’envoi : '+escapeHtml(matchInfo.kickoff||"Non renseigné")+'</div><div>Stade : '+escapeHtml(matchInfo.stadium||"Non renseigné")+'</div><div>Arbitre : '+escapeHtml(matchInfo.referee||"Non renseigné")+'</div><div>Assistant 1 : '+escapeHtml(matchInfo.assistant1||"Non renseigné")+'</div><div>Assistant 2 : '+escapeHtml(matchInfo.assistant2||"Non renseigné")+'</div><div>Délégué : '+escapeHtml(matchInfo.delegate||"Non renseigné")+'</div><div>Délégué adjoint : '+escapeHtml(matchInfo.delegateAdjoint||"Non renseigné")+'</div><div>Commissaire : '+escapeHtml(matchInfo.commissioner||"Non renseigné")+'</div><div>Président recevant : '+escapeHtml(matchInfo.presidentRecevant||"Non renseigné")+'</div><div>Président visiteur : '+escapeHtml(matchInfo.presidentVisiteur||"Non renseigné")+'</div><div>Responsable sécurité : '+escapeHtml(matchInfo.security||"Non renseigné")+'</div></div>';
 
+function minuteSortValue(value){
+ var match=String(value||"0").trim().match(/^(\d+)(?:\+(\d+))?(?::(\d+))?$/);
+ if(!match)return 0;
+ return Number(match[1])*60+Number(match[2]||0)*60+Number(match[3]||0);
+}
 function renderGoalsByTeam(side){
- var items=goals.filter(function(x){return x.team===side;});
+ var items=goals.filter(function(x){return x.team===side;}).slice().sort(function(a,b){return minuteSortValue(a.minute)-minuteSortValue(b.minute);});
  if(!items.length)return empty("Aucun but enregistré pour "+teamName(side)+".");
  return items.map(function(x){return '<div class="change-item" style="margin-top:7px;border-left:4px solid '+(side==="A"?'#22c55e':'#60a5fa')+'"><div><strong>'+escapeHtml(x.minute)+'</strong> · ⚽ <strong>N°'+escapeHtml(x.number||"—")+' · '+escapeHtml(x.player||"Nom non renseigné")+'</strong></div><div style="margin-top:4px">Type : '+escapeHtml(x.goalType||"Pied")+(x.assist?' · Passeur : <strong>N°'+escapeHtml(x.assistNumber||"—")+' · '+escapeHtml(x.assist)+'</strong>':' · Passeur : non renseigné')+(x.cancelled?' · <strong style="color:#f87171">BUT ANNULÉ</strong>':'')+'</div></div>';}).join("");
 }
@@ -1611,7 +1616,7 @@ html+=section("👥 COMPOSITION FINALE",finalCompositionHtml);
 html+=section("⚽ BUTEURS",goalHtml);
 
 function renderChangesByTeam(side){
- var items=changes.filter(function(x){return !x.returning&&x.team===side;});
+ var items=changes.filter(function(x){return !x.returning&&x.team===side;}).slice().sort(function(a,b){return minuteSortValue(a.minute)-minuteSortValue(b.minute);});
  if(!items.length)return empty("Aucun changement à faire figurer pour "+teamName(side)+".");
  return items.map(function(x){return '<div class="change-item" style="margin-top:7px;border-left:4px solid '+(side==="A"?'#22c55e':'#60a5fa')+'"><div><strong>'+escapeHtml(x.minute)+'</strong></div><div style="display:grid;grid-template-columns:1fr;gap:7px;margin-top:7px"><div><span style="color:#f87171;font-weight:800">SORTIE</span><br><strong>N°'+escapeHtml(x.outNumber||"—")+' · '+escapeHtml(x.out||"Nom non renseigné")+'</strong></div><div><span style="color:#4ade80;font-weight:800">ENTRÉE</span><br><strong>N°'+escapeHtml(x.inNumber||"—")+' · '+escapeHtml(x.in||"Nom non renseigné")+'</strong></div></div></div>';}).join("");
 }
@@ -1619,7 +1624,7 @@ var changeHtml='<div class="report-title">'+escapeHtml(teamName("A"))+'</div>'+r
 html+=section("🔄 CHANGEMENTS",changeHtml);
 
 function renderPlayerSanctions(items,side,emptyText){
- var filtered=items.filter(function(x){return x.team===side;});
+ var filtered=items.filter(function(x){return x.team===side;}).slice().sort(function(a,b){return minuteSortValue(a.minute)-minuteSortValue(b.minute);});
  if(!filtered.length)return empty(emptyText+" · "+teamName(side)+".");
  return filtered.map(function(x){return '<div class="change-item" style="margin-top:7px;border-left:4px solid '+(String(x.type||"").toLowerCase().indexOf("rouge")>=0?'#ef4444':(String(x.type||"").toLowerCase().indexOf("blanc")>=0?'#f8fafc':'#facc15'))+'"><strong>'+escapeHtml(x.minute)+'</strong><br><strong>N°'+escapeHtml(x.number||"—")+' · '+escapeHtml(x.player||"Nom non renseigné")+'</strong><div style="margin-top:4px">'+escapeHtml(x.type)+(x.auto?' · expulsion automatique':'')+'</div></div>';}).join("");
 }
@@ -1634,7 +1639,7 @@ html+=section("🟥 EXPULSIONS JOUEURS",renderSanctionTeams(playerDismissals,"Au
 html+=section("⚪ CARTONS BLANCS JOUEURS",renderSanctionTeams(playerWhites,"Aucun carton blanc joueur."));
 
 function renderStaffSanctionsByTeam(side){
- var items=staffCards.filter(function(x){return x.team===side;});
+ var items=staffCards.filter(function(x){return x.team===side;}).slice().sort(function(a,b){return minuteSortValue(a.minute)-minuteSortValue(b.minute);});
  var staffHtml="";
  if(items.length){
  staffHtml=items.map(function(x){var bg=(x.type||"").indexOf("Rouge")>=0?"#ef4444":((x.type||"").indexOf("Blanc")>=0?"#f8fafc":"#facc15");return '<div class="change-item" style="margin-top:7px;border-left:4px solid '+bg+'"><strong>'+escapeHtml(x.minute)+'</strong><br><strong>'+escapeHtml(x.member||"Staff non renseigné")+'</strong> · '+escapeHtml(x.type)+'<div style="margin-top:4px">'+escapeHtml(({E:'Éducateur',M:'Médecin',A:'Assistant',D:'Dirigeant','D/DR':'Dirigeant / dirigeant responsable'})[x.role]||x.role||'Fonction non renseignée')+' · Staff N°'+escapeHtml(String(x.number))+(x.auto?' · automatique':'')+'</div></div>';}).join("");
