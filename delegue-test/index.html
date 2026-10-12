@@ -1596,7 +1596,7 @@ function renderPlayerSanctions(items,side,emptyText){
   var lower=typeText.toLowerCase();
   var label=lower.indexOf("jaune")>=0?"Avertissement":(lower.indexOf("rouge")>=0?"Expulsion":(lower.indexOf("blanc")>=0?"Carton blanc":typeText));
   if(x.auto&&lower.indexOf("rouge")>=0)label="Expulsion automatique";
-  return '<div class="change-item" style="margin-top:7px;border-left:4px solid '+(lower.indexOf("rouge")>=0?'#ef4444':(lower.indexOf("blanc")>=0?'#f8fafc':'#facc15'))+'"><strong>'+escapeHtml(x.minute)+'</strong><br><strong>N°'+escapeHtml(x.number||"—")+' · '+escapeHtml(x.player||"Nom non renseigné")+'</strong><div style="margin-top:4px">'+escapeHtml(label)+(lower.indexOf("blanc")>=0?' · exclusion temporaire 10 minutes':'')+'</div></div>';
+  return '<div class="change-item" style="margin-top:7px;border-left:4px solid '+(lower.indexOf("rouge")>=0?'#ef4444':(lower.indexOf("blanc")>=0?'#f8fafc':'#facc15'))+'"><div><strong>'+escapeHtml(x.minute)+'</strong></div><div style="margin-top:4px"><strong>N°'+escapeHtml(x.number||"—")+' · '+escapeHtml(x.player||"Nom non renseigné")+'</strong></div><div style="margin-top:4px">'+escapeHtml(label)+'</div>'+(lower.indexOf("blanc")>=0?'<div style="margin-top:4px">Exclusion temporaire : 10 minutes</div>':'')+'</div>';
  }).join("");
 }
 function renderSanctionTeams(items,emptyText){
