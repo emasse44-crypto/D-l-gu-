@@ -174,7 +174,7 @@ body.print-composition #compositionPrintArea{width:100%!important}
 <body>
 <div class="app">
 <h1>⚽ Délégué Football</h1>
-<div class="version">VERSION TEST v147 · MOTIF AFFICHÉ POUR LES ROUGES</div>
+<div class="version">VERSION TEST v148 · MOTIFS FMI STAFF JAUNE ET ROUGE</div>
 <section id="home">
 <div class="card"><div class="teams">
 <div><div class="team" id="teamA">Équipe A</div><div class="score" id="scoreA">0</div></div>
@@ -1753,7 +1753,7 @@ function renderStaffSanctionsByTeam(side){
  var items=staffCards.filter(function(x){return x.team===side;}).slice().sort(function(a,b){return minuteSortValue(a.minute)-minuteSortValue(b.minute);});
  var staffHtml="";
  if(items.length){
- staffHtml=items.map(function(x){var bg=(x.type||"").indexOf("Rouge")>=0?"#ef4444":((x.type||"").indexOf("Blanc")>=0?"#f8fafc":"#facc15");return '<div class="change-item" style="margin-top:7px;border-left:4px solid '+bg+'"><strong>'+escapeHtml(x.minute)+'</strong><br><strong>'+escapeHtml(x.member||"Staff non renseigné")+'</strong> · '+escapeHtml(x.type)+'<div style="margin-top:4px">'+escapeHtml(({E:'Éducateur',M:'Médecin',A:'Assistant',D:'Dirigeant','D/DR':'Dirigeant / dirigeant responsable'})[x.role]||x.role||'Fonction non renseignée')+' · Staff N°'+escapeHtml(String(x.number))+(x.auto?' · automatique':'')+'</div></div>';}).join("");
+ staffHtml=items.map(function(x){var typeText=String(x.type||"");var lower=typeText.toLowerCase();var bg=lower.indexOf("rouge")>=0?"#ef4444":(lower.indexOf("blanc")>=0?"#f8fafc":"#facc15");var reason=(x.reason&&(lower.indexOf("jaune")>=0||lower.indexOf("rouge")>=0))?'<div style="margin-top:5px"><strong>Motif FMI :</strong> '+escapeHtml(x.reason)+'</div>':"";return '<div class="change-item" style="margin-top:7px;border-left:4px solid '+bg+'"><strong>'+escapeHtml(x.minute)+'</strong><br><strong>'+escapeHtml(x.member||"Staff non renseigné")+'</strong> · '+escapeHtml(typeText)+'<div style="margin-top:4px">'+escapeHtml(({E:'Éducateur',M:'Médecin',A:'Assistant',D:'Dirigeant','D/DR':'Dirigeant / dirigeant responsable'})[x.role]||x.role||'Fonction non renseignée')+' · Staff N°'+escapeHtml(String(x.number))+(x.auto?' · automatique':'')+'</div>'+reason+'</div>';}).join("");
  }else staffHtml=empty("Aucune sanction staff pour "+teamName(side)+".");
  var related=staffExclusions.filter(function(x){return x.team===side;});
  if(related.length){staffHtml+='<div style="margin-top:10px"><strong>⚪ Exclusions temporaires du capitaine suite à un blanc staff</strong></div>';related.forEach(function(x){staffHtml+='<div class="change-item" style="margin-top:7px;border-left:4px solid #f8fafc"><strong>'+escapeHtml(formatMinute(x.start))+'</strong><br>Capitaine : <strong>'+escapeHtml(x.player)+'</strong><div>Exclusion 10 minutes</div></div>';});}
