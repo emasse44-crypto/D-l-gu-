@@ -167,7 +167,7 @@ body.print-composition #compositionPrintArea{width:100%!important}
 <body>
 <div class="app">
 <h1>⚽ Délégué Football</h1>
-<div class="version">VERSION TEST v129 · MOTIFS MODIFIABLES / RAPPORT</div>
+<div class="version">VERSION TEST v130 · MOTIFS EN LISTE DÉROULANTE / RAPPORT</div>
 <section id="home">
 <div class="card"><div class="teams">
 <div><div class="team" id="teamA">Équipe A</div><div class="score" id="scoreA">0</div></div>
@@ -1279,14 +1279,31 @@ function deleteCard(index){
 }
 function editCardReason(index){
  var x=cards[index];if(!x||String(x.type||"").indexOf("🟨")!==0)return;
- var current=String(x.reason||"J1 · Comportement antisportif");
- var choice=prompt("Modifier le motif de l’avertissement.\n\nSaisissez le code et le motif (J1 à J9) ou le motif exact indiqué par l’arbitre :",current);
- if(choice===null)return;
- choice=choice.trim();
- if(!choice){alert("Le motif ne peut pas être vide.");return;}
- x.reason=choice;
- renderCards();saveState();
- if(typeof renderReport==="function")renderReport();
+ var old=String(x.reason||"J1 · Comportement antisportif");
+ var overlay=document.createElement("div");
+ overlay.style.cssText="position:fixed;inset:0;background:rgba(0,0,0,.78);z-index:99999;display:flex;align-items:center;justify-content:center;padding:16px";
+ var panel=document.createElement("div");
+ panel.style.cssText="background:#10202b;color:#fff;padding:20px;border-radius:14px;width:min(520px,100%);box-shadow:0 12px 40px #000";
+ var title=document.createElement("h3");title.textContent="Modifier le motif de l’avertissement";title.style.marginTop="0";panel.appendChild(title);
+ var label=document.createElement("label");label.textContent="Choisir le motif FMI";label.style.cssText="display:block;margin:12px 0 6px";panel.appendChild(label);
+ var select=document.createElement("select");select.style.cssText="width:100%;padding:12px;border-radius:8px;font-size:16px;background:#fff;color:#111";
+ var source=el("yellowReason");
+ Array.from(source.options).forEach(function(o){if(o.value!=="Autre motif"){var op=document.createElement("option");op.value=o.value;op.textContent=o.textContent;select.appendChild(op);}});
+ var other=document.createElement("option");other.value="Autre motif";other.textContent="Autre motif";select.appendChild(other);
+ var otherWrap=document.createElement("div");otherWrap.style.cssText="display:none;margin-top:10px";
+ var otherLabel=document.createElement("label");otherLabel.textContent="Préciser le motif";otherLabel.style.display="block";otherLabel.style.marginBottom="6px";otherWrap.appendChild(otherLabel);
+ var input=document.createElement("input");input.type="text";input.maxLength=180;input.placeholder="Motif indiqué par l’arbitre";input.style.cssText="box-sizing:border-box;width:100%;padding:11px;border-radius:8px";otherWrap.appendChild(input);panel.appendChild(select);panel.appendChild(otherWrap);
+ var current=old;
+ if(current.indexOf("Autre motif · ")===0){select.value="Autre motif";input.value=current.slice("Autre motif · ".length);}
+ else {select.value=Array.from(select.options).some(function(o){return o.value===current;})?current:"Autre motif";if(select.value==="Autre motif")input.value=current;}
+ function toggleOther(){otherWrap.style.display=select.value==="Autre motif"?"block":"none";}
+ select.addEventListener("change",toggleOther);toggleOther();
+ var note=document.createElement("p");note.textContent="Le motif choisi sera repris dans l’historique et dans le rapport.";note.style.cssText="font-size:13px;opacity:.8";panel.appendChild(note);
+ var actions=document.createElement("div");actions.style.cssText="display:flex;gap:10px;justify-content:flex-end;margin-top:18px";
+ var cancel=document.createElement("button");cancel.type="button";cancel.textContent="Annuler";cancel.style.cssText="padding:10px 16px;border:0;border-radius:8px;cursor:pointer";cancel.onclick=function(){overlay.remove();};
+ var save=document.createElement("button");save.type="button";save.textContent="Enregistrer";save.style.cssText="padding:10px 16px;border:0;border-radius:8px;background:#1673e6;color:white;cursor:pointer;font-weight:bold";
+ save.onclick=function(){var value=select.value;if(value==="Autre motif"){var detail=input.value.trim();if(!detail){alert("Précisez le motif de l’avertissement.");input.focus();return;}value="Autre motif · "+detail;}x.reason=value;overlay.remove();renderCards();saveState();if(typeof renderReport==="function")renderReport();};
+ actions.appendChild(cancel);actions.appendChild(save);panel.appendChild(actions);overlay.appendChild(panel);document.body.appendChild(overlay);select.focus();
 }
 function correctCard(index){
  var x=cards[index];var team=x.team==="A"?playersA:playersB;
