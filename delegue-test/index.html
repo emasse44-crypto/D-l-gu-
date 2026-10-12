@@ -174,7 +174,7 @@ body.print-composition #compositionPrintArea{width:100%!important}
 <body>
 <div class="app">
 <h1>⚽ Délégué Football</h1>
-<div class="version">VERSION TEST v150 · COMMENTAIRE SUR UNE LIGNE</div>
+<div class="version">VERSION TEST v151 · MODIFICATION PAR LISTES DÉROULANTES</div>
 <section id="home">
 <div class="card"><div class="teams">
 <div><div class="team" id="teamA">Équipe A</div><div class="score" id="scoreA">0</div></div>
@@ -1796,8 +1796,48 @@ exclusionHtml=exclusions.map(function(x){return '<div style="margin-top:6px"><st
 html+=section("📸 PHOTOS DU MATCH",renderPhotosInReport());
 
 box.innerHTML=html;
- box.querySelectorAll("[data-save-comment]").forEach(function(btn){btn.addEventListener("click",function(){var kind=btn.dataset.saveComment,idx=Number(btn.dataset.sanctionIndex);var list=kind==="staff"?staffCards:cards;var item=list[idx];var area=box.querySelector('textarea[data-sanction-comment="'+kind+'"][data-sanction-index="'+idx+'"]');if(!item||!area)return;item.comment=area.value.trim();saveState();renderReport();});});
- box.querySelectorAll("[data-correct-sanction]").forEach(function(btn){btn.addEventListener("click",function(){var kind=btn.dataset.correctSanction,idx=Number(btn.dataset.sanctionIndex);var list=kind==="staff"?staffCards:cards;var item=list[idx];if(!item||item.auto)return;var current=String(item.type||"");var isStaff=kind==="staff";var isYellow=current.toLowerCase().indexOf("jaune")>=0;var newType=prompt("Correction de saisie uniquement.\nTape 1 pour "+(isStaff?"carton jaune staff":"avertissement jaune")+", 2 pour "+(isStaff?"carton rouge staff":"expulsion rouge")+".\nLa décision officielle de l’arbitre reste celle réellement prononcée.",isYellow?"1":"2");if(newType===null)return;newType=newType.trim();if(newType!=="1"&&newType!=="2"){alert("Choisis 1 ou 2.");return;}item.type=newType==="1"?(isStaff?"🟨 Jaune":"🟨 Jaune"):(isStaff?"🟥 Rouge":"🟥 Rouge");var defaultKey=isStaff?(newType==="1"?"staffJaune":"staffRouge"):(newType==="1"?"joueurJaune":"joueurRouge");var options=sanctionMotifsFMI[defaultKey]||[];var choices=options.map(function(m){return m[0]+" · "+m[1];});var chosen=prompt("Motif FMI (copie le code ou le libellé exact) :\n"+choices.join("\n"),item.reason||choices[0]||"");if(chosen===null)return;if(choices.indexOf(chosen.trim())>=0)item.reason=chosen.trim();else if(chosen.trim())item.reason=chosen.trim();saveState();renderReport();});});
+ function openSanctionCorrection(kind,index){
+ var list=kind==="staff"?staffCards:cards,item=list[index];
+ if(!item||item.auto){alert("Cette sanction automatique ne peut pas être modifiée directement.");return;}
+ var isStaff=kind==="staff",oldType=String(item.type||"").toLowerCase(),initialYellow=oldType.indexOf("jaune")>=0;
+ var overlay=document.createElement("div");
+ overlay.style.cssText="position:fixed;inset:0;background:rgba(0,0,0,.78);z-index:99999;display:flex;align-items:center;justify-content:center;padding:16px";
+ var panel=document.createElement("div");panel.style.cssText="background:#10202b;color:#fff;padding:20px;border-radius:14px;width:min(560px,100%);box-shadow:0 12px 40px #000";
+ var title=document.createElement("h3");title.textContent="Modifier la sanction";panel.appendChild(title);
+ var help=document.createElement("p");help.textContent="Correction de saisie. La décision réellement prononcée par l’arbitre doit rester fidèle au match.";panel.appendChild(help);
+ var typeLabel=document.createElement("label");typeLabel.textContent="Type de sanction";typeLabel.style.display="block";typeLabel.style.marginTop="10px";panel.appendChild(typeLabel);
+ var typeSelect=document.createElement("select");typeSelect.style.cssText="box-sizing:border-box;width:100%;padding:11px;margin-top:5px;border-radius:8px;background:#fff;color:#111;font-size:16px";
+ [["yellow","🟨 Avertissement / carton jaune"],["red","🟥 Expulsion / carton rouge"]].forEach(function(v){var o=document.createElement("option");o.value=v[0];o.textContent=v[1];typeSelect.appendChild(o);});
+ typeSelect.value=initialYellow?"yellow":"red";panel.appendChild(typeSelect);
+ var reasonLabel=document.createElement("label");reasonLabel.textContent="Motif FMI";reasonLabel.style.display="block";reasonLabel.style.marginTop="12px";panel.appendChild(reasonLabel);
+ var reasonSelect=document.createElement("select");reasonSelect.style.cssText="box-sizing:border-box;width:100%;padding:11px;margin-top:5px;border-radius:8px;background:#fff;color:#111;font-size:16px";panel.appendChild(reasonSelect);
+ var otherInput=document.createElement("input");otherInput.type="text";otherInput.placeholder="Préciser le motif";otherInput.style.cssText="box-sizing:border-box;width:100%;padding:10px;margin-top:8px;border-radius:8px;background:#fff;color:#111;display:none";panel.appendChild(otherInput);
+ function populateReasons(keep){
+  var yellow=typeSelect.value==="yellow",key=isStaff?(yellow?"staffJaune":"staffRouge"):(yellow?"joueurJaune":"joueurRouge");
+  var previous=keep?reasonSelect.value:item.reason||"";
+  reasonSelect.innerHTML="";
+  (sanctionMotifsFMI[key]||[]).forEach(function(m){var value=m[0]+" · "+m[1],o=document.createElement("option");o.value=value;o.textContent=value;reasonSelect.appendChild(o);});
+  var other=document.createElement("option");other.value="Autre motif";other.textContent="Autre motif";reasonSelect.appendChild(other);
+  if(Array.from(reasonSelect.options).some(function(o){return o.value===previous;}))reasonSelect.value=previous;
+  else if(previous&&previous.indexOf("Autre motif · ")===0){reasonSelect.value="Autre motif";otherInput.value=previous.slice(14);}
+  else if(previous){var custom=document.createElement("option");custom.value=previous;custom.textContent=previous;reasonSelect.insertBefore(custom,reasonSelect.lastChild);reasonSelect.value=previous;}
+  otherInput.style.display=reasonSelect.value==="Autre motif"?"block":"none";
+ }
+ typeSelect.onchange=function(){populateReasons(false);};
+ reasonSelect.onchange=function(){otherInput.style.display=reasonSelect.value==="Autre motif"?"block":"none";};
+ populateReasons(false);
+ var actions=document.createElement("div");actions.style.cssText="display:flex;gap:8px;flex-wrap:wrap;margin-top:16px";
+ var save=document.createElement("button");save.type="button";save.textContent="Enregistrer";save.onclick=function(){
+  var yellow=typeSelect.value==="yellow",reason=reasonSelect.value;
+  if(reason==="Autre motif"){var detail=otherInput.value.trim();if(!detail){alert("Précise le motif.");return;}reason="Autre motif · "+detail;}
+  item.type=yellow?"🟨 Jaune":"🟥 Rouge";item.reason=reason;
+  saveState();overlay.remove();renderReport();
+ };
+ var cancel=document.createElement("button");cancel.type="button";cancel.textContent="Annuler";cancel.onclick=function(){overlay.remove();};
+ actions.appendChild(save);actions.appendChild(cancel);panel.appendChild(actions);overlay.appendChild(panel);document.body.appendChild(overlay);
+}
+box.querySelectorAll("[data-save-comment]").forEach(function(btn){btn.addEventListener("click",function(){var kind=btn.dataset.saveComment,idx=Number(btn.dataset.sanctionIndex);var list=kind==="staff"?staffCards:cards;var item=list[idx];var area=box.querySelector('textarea[data-sanction-comment="'+kind+'"][data-sanction-index="'+idx+'"]');if(!item||!area)return;item.comment=area.value.trim();saveState();renderReport();});});
+ box.querySelectorAll("[data-correct-sanction]").forEach(function(btn){btn.addEventListener("click",function(){openSanctionCorrection(btn.dataset.correctSanction,Number(btn.dataset.sanctionIndex));});});
 }function goHome(){var pages=document.querySelectorAll(".page");pages.forEach(function(p){p.classList.remove("active");p.style.removeProperty("display");});var home=el("home");home.classList.remove("home-hidden");home.style.display="block";home.hidden=false;window.scrollTo(0,0);}function showPageDirect(pageId){var pages=document.querySelectorAll(".page");pages.forEach(function(p){p.classList.remove("active");p.style.display="none";});var home=document.getElementById("home");if(home)home.style.display="none";var page=document.getElementById(pageId);if(!page)return;page.classList.add("active");page.style.display="block";if(pageId==="changes")renderChanges();if(pageId==="events")renderCards();}
 function rebuildActiveStates(){
   [playersA,playersB].forEach(function(team){
