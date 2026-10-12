@@ -167,7 +167,7 @@ body.print-composition #compositionPrintArea{width:100%!important}
 <body>
 <div class="app">
 <h1>⚽ Délégué Football</h1>
-<div class="version">VERSION TEST v130 · MOTIFS EN LISTE DÉROULANTE / RAPPORT</div>
+<div class="version">VERSION TEST v133 · AVERTISSEMENTS JOUEURS/STAFF ET EXPULSIONS</div>
 <section id="home">
 <div class="card"><div class="teams">
 <div><div class="team" id="teamA">Équipe A</div><div class="score" id="scoreA">0</div></div>
@@ -1054,6 +1054,7 @@ function setupCard(side,label){
   el("cardSimplePanel").style.display="none";
   form.style.display="block";
   el("cardPersonWrap").style.display="block";
+  actualiserListeMotifsFMI();
 }
 function selectCardType(type){
   var form=el("cardForm");
@@ -1064,6 +1065,31 @@ function selectCardType(type){
   el("cardPersonWrap").style.display="none";
   form.style.display="none";
 }
+el("yellowReason").addEventListener("change",function(){el("yellowOtherWrap").style.display=this.value==="Autre motif"?"block":"none";});
+var sanctionMotifsFMI={
+ joueurJaune:[["J1","Comportement antisportif"],["J2","Désapprobation en paroles ou en actes"],["J3","Enfreindre avec persistance les Lois du Jeu"],["J4","Retarder la reprise du jeu"],["J5","Ne pas respecter la distance requise lors d’un coup de pied de coin, d’un coup franc ou d’une rentrée de touche"],["J6","Pénétrer ou revenir sur le terrain sans autorisation de l’arbitre"],["J7","Quitter délibérément le terrain sans autorisation de l’arbitre"],["J8","Pénétrer dans la zone de visionnage"],["J9","Usage excessif du signal d’analyse vidéo"]],
+ joueurRouge:[["R1","Être coupable de faute grossière"],["R2","Commettre un acte de brutalité"],["R3","Cracher sur un adversaire ou une autre personne"],["R4","Empêcher un but en touchant délibérément le ballon de la main ou annihiler une occasion manifeste"],["R5","Anéantir une occasion de but manifeste par une infraction passible d’un coup franc"],["R6","Tenir des propos ou faire des gestes blessants, injurieux ou grossiers"],["R8","Pénétrer dans la salle de visionnage"],["R9","Usage excessif du signal d’analyse vidéo"]],
+ staffJaune:[["JS1","Ne pas respecter avec persistance les limites de la surface technique"],["JS2","Retarder la reprise du jeu de l’équipe adverse"],["JS3","Pénétrer dans la surface technique adverse ou la zone de visionnage sans chercher la confrontation"],["JS4","Manifester sa désapprobation par la parole ou par des gestes"],["JS5","Demander excessivement ou avec persistance d’infliger des cartons à l’adversaire"],["JS6","Effectuer de manière excessive le signal du recours à l’arbitrage vidéo"],["JS7","Effectuer des gestes ou se comporter de manière provocante ou offensante"],["JS8","Adopter avec persistance un comportement répréhensible"],["JS9","Se comporter d’une manière irrespectueuse envers le jeu"]],
+ staffRouge:[["RS1","Retarder la reprise du jeu de l’équipe adverse"],["RS2","Quitter la surface technique pour signifier sa désapprobation ou agir de manière provocatrice"],["RS3","Pénétrer dans la surface technique adverse ou la zone de visionnage de manière agressive"],["RS4","Jeter ou botter un objet sur le terrain"],["RS5","Pénétrer sur le terrain pour chercher la confrontation ou interférer avec le jeu"],["RS6","Se comporter de manière agressive ou violente"],["RS7","Recevoir un second avertissement au cours du même match"],["RS8","Tenir des propos ou faire des gestes blessants, injurieux ou grossiers"],["RS9","Utiliser illicitement des équipements électroniques ou de communication"]]
+};
+function actualiserListeMotifsFMI(){
+ var type=String(el("cardForm").dataset.type||"");
+ var value=String(el("cardPlayer").value||"");
+ var staff=value.indexOf("staff-")===0;
+ var yellow=type.indexOf("🟨")===0, red=type.indexOf("🟥")===0;
+ var wrap=el("yellowReasonWrap"),select=el("yellowReason");
+ if(!yellow&&!red){wrap.style.display="none";return;}
+ wrap.style.display="block";
+ el("reasonTitle").textContent=(yellow?"Avertissement":"Expulsion")+" · "+(staff?"staff / dirigeant":"joueur");
+ var key=staff?(yellow?"staffJaune":"staffRouge"):(yellow?"joueurJaune":"joueurRouge");
+ var previous=select.value;
+ select.innerHTML="";
+ sanctionMotifsFMI[key].forEach(function(m){var op=document.createElement("option");op.value=m[0]+" · "+m[1];op.textContent=m[0]+" · "+m[1];select.appendChild(op);});
+ var other=document.createElement("option");other.value="Autre motif";other.textContent="Autre motif";select.appendChild(other);
+ if(Array.from(select.options).some(function(o){return o.value===previous;}))select.value=previous;
+ el("yellowOtherWrap").style.display=select.value==="Autre motif"?"block":"none";
+}
+el("cardPlayer").addEventListener("change",actualiserListeMotifsFMI);
 el("yellowReason").addEventListener("change",function(){el("yellowOtherWrap").style.display=this.value==="Autre motif"?"block":"none";});
 function confirmCard(){
 var side=el("cardForm").dataset.team;
@@ -1076,6 +1102,7 @@ var sidx=Number(String(raw).slice(6));
 var staff=side==="A"?staffA:staffB;
 if(!Number.isInteger(sidx)||!staff[sidx]){alert("Choisissez un membre du staff.");return;}
 var member=staff[sidx];
+var staffReason="";if(type==="🟨 Jaune"||type==="🟥 Rouge"){staffReason=el("yellowReason").value;if(staffReason==="Autre motif"){staffReason=el("yellowOther").value.trim();if(!staffReason){alert("Précisez le motif de la sanction.");return;}staffReason="Autre motif · "+staffReason;}}
 var previous=staffCards.filter(function(x){return x.team===side&&x.number===sidx+1;});
 if(previous.some(function(x){return x.sentOff;})){alert("Ce membre du staff est déjà expulsé.");return;}
 var hadPrevious=previous.some(function(x){return x.type==="🟨 Jaune"||x.type==="⚪ Blanc"});
@@ -1090,7 +1117,7 @@ staffExclusions.push({team:side,number:cap+1,player:playerLabel(players[cap],cap
 players[cap].active=false;
 }
 }else{
-staffCards.push({team:side,type:type,member:member,number:sidx+1,minute:minute,sentOff:type==="🟥 Rouge"});
+staffCards.push({team:side,type:type,member:member,number:sidx+1,minute:minute,reason:staffReason,sentOff:type==="🟥 Rouge"});
 if(staffTriggersRed&&type!=="🟥 Rouge"){
 staffCards.push({team:side,type:"🟥 Rouge ("+(type==="⚪ Blanc"?"blanc + jaune":"2 jaunes")+")",member:member,number:sidx+1,minute:minute,auto:true,sentOff:true});
 }
@@ -1114,7 +1141,7 @@ var previousWhite=previous.some(function(x){return String(x.type||"").indexOf("�
 var isYellow=String(type).indexOf("🟨")===0;
 var isWhite=String(type).indexOf("⚪")===0;
 var triggersRed=(isYellow&&previousYellow)||(isWhite&&previousYellow)||(isYellow&&previousWhite);
-var yellowReason="";if(isYellow){yellowReason=el("yellowReason").value;if(yellowReason==="Autre motif"){yellowReason=el("yellowOther").value.trim();if(!yellowReason){alert("Précisez le motif de l’avertissement.");return;}yellowReason="Autre motif · "+yellowReason;}}cards.push({team:side,type:type,player:playerLabel(team[idx],idx),number:idx+1,minute:minute,reason:yellowReason});
+var yellowReason="";if(isYellow||String(type).indexOf("🟥")===0){yellowReason=el("yellowReason").value;if(yellowReason==="Autre motif"){yellowReason=el("yellowOther").value.trim();if(!yellowReason){alert("Précisez le motif de la sanction.");return;}yellowReason="Autre motif · "+yellowReason;}}cards.push({team:side,type:type,player:playerLabel(team[idx],idx),number:idx+1,minute:minute,reason:yellowReason});
 if(type==="🟥 Rouge"){
 team[idx].active=false;
 }else if(isWhite&&!hadPrevious){
