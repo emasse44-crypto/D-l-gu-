@@ -1842,8 +1842,6 @@ function exportWordReport(deliveryMode){ if(!window.JSZip){alert("Le module Word
   if(red)lines.push(red+" rouge"+(red>1?"s":"")+" pour "+teamName);
   if(white)lines.push(white+" blanc"+(white>1?"s":"")+" pour "+teamName);
   if(!lines.length)lines.push("Aucune sanction pour "+teamName);
-  var warnings=cards.filter(function(x){return x.team===side&&String(x.type||"").indexOf("🟨")===0&&String(x.reason||"").trim();});
-  warnings.forEach(function(x){lines.push("Motif avertissement ("+(x.minute||"minute non renseignée")+", "+(x.player||"joueur non renseigné")+") : "+x.reason);});
   return lines;
  }
  function xmlEscape(v){return String(v==null?"Non renseigné":v).replace(/&/g,"&amp;").replace(/</g,"&lt;").replace(/>/g,"&gt;");}
