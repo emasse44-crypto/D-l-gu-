@@ -9,7 +9,7 @@ android {
     defaultConfig {
         applicationId 'fr.deleguefootball.android8.v1'
         minSdk 26
-        targetSdk 28
+        targetSdk 35
         versionCode 5
         versionName '5.0'
     }
