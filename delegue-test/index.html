@@ -167,7 +167,7 @@ body.print-composition #compositionPrintArea{width:100%!important}
 <body>
 <div class="app">
 <h1>⚽ Délégué Football</h1>
-<div class="version">VERSION TEST v141 · MODIFICATION MOTIF APRÈS SAISIE</div>
+<div class="version">VERSION TEST v142 · SUPPRESSION SANCTION STAFF</div>
 <section id="home">
 <div class="card"><div class="teams">
 <div><div class="team" id="teamA">Équipe A</div><div class="score" id="scoreA">0</div></div>
@@ -1558,7 +1558,36 @@ el("staffForm").style.display="none";
 renderStaffHistory();
 saveState();
 }
-function renderStaffHistory(){var c=el("staffHistory");if(!c)return;c.innerHTML="";if(!staffCards.length&&!staffExclusions.length){c.innerHTML='<p class="note">Aucune sanction.</p>';return;}staffCards.forEach(function(x){var d=document.createElement("div");d.className="change-item";d.textContent=x.minute+" · Équipe "+x.team+" : "+x.type+" · "+x.member+" (staff "+x.number+")";c.appendChild(d);});if(staffExclusions.length){var h=document.createElement("div");h.className="change-item";h.style.marginTop="12px";h.innerHTML="<strong>⚪ Exclusion capitaine</strong>";staffExclusions.forEach(function(x){var p=document.createElement("div");p.style.marginTop="6px";var remaining=Math.max(0,x.end-seconds);p.textContent=x.player+" · "+(remaining>0?Math.ceil(remaining/60)+" min restantes":"exclusion terminée");h.appendChild(p);});c.appendChild(h);}}
+function renderStaffHistory(){
+ var c=el("staffHistory");if(!c)return;c.innerHTML="";
+ if(!staffCards.length&&!staffExclusions.length){c.innerHTML='<p class="note">Aucune sanction.</p>';return;}
+ staffCards.forEach(function(x,i){
+   var d=document.createElement("div");d.className="change-item";
+   var line=document.createElement("div");
+   line.textContent=x.minute+" · Équipe "+x.team+" : "+x.type+" · "+x.member+" (staff "+x.number+")";
+   d.appendChild(line);
+   if(x.reason){var reason=document.createElement("div");reason.className="note";reason.style.marginTop="5px";reason.textContent="Motif FMI : "+x.reason;d.appendChild(reason);}
+   if(x.auto){var auto=document.createElement("div");auto.className="note";auto.style.marginTop="5px";auto.textContent="Expulsion automatique";d.appendChild(auto);}
+   if(!x.auto){
+     var actions=document.createElement("div");actions.style.marginTop="8px";
+     var del=document.createElement("button");del.type="button";del.className="red";del.textContent="🗑️ Supprimer cette sanction";
+     del.onclick=function(){deleteStaffCard(i);};
+     actions.appendChild(del);d.appendChild(actions);
+   }
+   c.appendChild(d);
+ });
+ if(staffExclusions.length){
+   var h=document.createElement("div");h.className="change-item";h.style.marginTop="12px";
+   var heading=document.createElement("strong");heading.textContent="⚪ Exclusion capitaine";h.appendChild(heading);
+   staffExclusions.forEach(function(x){
+     var p=document.createElement("div");p.style.marginTop="6px";
+     var remaining=Math.max(0,x.end-seconds);
+     p.textContent=x.player+" · "+(remaining>0?Math.ceil(remaining/60)+" min restantes":"exclusion terminée");
+     h.appendChild(p);
+   });
+   c.appendChild(h);
+ }
+}
 function formatMinute(total){return Math.floor(total/60)+":"+String(total%60).padStart(2,"0");} function renderTimeline(){
 var box=el("sheetTimeline"); if(!box)return;
 var events=[];
