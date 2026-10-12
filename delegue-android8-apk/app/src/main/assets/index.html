@@ -230,6 +230,7 @@ body.print-composition #compositionPrintArea{width:100%!important}
 </div>
 <script src="https://cdn.jsdelivr.net/npm/tesseract.js@5/dist/tesseract.min.js"></script>
 <script src="https://cdn.jsdelivr.net/npm/jszip@3.10.1/dist/jszip.min.js"></script>
+<script src="rapport-modele.js"></script>
 
 <section class="page card" id="guide"><button class="back">← Retour</button><h2>📘 Guide d’utilisation</h2><p class="note">Consulte le mode d’emploi de Délégué Football ci-dessous.</p><div style="display:grid;grid-template-columns:1fr 1fr;gap:8px;margin:10px 0"><a href="guide-utilisation.pdf" target="_blank" rel="noopener" style="display:block;text-align:center;text-decoration:none;background:#166534;color:white;padding:12px;border-radius:10px;font-weight:bold">📖 Ouvrir le PDF</a><a href="guide-utilisation.pdf" download="Guide_simple_Delegue_Football.pdf" style="display:block;text-align:center;text-decoration:none;background:#28435d;color:white;padding:12px;border-radius:10px;font-weight:bold">⬇️ Télécharger le PDF</a></div><iframe title="Guide d’utilisation" src="guide-utilisation.pdf" style="width:100%;height:70vh;min-height:480px;border:1px solid var(--line);border-radius:10px;background:white"></iframe></section>
 <script>
@@ -1976,6 +1977,7 @@ function saveCompositionAsImage(){
     });
    }else{
     downloadCompositionBlob(blob,filename);
+    if(window.AndroidBridge&&window.AndroidBridge.shareFile)return;
     if(window.__compositionPhotoMode==="send")alert("Le partage de fichiers n’est pas disponible dans ce navigateur. La photo a été téléchargée : tu peux ensuite la joindre à ton message.");
     else alert("Photo téléchargée au format PNG.");
    }
@@ -2026,9 +2028,11 @@ function exportWordReport(deliveryMode){ if(!window.JSZip){alert("Le module Word
   nodes[0].setAttributeNS("http://www.w3.org/XML/1998/namespace","xml:space","preserve");
   for(var i=1;i<nodes.length;i++)nodes[i].textContent="";
  }
- fetch(window.location.protocol==="file:"?"https://raw.githubusercontent.com/emasse44-crypto/D-l-gu-/main/delegue-test/rapport-modele.docx.docx":"../delegue-test/rapport-modele.docx.docx?v=124",{cache:"no-store"}).then(function(r){
-  if(!r.ok)throw new Error("Modèle Word introuvable ("+r.status+").");
-  return r.arrayBuffer();
+ Promise.resolve().then(function(){
+  if(!window.WORD_TEMPLATE_BASE64)throw new Error("Le modèle Word intégré est introuvable.");
+  var binary=atob(window.WORD_TEMPLATE_BASE64),bytes=new Uint8Array(binary.length);
+  for(var i=0;i<binary.length;i++)bytes[i]=binary.charCodeAt(i);
+  return bytes.buffer;
  }).then(function(buf){return JSZip.loadAsync(buf);}).then(function(zip){
   var file=zip.file("word/document.xml");if(!file)throw new Error("Le document Word est invalide.");
   return file.async("string").then(function(xml){
@@ -2136,12 +2140,12 @@ el("saveStaff").onclick=function(){readStaff(staffA,"staffA");readStaff(staffB,"
 el("staffYellowA").onclick=function(){setupStaffCard(staffA,"Équipe A","🟨 Jaune");};el("staffYellowB").onclick=function(){setupStaffCard(staffB,"Équipe B","🟨 Jaune");};
 el("staffRedA").onclick=function(){setupStaffCard(staffA,"Équipe A","🟥 Rouge");};el("staffRedB").onclick=function(){setupStaffCard(staffB,"Équipe B","🟥 Rouge");};
 el("staffWhiteA").onclick=function(){setupStaffCard(staffA,"Équipe A","⚪ Blanc");};el("staffWhiteB").onclick=function(){setupStaffCard(staffB,"Équipe B","⚪ Blanc");};
-el("confirmStaffCard").onclick=confirmStaffCard;el("printSheet").onclick=function(){renderSheet();window.print();};
+el("confirmStaffCard").onclick=confirmStaffCard;el("printSheet").onclick=function(){renderSheet();if(window.AndroidBridge&&window.AndroidBridge.printPage){window.AndroidBridge.printPage();}else{window.print();}};
 
 el("addIncident").onclick=function(){var txt=el("incidentText").value.trim();if(!txt){alert("Décrivez l'incident.");return;}incidents.push({minute:formatMinute(seconds),text:txt});el("incidentText").value="";renderIncidents();saveState();};
 el("injuryTeam").onchange=renderInjuryPlayers;
 el("addInjury").onclick=function(){var side=el("injuryTeam").value,idx=Number(el("injuryPlayer").value),team=side==="A"?playersA:playersB;if(!Number.isInteger(idx)||!team[idx]){alert("Choisissez un joueur.");return;}var note=el("injuryText").value.trim();var out=el("injuryOut").checked;injuries.push({team:side,player:playerLabel(team[idx],idx),number:idx+1,minute:formatMinute(seconds),note:note,out:out});el("injuryText").value="";el("injuryOut").checked=false;renderInjuries();saveState();};
-el("printReport").onclick=function(){renderReport();document.body.classList.add("print-report");window.print();};
+el("printReport").onclick=function(){renderReport();document.body.classList.add("print-report");if(window.AndroidBridge&&window.AndroidBridge.printPage){window.AndroidBridge.printPage();}else{window.print();}};
 el("takePhotosBtn").onclick=function(){el("matchPhotosInput").click();};
 el("matchPhotosInput").onchange=function(){addPhotos(this.files);this.value="";};
 
