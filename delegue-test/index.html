@@ -1027,33 +1027,37 @@ function setupCard(side,label){
   if(!Array.isArray(staff))staff=[];
   el("cardTeamLabel").textContent=(type?type+" · ":"")+label;
   var sel=el("cardPlayer");sel.innerHTML="";
+  var playersGroup=document.createElement("optgroup");playersGroup.label="JOUEURS";
   team.forEach(function(p,i){
     p=p||{};
     if(i<16&&!p.role&&!isPlayerExpelled(side,i)){
-      var o=document.createElement("option");o.value=i;
+      var o=document.createElement("option");o.value=String(i);
       o.textContent=p.name?playerLabel(p,i):("N°"+(i+1)+" · joueur non renseigné");
       if(p.name&&!p.active)o.textContent+=" · remplaçant / sorti";
-      sel.appendChild(o);
+      playersGroup.appendChild(o);
     }
   });
-  if(sel.options.length){
-    var sep=document.createElement("option");sep.disabled=true;sep.textContent="──────── STAFF ────────";sel.appendChild(sep);
-  }
-  staff.forEach(function(name,i){
-    if(typeof name==="string"&&name.trim()){
-      var o=document.createElement("option");o.value="staff-"+i;o.textContent=name+" · STAFF";sel.appendChild(o);
+  if(playersGroup.children.length)sel.appendChild(playersGroup);
+  var staffGroup=document.createElement("optgroup");staffGroup.label="STAFF · DIRIGEANTS";
+  staff.forEach(function(member,i){
+    var name=(typeof member==="string"?member:(member&&typeof member==="object"?(member.name||member.nom||""):""));
+    if(String(name).trim()){
+      var o=document.createElement("option");o.value="staff-"+i;o.textContent=String(name).trim()+" · STAFF";
+      staffGroup.appendChild(o);
     }
   });
+  if(staffGroup.children.length)sel.appendChild(staffGroup);
   if(!sel.options.length){
     var o=document.createElement("option");o.value="";o.textContent="Aucun joueur ou staff renseigné";sel.appendChild(o);
   }
   form.dataset.team=side;
-  el("yellowReasonWrap").style.display=(String(type).indexOf("🟨")===0)?"block":"none";
+  el("yellowReasonWrap").style.display=(String(type).indexOf("🟨")===0||String(type).indexOf("🟥")===0)?"block":"none";
   el("yellowOtherWrap").style.display="none";
   el("yellowOther").value="";
   el("cardSimplePanel").style.display="none";
   form.style.display="block";
   el("cardPersonWrap").style.display="block";
+  sel.onchange=function(){actualiserListeMotifsFMI();};
   actualiserListeMotifsFMI();
 }
 function selectCardType(type){
