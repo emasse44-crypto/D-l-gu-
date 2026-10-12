@@ -167,7 +167,7 @@ body.print-composition #compositionPrintArea{width:100%!important}
 <body>
 <div class="app">
 <h1>⚽ Délégué Football</h1>
-<div class="version">VERSION TEST v140 · CORRECTION TITRE MOTIFS FMI</div>
+<div class="version">VERSION TEST v141 · MODIFICATION MOTIF APRÈS SAISIE</div>
 <section id="home">
 <div class="card"><div class="teams">
 <div><div class="team" id="teamA">Équipe A</div><div class="score" id="scoreA">0</div></div>
@@ -1207,9 +1207,9 @@ setTimeout(goHome,0);
    var actions=document.createElement("div");actions.style.display="flex";actions.style.gap="8px";actions.style.flexWrap="wrap";actions.style.marginTop="8px";
    if(entry.kind==="player"&&!x.auto){
      var edit=document.createElement("button");edit.type="button";edit.textContent="✏️ Corriger joueur";edit.onclick=function(){correctCard(entry.index);};actions.appendChild(edit);
-     if(String(x.type||"").indexOf("🟨")===0){
-       var editReason=document.createElement("button");editReason.type="button";editReason.textContent="✏️ Modifier motif";editReason.onclick=function(){editCardReason(entry.index);};actions.appendChild(editReason);
-     }
+   }
+   if(!x.auto&&(String(x.type||"").indexOf("🟨")===0||String(x.type||"").indexOf("🟥")===0)){
+     var editReason=document.createElement("button");editReason.type="button";editReason.textContent="✏️ Modifier motif";editReason.onclick=function(){editSanctionReason(entry.kind,entry.index);};actions.appendChild(editReason);
    }
    if(!x.auto){
      var del=document.createElement("button");del.type="button";del.textContent="🗑️ Supprimer";del.className="red";del.onclick=function(){
@@ -1284,6 +1284,38 @@ function restoreCardPlayer(teamSide,number){
  var excluded=exclusions.some(function(e){return e.team===teamSide&&e.number===number&&e.active;});
  var sentOff=cards.some(function(e){return e.team===teamSide&&e.number===number&&e.type.indexOf("🟥")===0;});
  if(!excluded&&!sentOff)team[idx].active=true;
+}
+function editSanctionReason(kind,index){
+ var list=kind==="staff"?staffCards:cards;
+ var x=list[index];
+ if(!x||x.auto)return;
+ var yellow=String(x.type||"").indexOf("🟨")===0;
+ var red=String(x.type||"").indexOf("🟥")===0;
+ if(!yellow&&!red)return;
+ var isStaff=kind==="staff";
+ var key=isStaff?(yellow?"staffJaune":"staffRouge"):(yellow?"joueurJaune":"joueurRouge");
+ var overlay=document.createElement("div");
+ overlay.style.cssText="position:fixed;inset:0;background:rgba(0,0,0,.78);z-index:99999;display:flex;align-items:center;justify-content:center;padding:16px";
+ var panel=document.createElement("div");
+ panel.style.cssText="background:#10202b;color:#fff;padding:20px;border-radius:14px;width:min(520px,100%);box-shadow:0 12px 40px #000";
+ var title=document.createElement("h3");title.textContent="Modifier le motif de la sanction";panel.appendChild(title);
+ var select=document.createElement("select");select.style.cssText="width:100%;padding:12px;border-radius:8px;font-size:16px;background:#fff;color:#111";
+ (sanctionMotifsFMI[key]||[]).forEach(function(m){var o=document.createElement("option");o.value=m[0]+" · "+m[1];o.textContent=o.value;select.appendChild(o);});
+ var other=document.createElement("option");other.value="Autre motif";other.textContent="Autre motif";select.appendChild(other);panel.appendChild(select);
+ var input=document.createElement("input");input.type="text";input.placeholder="Préciser le motif";input.style.cssText="display:none;box-sizing:border-box;width:100%;padding:11px;margin-top:10px;border-radius:8px";
+ if(String(x.reason||"").indexOf("Autre motif · ")===0){select.value="Autre motif";input.value=String(x.reason).slice(14);}
+ else if(Array.from(select.options).some(function(o){return o.value===x.reason;})){select.value=x.reason;}
+ panel.appendChild(input);
+ select.onchange=function(){input.style.display=this.value==="Autre motif"?"block":"none";};
+ select.onchange();
+ var actions=document.createElement("div");actions.style.cssText="display:flex;gap:8px;margin-top:14px;flex-wrap:wrap";
+ var save=document.createElement("button");save.type="button";save.textContent="Enregistrer";save.onclick=function(){
+   var reason=select.value;
+   if(reason==="Autre motif"){var detail=input.value.trim();if(!detail){alert("Précisez le motif.");return;}reason="Autre motif · "+detail;}
+   x.reason=reason;saveState();renderCards();overlay.remove();
+ };
+ var cancel=document.createElement("button");cancel.type="button";cancel.textContent="Annuler";cancel.onclick=function(){overlay.remove();};
+ actions.appendChild(save);actions.appendChild(cancel);panel.appendChild(actions);overlay.appendChild(panel);document.body.appendChild(overlay);
 }
 function deleteCard(index){
  var x=cards[index];if(!x)return;
