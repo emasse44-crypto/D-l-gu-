@@ -174,7 +174,7 @@ body.print-composition #compositionPrintArea{width:100%!important}
 <body>
 <div class="app">
 <h1>⚽ Délégué Football</h1>
-<div class="version">VERSION TEST v152 · BOUTONS STAFF ALIGNÉS JOUEURS</div>
+<div class="version">VERSION TEST v153 · CORRIGER STAFF DANS L’HISTORIQUE</div>
 <section id="home">
 <div class="card"><div class="teams">
 <div><div class="team" id="teamA">Équipe A</div><div class="score" id="scoreA">0</div></div>
@@ -1212,8 +1212,11 @@ setTimeout(goHome,0);
    d.appendChild(line);if(x.reason){var reasonLine=document.createElement("div");reasonLine.className="note";reasonLine.style.marginTop="5px";reasonLine.textContent="Motif FMI : "+x.reason;d.appendChild(reasonLine);}
    if(x.auto){var note=document.createElement("div");note.className="note";note.style.marginTop="5px";note.textContent="Sanction automatique";d.appendChild(note);}
    var actions=document.createElement("div");actions.style.display="flex";actions.style.gap="8px";actions.style.flexWrap="wrap";actions.style.marginTop="8px";
-   if(entry.kind==="player"&&!x.auto){
+   if(!x.auto&&entry.kind==="player"){
      var edit=document.createElement("button");edit.type="button";edit.textContent="✏️ Corriger joueur";edit.onclick=function(){correctCard(entry.index);};actions.appendChild(edit);
+   }
+   if(!x.auto&&entry.kind==="staff"){
+     var editStaff=document.createElement("button");editStaff.type="button";editStaff.textContent="✏️ Corriger staff";editStaff.onclick=function(){correctStaffCard(entry.index);};actions.appendChild(editStaff);
    }
    if(!x.auto&&(String(x.type||"").indexOf("🟨")===0||String(x.type||"").indexOf("🟥")===0)){
      var editReason=document.createElement("button");editReason.type="button";editReason.textContent="✏️ Modifier motif";editReason.onclick=function(){editSanctionReason(entry.kind,entry.index);};actions.appendChild(editReason);
@@ -1379,6 +1382,18 @@ function editCardReason(index){
  var save=document.createElement("button");save.type="button";save.textContent="Enregistrer";save.style.cssText="padding:10px 16px;border:0;border-radius:8px;background:#1673e6;color:white;cursor:pointer;font-weight:bold";
  save.onclick=function(){var value=select.value;if(value==="Autre motif"){var detail=input.value.trim();if(!detail){alert("Précisez le motif de l’avertissement.");input.focus();return;}value="Autre motif · "+detail;}x.reason=value;overlay.remove();renderCards();saveState();if(typeof renderReport==="function")renderReport();};
  actions.appendChild(cancel);actions.appendChild(save);panel.appendChild(actions);overlay.appendChild(panel);document.body.appendChild(overlay);select.focus();
+}
+function correctStaffCard(index){
+ var x=staffCards[index];if(!x||x.auto)return;
+ var list=x.team==="A"?staffA:staffB;
+ var current=Number(x.number)||1;
+ var options=list.map(function(name,i){return (i+1)+". "+(String(name||"").trim()||"Staff non renseigné");}).join("\n");
+ var answer=prompt("Choisis le numéro du bon membre du staff :\n"+options,current);
+ if(answer===null)return;
+ var n=Number(answer);
+ if(!Number.isInteger(n)||n<1||n>5||!String(list[n-1]||"").trim()){alert("Choisis un membre du staff renseigné, de 1 à 5.");return;}
+ x.member=String(list[n-1]).trim();x.number=n;
+ saveState();renderCards();renderReport();
 }
 function correctCard(index){
  var x=cards[index];var team=x.team==="A"?playersA:playersB;
