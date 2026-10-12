@@ -174,7 +174,7 @@ body.print-composition #compositionPrintArea{width:100%!important}
 <body>
 <div class="app">
 <h1>⚽ Délégué Football</h1>
-<div class="version">VERSION TEST v154 · SANCTIONS COMPACTES</div>
+<div class="version">VERSION TEST v155 · DOUBLON CARTON BLANC CORRIGÉ</div>
 <section id="home">
 <div class="card"><div class="teams">
 <div><div class="team" id="teamA">Équipe A</div><div class="score" id="scoreA">0</div></div>
@@ -1762,7 +1762,7 @@ function renderSanctionTeams(items,emptyText){
 }
 var playerWarnings=cards.filter(function(x){var t=String(x.type||"").toLowerCase();return t.indexOf("jaune")>=0;});
 var playerDismissals=cards.filter(function(x){var t=String(x.type||"").toLowerCase();return t.indexOf("rouge")>=0;});
-var playerWhites=cards.filter(function(x){var t=String(x.type||"").toLowerCase();return t.indexOf("blanc")>=0;});
+var playerWhites=cards.filter(function(x){var t=String(x.type||"").toLowerCase();return t.indexOf("blanc")>=0&&t.indexOf("rouge")<0&&!x.auto;});
 html+=section("🟨 AVERTISSEMENTS JOUEURS",renderSanctionTeams(playerWarnings,"Aucun avertissement joueur."));
 html+=section("🟥 EXPULSIONS JOUEURS",renderSanctionTeams(playerDismissals,"Aucune expulsion joueur."));
 html+=section("⚪ CARTONS BLANCS JOUEURS",renderSanctionTeams(playerWhites,"Aucun carton blanc joueur."));
