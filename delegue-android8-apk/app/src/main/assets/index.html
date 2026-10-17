@@ -1177,6 +1177,9 @@ update();
 goHome();
 setTimeout(goHome,0);
 }function renderCards(){
+ // Afficher les noms réels des clubs sur les boutons de sélection des cartons.
+ if(el("cardSimpleA"))el("cardSimpleA").textContent=el("teamA").textContent||"Équipe A";
+ if(el("cardSimpleB"))el("cardSimpleB").textContent=el("teamB").textContent||"Équipe B";
  // Nettoyer les anciennes expulsions automatiques devenues orphelines après une suppression.
  function hasTriggerForAutoRed(red, list, staffMode){
    var same=list.filter(function(item){
@@ -2150,7 +2153,7 @@ el("takePhotosBtn").onclick=function(){el("matchPhotosInput").click();};
 el("matchPhotosInput").onchange=function(){addPhotos(this.files);this.value="";};
 
 /* ===== CORRECTION DES MINUTES - VERSION DEVELOP ===== */
-function minuteEditorValue(v){return v==null?"":String(v);}
+function minuteEditorValue(v){v=v==null?"":String(v).trim();return /^(?:\d{1,3})(?:\+\d{1,2})?$/.test(v)?v:"";}
 function normalizeEditedMinute(v){
   v=String(v||"").trim();
   if(!v)return null;
