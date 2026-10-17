@@ -2154,7 +2154,7 @@ function minuteEditorValue(v){return v==null?"":String(v);}
 function normalizeEditedMinute(v){
   v=String(v||"").trim();
   if(!v)return null;
-  if(!/^(?:\\d{1,3})(?:\\+\\d{1,2})?$/.test(v)){
+  if(!/^(?:\d{1,3})(?:\+\d{1,2})?$/.test(v)){
     alert("Minute invalide. Exemple : 37, 45+2 ou 90+4.");
     return null;
   }
