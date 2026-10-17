@@ -2193,6 +2193,22 @@ function renderMinuteEditor(boxId,title,items,labelFn,saveFn){
     var inp=document.createElement("input");
     inp.type="text";
     inp.inputMode="text";
+    inp.setAttribute("autocomplete","off");
+    inp.setAttribute("autocorrect","off");
+    inp.addEventListener("focus",function(){
+      if(window.AndroidBridge&&typeof window.AndroidBridge.showKeyboard==="function"){
+        window.AndroidBridge.showKeyboard();
+      }
+    });
+    inp.addEventListener("touchend",function(){
+      var field=this;
+      setTimeout(function(){
+        field.focus();
+        if(window.AndroidBridge&&typeof window.AndroidBridge.showKeyboard==="function"){
+          window.AndroidBridge.showKeyboard();
+        }
+      },80);
+    });
     inp.style.width="100%";
     inp.style.minWidth="0";
     inp.style.boxSizing="border-box";
