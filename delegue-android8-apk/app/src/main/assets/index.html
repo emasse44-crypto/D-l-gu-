@@ -2195,20 +2195,30 @@ function renderMinuteEditor(boxId,title,items,labelFn,saveFn){
     inp.inputMode="text";
     inp.setAttribute("autocomplete","off");
     inp.setAttribute("autocorrect","off");
-    inp.addEventListener("focus",function(){
-      if(window.AndroidBridge&&typeof window.AndroidBridge.showKeyboard==="function"){
-        window.AndroidBridge.showKeyboard();
-      }
-    });
-    inp.addEventListener("touchend",function(){
-      var field=this;
-      setTimeout(function(){
-        field.focus();
+    if(boxId==="goalHistory"||boxId==="cardHistory"){
+      inp.readOnly=true;
+      inp.placeholder="Appuyer pour corriger";
+      inp.addEventListener("click",function(){
+        if(window.AndroidBridge&&typeof window.AndroidBridge.editMinute==="function"){
+          window.AndroidBridge.editMinute(boxId,i,inp.value);
+        }
+      });
+    }else{
+      inp.addEventListener("focus",function(){
         if(window.AndroidBridge&&typeof window.AndroidBridge.showKeyboard==="function"){
           window.AndroidBridge.showKeyboard();
         }
-      },80);
-    });
+      });
+      inp.addEventListener("touchend",function(){
+        var field=this;
+        setTimeout(function(){
+          field.focus();
+          if(window.AndroidBridge&&typeof window.AndroidBridge.showKeyboard==="function"){
+            window.AndroidBridge.showKeyboard();
+          }
+        },80);
+      });
+    }
     inp.style.width="100%";
     inp.style.minWidth="0";
     inp.style.boxSizing="border-box";
@@ -2234,6 +2244,17 @@ function renderMinuteEditor(boxId,title,items,labelFn,saveFn){
     wrap.appendChild(row);
   });
   box.appendChild(wrap);
+}
+function applyNativeMinuteEdit(boxId,index,value){
+  var v=normalizeEditedMinute(value);
+  if(v===null)return;
+  var list=boxId==="goalHistory"?goals:(boxId==="cardHistory"?cards:null);
+  if(!list||!list[index])return;
+  list[index].minute=v;
+  saveState();
+  if(boxId==="goalHistory"){renderGoalsPage();}else{renderCards();}
+  if(typeof renderReport==="function")renderReport();
+  if(typeof renderSheet==="function")renderSheet();
 }
 function refreshGoalMinuteEditor(){
   renderMinuteEditor("goalHistory","Modifiez uniquement la minute de l'événement.",goals,
