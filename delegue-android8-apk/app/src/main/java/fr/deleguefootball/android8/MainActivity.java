@@ -21,6 +21,7 @@ import android.webkit.WebResourceRequest;
 import android.webkit.WebSettings;
 import android.webkit.WebView;
 import android.view.WindowManager;
+import android.view.inputmethod.InputMethodManager;
 
 import androidx.core.content.FileProvider;
 
@@ -102,6 +103,21 @@ public class MainActivity extends Activity {
     }
 
     private class AndroidBridge {
+        @JavascriptInterface
+        public void showKeyboard() {
+            runOnUiThread(() -> {
+                try {
+                    webView.requestFocus();
+                    InputMethodManager imm = (InputMethodManager) getSystemService(Context.INPUT_METHOD_SERVICE);
+                    if (imm != null) {
+                        webView.postDelayed(() -> imm.showSoftInput(webView, InputMethodManager.SHOW_IMPLICIT), 120);
+                    }
+                } catch (Exception e) {
+                    android.util.Log.e("DelegueFootball", "Ouverture du clavier impossible", e);
+                }
+            });
+        }
+
         @JavascriptInterface
         public void printPage() {
             runOnUiThread(() -> {
