@@ -107,7 +107,6 @@ public class MainActivity extends Activity {
         public void showKeyboard() {
             runOnUiThread(() -> {
                 try {
-                    webView.requestFocus();
                     InputMethodManager imm = (InputMethodManager) getSystemService(Context.INPUT_METHOD_SERVICE);
                     if (imm != null) {
                         webView.postDelayed(() -> imm.showSoftInput(webView, InputMethodManager.SHOW_IMPLICIT), 120);
