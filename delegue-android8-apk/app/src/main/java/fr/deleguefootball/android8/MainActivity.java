@@ -104,6 +104,38 @@ public class MainActivity extends Activity {
 
     private class AndroidBridge {
         @JavascriptInterface
+        public void editMinute(String boxId, int index, String currentValue) {
+            runOnUiThread(() -> {
+                android.widget.EditText input = new android.widget.EditText(MainActivity.this);
+                input.setSingleLine(true);
+                input.setInputType(android.text.InputType.TYPE_CLASS_TEXT | android.text.InputType.TYPE_TEXT_FLAG_NO_SUGGESTIONS);
+                input.setText(currentValue == null ? "" : currentValue);
+                input.setSelection(input.getText().length());
+                input.setHint("Ex. 45 ou 45+2");
+                android.widget.LinearLayout layout = new android.widget.LinearLayout(MainActivity.this);
+                layout.setOrientation(android.widget.LinearLayout.VERTICAL);
+                int pad = (int) (20 * getResources().getDisplayMetrics().density);
+                layout.setPadding(pad, pad / 2, pad, 0);
+                layout.addView(input);
+                new android.app.AlertDialog.Builder(MainActivity.this)
+                    .setTitle("Corriger la minute")
+                    .setMessage("Entrez la minute, par exemple 45 ou 45+2.")
+                    .setView(layout)
+                    .setNegativeButton("Annuler", (dialog, which) -> dialog.dismiss())
+                    .setPositiveButton("Enregistrer", (dialog, which) -> {
+                        String value = input.getText().toString().trim();
+                        String safeBox = "goalHistory".equals(boxId) ? "goalHistory" :
+                                         ("cardHistory".equals(boxId) ? "cardHistory" : "");
+                        if (safeBox.isEmpty()) return;
+                        String safeValue = value.replace("\\", "\\\\").replace("'", "\\'").replace("\n", "");
+                        webView.evaluateJavascript("window.applyNativeMinuteEdit('" + safeBox + "'," + index + ",'" + safeValue + "')", null);
+                    })
+                    .show();
+                input.requestFocus();
+            });
+        }
+
+        @JavascriptInterface
         public void showKeyboard() {
             runOnUiThread(() -> {
                 try {
