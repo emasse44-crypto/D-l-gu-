@@ -20,6 +20,7 @@ import android.webkit.WebChromeClient;
 import android.webkit.WebResourceRequest;
 import android.webkit.WebSettings;
 import android.webkit.WebView;
+import android.view.WindowManager;
 
 import androidx.core.content.FileProvider;
 
@@ -44,8 +45,12 @@ public class MainActivity extends Activity {
             requestPermissions(new String[]{Manifest.permission.CAMERA}, 1001);
         }
 
+        getWindow().setSoftInputMode(WindowManager.LayoutParams.SOFT_INPUT_ADJUST_RESIZE);
         webView = new WebView(this);
+        webView.setFocusable(true);
+        webView.setFocusableInTouchMode(true);
         setContentView(webView);
+        webView.requestFocus();
 
         WebSettings settings = webView.getSettings();
         settings.setJavaScriptEnabled(true);
