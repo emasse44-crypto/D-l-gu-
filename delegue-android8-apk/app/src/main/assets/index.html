@@ -2256,7 +2256,13 @@ function applyNativeMinuteEdit(boxId,index,value){
   if(!list||!list[index])return;
   list[index].minute=v;
   saveState();
-  if(boxId==="goalHistory"){renderGoalsPage();}else{renderCards();}
+  if(boxId==="goalHistory"){
+    renderGoalsPage();
+    refreshGoalMinuteEditor();
+  }else{
+    renderCards();
+    refreshCardMinuteEditor();
+  }
   if(typeof renderReport==="function")renderReport();
   if(typeof renderSheet==="function")renderSheet();
 }
