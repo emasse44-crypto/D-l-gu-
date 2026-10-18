@@ -2238,7 +2238,11 @@ function renderMinuteEditor(boxId,title,items,labelFn,saveFn){
       alert("Minute corrigée : "+v);
       if(typeof renderReport==="function")renderReport();
       if(typeof renderSheet==="function")renderSheet();
-      renderMinuteEditor(boxId,title,items,labelFn,saveFn);
+      if(boxId==="changeHistory" && typeof renderChanges==="function"){
+        renderChanges();
+      }else{
+        renderMinuteEditor(boxId,title,items,labelFn,saveFn);
+      }
     };
     row.appendChild(lab);row.appendChild(inp);row.appendChild(btn);
     wrap.appendChild(row);
