@@ -2173,7 +2173,13 @@ function renderMinuteEditor(boxId,title,items,labelFn,saveFn){
     inp.setAttribute("autocorrect","off");
     /* Même saisie directe que sur la version Android 8 validée sur tablette. */
     inp.readOnly=false;
+    inp.disabled=false;
+    inp.removeAttribute("readonly");
+    inp.setAttribute("autocomplete","off");
+    inp.setAttribute("autocapitalize","off");
+    inp.setAttribute("spellcheck","false");
     inp.addEventListener("focus",function(){
+      this.select();
       if(window.AndroidBridge&&typeof window.AndroidBridge.showKeyboard==="function"){
         window.AndroidBridge.showKeyboard();
       }
@@ -2181,6 +2187,7 @@ function renderMinuteEditor(boxId,title,items,labelFn,saveFn){
     inp.addEventListener("touchend",function(){
       var field=this;
       setTimeout(function(){
+        field.readOnly=false;
         field.focus();
         if(window.AndroidBridge&&typeof window.AndroidBridge.showKeyboard==="function"){
           window.AndroidBridge.showKeyboard();
