@@ -1215,13 +1215,19 @@ setTimeout(goHome,0);
    if(!x.auto){
      var editMinute=document.createElement("button");editMinute.type="button";editMinute.textContent="✏️ Modifier minute";
      editMinute.onclick=function(){
-       var answer=prompt("Nouvelle minute du carton (ex. 37, 45+2 ou 90+4) :",String(x.minute||""));
-       if(answer===null)return;
-       var value=normalizeEditedMinute(answer);
-       if(value===null)return;
-       x.minute=value;saveState();renderCards();
-       if(typeof renderReport==="function")renderReport();
-       if(typeof renderSheet==="function")renderSheet();
+       var overlay=document.createElement("div");
+       overlay.style.cssText="position:fixed;inset:0;z-index:99999;background:rgba(0,0,0,.6);display:flex;align-items:center;justify-content:center;padding:18px;";
+       var panel=document.createElement("div");
+       panel.style.cssText="background:var(--card,#fff);color:var(--text,#111);width:100%;max-width:360px;border-radius:14px;padding:18px;box-shadow:0 12px 40px rgba(0,0,0,.3);";
+       var title=document.createElement("div");title.textContent="Modifier la minute du carton";title.style.cssText="font-size:18px;font-weight:700;margin-bottom:12px;";
+       var field=document.createElement("input");field.type="text";field.value=String(x.minute||"");field.placeholder="Ex. 37 ou 45+2";field.inputMode="text";field.autocomplete="off";field.style.cssText="display:block;width:100%;box-sizing:border-box;font-size:20px;padding:14px 10px;border:1px solid #888;border-radius:8px;margin-bottom:14px;background:white;color:#111;pointer-events:auto;";
+       var buttons=document.createElement("div");buttons.style.cssText="display:flex;gap:8px;justify-content:flex-end;";
+       var cancel=document.createElement("button");cancel.type="button";cancel.textContent="Annuler";cancel.onclick=function(){overlay.remove();};
+       var save=document.createElement("button");save.type="button";save.textContent="Enregistrer";save.onclick=function(){var value=normalizeEditedMinute(field.value);if(value===null){field.focus();return;}x.minute=value;saveState();overlay.remove();renderCards();if(typeof renderReport==="function")renderReport();if(typeof renderSheet==="function")renderSheet();};
+       buttons.appendChild(cancel);buttons.appendChild(save);panel.appendChild(title);panel.appendChild(field);panel.appendChild(buttons);overlay.appendChild(panel);document.body.appendChild(overlay);
+       field.focus();
+       field.addEventListener("click",function(){this.focus();});
+       field.addEventListener("touchend",function(){var f=this;setTimeout(function(){f.focus();},80);});
      };
      actions.appendChild(editMinute);
    }
