@@ -2176,6 +2176,22 @@ function renderMinuteEditor(boxId,title,items,labelFn,saveFn){
     inp.readOnly=false;
     inp.disabled=false;
     inp.style.pointerEvents="auto";
+    inp.addEventListener("pointerdown",function(){
+      this.readOnly=false;
+      this.disabled=false;
+      this.focus();
+      if(window.AndroidBridge&&typeof window.AndroidBridge.showKeyboard==="function"){
+        window.AndroidBridge.showKeyboard();
+      }
+    });
+    inp.addEventListener("mousedown",function(){
+      this.readOnly=false;
+      this.disabled=false;
+      this.focus();
+      if(window.AndroidBridge&&typeof window.AndroidBridge.showKeyboard==="function"){
+        window.AndroidBridge.showKeyboard();
+      }
+    });
     inp.addEventListener("focus",function(){
       if(window.AndroidBridge&&typeof window.AndroidBridge.showKeyboard==="function"){
         window.AndroidBridge.showKeyboard();
