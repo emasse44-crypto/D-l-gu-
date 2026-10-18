@@ -1216,6 +1216,7 @@ setTimeout(goHome,0);
      var editMinute=document.createElement("button");editMinute.type="button";editMinute.textContent="✏️ Modifier minute";
      editMinute.onclick=function(){
        var overlay=document.createElement("div");
+       overlay.id="cardMinuteEditOverlay";
        overlay.style.cssText="position:fixed;inset:0;z-index:99999;background:rgba(0,0,0,.6);display:flex;align-items:center;justify-content:center;padding:18px;";
        var panel=document.createElement("div");
        panel.style.cssText="background:var(--card,#fff);color:var(--text,#111);width:100%;max-width:360px;border-radius:14px;padding:18px;box-shadow:0 12px 40px rgba(0,0,0,.3);";
@@ -2280,7 +2281,14 @@ renderGoalsPage=function(){_renderGoalsPageMinute();refreshGoalMinuteEditor();};
 var _renderChangesMinute=renderChanges;
 renderChanges=function(){_renderChangesMinute();refreshChangeMinuteEditor();};
 var _renderCardsMinute=renderCards;
-renderCards=function(){_renderCardsMinute();refreshCardMinuteEditor();};
+renderCards=function(){
+  var history=el("cardHistory");
+  var active=document.activeElement;
+  if(document.getElementById("cardMinuteEditOverlay"))return;
+  if(history&&active&&history.contains(active)&&/^(INPUT|TEXTAREA|SELECT)$/.test(active.tagName))return;
+  _renderCardsMinute();
+  refreshCardMinuteEditor();
+};
 var _renderStaffHistoryMinute=renderStaffHistory;
 renderStaffHistory=function(){_renderStaffHistoryMinute();refreshStaffCardMinuteEditor();};
 
