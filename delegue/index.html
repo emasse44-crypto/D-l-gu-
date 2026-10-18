@@ -1212,6 +1212,19 @@ setTimeout(goHome,0);
    d.appendChild(line);if(x.reason){var reasonLine=document.createElement("div");reasonLine.className="note";reasonLine.style.marginTop="5px";reasonLine.textContent="Motif FMI : "+x.reason;d.appendChild(reasonLine);}
    if(x.auto){var note=document.createElement("div");note.className="note";note.style.marginTop="5px";note.textContent="Sanction automatique";d.appendChild(note);}
    var actions=document.createElement("div");actions.style.display="flex";actions.style.gap="8px";actions.style.flexWrap="wrap";actions.style.marginTop="8px";
+   if(!x.auto){
+     var editMinute=document.createElement("button");editMinute.type="button";editMinute.textContent="✏️ Modifier minute";
+     editMinute.onclick=function(){
+       var answer=prompt("Nouvelle minute du carton (ex. 37, 45+2 ou 90+4) :",String(x.minute||""));
+       if(answer===null)return;
+       var value=normalizeEditedMinute(answer);
+       if(value===null)return;
+       x.minute=value;saveState();renderCards();
+       if(typeof renderReport==="function")renderReport();
+       if(typeof renderSheet==="function")renderSheet();
+     };
+     actions.appendChild(editMinute);
+   }
    if(!x.auto&&entry.kind==="player"){
      var edit=document.createElement("button");edit.type="button";edit.textContent="✏️ Corriger joueur";edit.onclick=function(){correctCard(entry.index);};actions.appendChild(edit);
    }
