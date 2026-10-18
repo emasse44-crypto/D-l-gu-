@@ -2195,30 +2195,23 @@ function renderMinuteEditor(boxId,title,items,labelFn,saveFn){
     inp.inputMode="text";
     inp.setAttribute("autocomplete","off");
     inp.setAttribute("autocorrect","off");
-    if(boxId==="goalHistory"||boxId==="cardHistory"){
-      inp.readOnly=true;
-      inp.placeholder="Appuyer pour corriger";
-      inp.addEventListener("click",function(){
-        if(window.AndroidBridge&&typeof window.AndroidBridge.editMinute==="function"){
-          window.AndroidBridge.editMinute(boxId,i,inp.value);
-        }
-      });
-    }else{
-      inp.addEventListener("focus",function(){
+    /* Les minutes des buts, cartons et changements utilisent le même champ éditable.
+       Éviter le dialogue natif Android, qui ne rafraîchissait pas toujours l'historique. */
+    inp.readOnly=false;
+    inp.addEventListener("focus",function(){
+      if(window.AndroidBridge&&typeof window.AndroidBridge.showKeyboard==="function"){
+        window.AndroidBridge.showKeyboard();
+      }
+    });
+    inp.addEventListener("touchend",function(){
+      var field=this;
+      setTimeout(function(){
+        field.focus();
         if(window.AndroidBridge&&typeof window.AndroidBridge.showKeyboard==="function"){
           window.AndroidBridge.showKeyboard();
         }
-      });
-      inp.addEventListener("touchend",function(){
-        var field=this;
-        setTimeout(function(){
-          field.focus();
-          if(window.AndroidBridge&&typeof window.AndroidBridge.showKeyboard==="function"){
-            window.AndroidBridge.showKeyboard();
-          }
-        },80);
-      });
-    }
+      },80);
+    });
     inp.style.width="100%";
     inp.style.minWidth="0";
     inp.style.boxSizing="border-box";
