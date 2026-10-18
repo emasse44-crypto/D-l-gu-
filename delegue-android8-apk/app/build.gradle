@@ -10,8 +10,8 @@ android {
         applicationId 'fr.deleguefootball.android8.v1'
         minSdk 26
         targetSdk 35
-        versionCode 15
-        versionName '10.4' // V15
+        versionCode 16
+        versionName '10.5' // V16
     }
 
     signingConfigs {
