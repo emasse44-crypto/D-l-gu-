@@ -2159,7 +2159,7 @@ function renderMinuteEditor(boxId,title,items,labelFn,saveFn){
   items.forEach(function(item,i){
     var row=document.createElement("div");
     row.style.display="grid";
-    row.style.gridTemplateColumns="1fr 86px auto";
+    row.style.gridTemplateColumns="minmax(0,1fr) minmax(95px,125px) auto";
     row.style.gap="7px";
     row.style.alignItems="center";
     row.style.marginTop="7px";
@@ -2171,15 +2171,12 @@ function renderMinuteEditor(boxId,title,items,labelFn,saveFn){
     inp.inputMode="text";
     inp.setAttribute("autocomplete","off");
     inp.setAttribute("autocorrect","off");
-    /* Même saisie directe que sur la version Android 8 validée sur tablette. */
-    inp.readOnly=false;
-    inp.disabled=false;
-    inp.removeAttribute("readonly");
-    inp.setAttribute("autocomplete","off");
     inp.setAttribute("autocapitalize","off");
     inp.setAttribute("spellcheck","false");
+    inp.readOnly=false;
+    inp.disabled=false;
+    inp.style.pointerEvents="auto";
     inp.addEventListener("focus",function(){
-      this.select();
       if(window.AndroidBridge&&typeof window.AndroidBridge.showKeyboard==="function"){
         window.AndroidBridge.showKeyboard();
       }
@@ -2187,7 +2184,6 @@ function renderMinuteEditor(boxId,title,items,labelFn,saveFn){
     inp.addEventListener("touchend",function(){
       var field=this;
       setTimeout(function(){
-        field.readOnly=false;
         field.focus();
         if(window.AndroidBridge&&typeof window.AndroidBridge.showKeyboard==="function"){
           window.AndroidBridge.showKeyboard();
