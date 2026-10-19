@@ -1932,6 +1932,8 @@ if(el("goalPageA"))el("goalPageA").textContent="+ But "+a;
 if(el("goalPageB"))el("goalPageB").textContent="+ But "+b;
 if(el("goalsTeamA"))el("goalsTeamA").textContent=a;
 if(el("goalsTeamB"))el("goalsTeamB").textContent=b;
+if(el("cardSimpleA"))el("cardSimpleA").textContent=a;
+if(el("cardSimpleB"))el("cardSimpleB").textContent=b;
 }
 function openGoalsPage(side){el("home").style.display="none";document.querySelectorAll(".page").forEach(function(p){p.classList.remove("active");});el("goals").classList.add("active");renderGoalsPage();if(side==="A")setupGoal(playersA,"But "+el("teamA").textContent);else if(side==="B")setupGoal(playersB,"But "+el("teamB").textContent);}
 el("quickChange").onclick=function(){document.querySelectorAll(".page").forEach(function(p){p.classList.remove("active");p.style.display="none";});el("home").style.display="none";el("changes").classList.add("active");el("changes").style.display="block";renderChanges();};el("quickCard").onclick=function(){document.querySelectorAll(".page").forEach(function(p){p.classList.remove("active");p.style.display="none";});el("home").style.display="none";el("events").classList.add("active");el("events").style.display="block";renderCards();};el("startQuick").onclick=start;
