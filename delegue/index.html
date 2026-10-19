@@ -1224,7 +1224,7 @@ setTimeout(goHome,0);
        var panel=document.createElement("div");
        panel.style.cssText="background:var(--card,#fff);color:var(--text,#111);width:100%;max-width:360px;border-radius:14px;padding:18px;box-shadow:0 12px 40px rgba(0,0,0,.3);";
        var title=document.createElement("div");title.textContent="Modifier la minute du carton";title.style.cssText="font-size:18px;font-weight:700;margin-bottom:12px;";
-       var field=document.createElement("input");field.type="text";field.value=String(x.minute||"");field.placeholder="Ex. 37 ou 45+2";field.inputMode="text";field.autocomplete="off";field.autocorrect="off";field.autocapitalize="off";field.spellcheck=false;field.readOnly=false;field.disabled=false;field.style.cssText="display:block;width:100%;box-sizing:border-box;font-size:20px;padding:14px 10px;border:1px solid #888;border-radius:8px;margin-bottom:14px;background:white;color:#111;pointer-events:auto;";field.addEventListener("pointerdown",function(){this.focus();if(window.AndroidBridge&&typeof window.AndroidBridge.showKeyboard==="function"){window.AndroidBridge.showKeyboard();}});field.addEventListener("mousedown",function(){this.focus();if(window.AndroidBridge&&typeof window.AndroidBridge.showKeyboard==="function"){window.AndroidBridge.showKeyboard();}});field.addEventListener("focus",function(){if(window.AndroidBridge&&typeof window.AndroidBridge.showKeyboard==="function"){window.AndroidBridge.showKeyboard();}});field.addEventListener("touchend",function(){var input=this;setTimeout(function(){input.focus();if(window.AndroidBridge&&typeof window.AndroidBridge.showKeyboard==="function"){window.AndroidBridge.showKeyboard();}},80);});
+       var field=document.createElement("input");field.type="text";field.value=String(x.minute||"");field.placeholder="Ex. 37 ou 45+2";field.inputMode="text";field.autocomplete="off";field.style.cssText="display:block;width:100%;box-sizing:border-box;font-size:20px;padding:14px 10px;border:1px solid #888;border-radius:8px;margin-bottom:14px;background:white;color:#111;pointer-events:auto;";
        var buttons=document.createElement("div");buttons.style.cssText="display:flex;gap:8px;justify-content:flex-end;";
        var cancel=document.createElement("button");cancel.type="button";cancel.textContent="Annuler";cancel.onclick=function(){overlay.remove();};
        var save=document.createElement("button");save.type="button";save.textContent="Enregistrer";save.onclick=function(){var value=normalizeEditedMinute(field.value);if(value===null){field.focus();return;}x.minute=value;saveState();overlay.remove();renderCards();if(typeof renderReport==="function")renderReport();if(typeof renderSheet==="function")renderSheet();};
@@ -1609,7 +1609,7 @@ function renderStaffHistory(){
  staffCards.forEach(function(x,i){
    var d=document.createElement("div");d.className="change-item";
    var line=document.createElement("div");
-   line.textContent=x.minute+" · Équipe "+x.team+" : "+x.type+" · "+x.member+" (staff "+x.number+")";
+   line.textContent=x.minute+" · "+(x.team==="A"?el("teamA").textContent:el("teamB").textContent)+" : "+x.type+" · "+x.member+" (staff "+x.number+")";
    d.appendChild(line);
    if(x.reason){var reason=document.createElement("div");reason.className="note";reason.style.marginTop="5px";reason.textContent="Motif FMI : "+x.reason;d.appendChild(reason);}
    if(x.auto){var auto=document.createElement("div");auto.className="note";auto.style.marginTop="5px";auto.textContent="Expulsion automatique";d.appendChild(auto);}
