@@ -1996,18 +1996,42 @@ function saveCompositionAsImage(){
    if(!blob){alert("Impossible de créer l’image. Réessayez.");return;}
    var safe=((el("teamA").textContent||"EquipeA")+"_"+(el("teamB").textContent||"EquipeB")).replace(/[^a-z0-9_-]+/gi,"_").replace(/^_+|_+$/g,"")||"match";
    var filename="Composition_"+safe+".png";
+   // Dans l'application Android, passer par les fonctions natives : les liens blob://
+   // ne déclenchent pas un vrai téléchargement dans certains WebView Android 8.
+   if(window.AndroidBridge&&window.AndroidBridge.saveImageToPictures&&window.__compositionPhotoMode!=="send"){
+    var reader=new FileReader();
+    reader.onloadend=function(){
+     try{
+      var base64=String(reader.result||"").split(",")[1]||"";
+      window.AndroidBridge.saveImageToPictures(base64,filename,"image/png");
+     }catch(e){alert("Impossible d’enregistrer la photo. Réessayez.");}
+    };
+    reader.readAsDataURL(blob);
+    return;
+   }
+   if(window.AndroidBridge&&window.AndroidBridge.shareFile&&window.__compositionPhotoMode==="send"){
+    var shareReader=new FileReader();
+    shareReader.onloadend=function(){
+     try{
+      var base64=String(shareReader.result||"").split(",")[1]||"";
+      window.AndroidBridge.shareFile(base64,filename,"image/png");
+     }catch(e){alert("Impossible d’ouvrir le partage. Utilisez Télécharger la photo.");}
+    };
+    shareReader.readAsDataURL(blob);
+    return;
+   }
    var file;
    try{file=new File([blob],filename,{type:"image/png"});}catch(e){file=null;}
    if(window.__compositionPhotoMode==="send"&&file&&navigator.share&&navigator.canShare&&navigator.canShare({files:[file]})){
     navigator.share({files:[file],title:"Composition des équipes",text:"Composition du match"}).catch(function(err){
      if(err&&err.name==="AbortError")return;
      downloadCompositionBlob(blob,filename);
-     alert("Le partage n’a pas abouti. La photo a été téléchargée à la place.");
+     alert("Le partage n’a pas abouti. Essayez Télécharger la photo.");
     });
    }else{
     downloadCompositionBlob(blob,filename);
-    if(window.__compositionPhotoMode==="send")alert("Le partage de fichiers n’est pas disponible dans ce navigateur. La photo a été téléchargée : tu peux ensuite la joindre à ton message.");
-    else alert("Photo téléchargée au format PNG.");
+    if(window.__compositionPhotoMode==="send")alert("Le partage n’est pas disponible dans ce navigateur. Utilisez Télécharger la photo.");
+    else alert("Si le téléchargement ne démarre pas, ouvrez l’application dans Chrome.");
    }
   },"image/png");
  }catch(err){console.error(err);alert("Impossible d’enregistrer la composition : "+(err&&err.message?err.message:"erreur inconnue"));}

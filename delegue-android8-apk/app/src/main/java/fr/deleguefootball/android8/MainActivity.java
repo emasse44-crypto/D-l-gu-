@@ -8,6 +8,8 @@ import android.net.Uri;
 import android.os.Bundle;
 import android.os.Environment;
 import android.provider.MediaStore;
+import android.media.MediaScannerConnection;
+import android.widget.Toast;
 import android.print.PrintManager;
 import android.webkit.JavascriptInterface;
 import android.print.PrintDocumentAdapter;
@@ -41,9 +43,13 @@ public class MainActivity extends Activity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
 
-        if (android.os.Build.VERSION.SDK_INT >= 23 &&
-                checkSelfPermission(Manifest.permission.CAMERA) != PackageManager.PERMISSION_GRANTED) {
-            requestPermissions(new String[]{Manifest.permission.CAMERA}, 1001);
+        if (android.os.Build.VERSION.SDK_INT >= 23) {
+            java.util.ArrayList<String> needed = new java.util.ArrayList<>();
+            if (checkSelfPermission(Manifest.permission.CAMERA) != PackageManager.PERMISSION_GRANTED)
+                needed.add(Manifest.permission.CAMERA);
+            if (checkSelfPermission(Manifest.permission.WRITE_EXTERNAL_STORAGE) != PackageManager.PERMISSION_GRANTED)
+                needed.add(Manifest.permission.WRITE_EXTERNAL_STORAGE);
+            if (!needed.isEmpty()) requestPermissions(needed.toArray(new String[0]), 1001);
         }
 
         getWindow().setSoftInputMode(WindowManager.LayoutParams.SOFT_INPUT_ADJUST_RESIZE);
@@ -160,6 +166,31 @@ public class MainActivity extends Activity {
                     }
                 } catch (Exception e) {
                     android.util.Log.e("DelegueFootball", "Impression impossible", e);
+                }
+            });
+        }
+
+        @JavascriptInterface
+        public void saveImageToPictures(String base64, String filename, String mimeType) {
+            runOnUiThread(() -> {
+                try {
+                    if (android.os.Build.VERSION.SDK_INT >= 23 &&
+                            checkSelfPermission(Manifest.permission.WRITE_EXTERNAL_STORAGE) != PackageManager.PERMISSION_GRANTED) {
+                        Toast.makeText(MainActivity.this, "Autorisez l’accès au stockage puis réessayez.", Toast.LENGTH_LONG).show();
+                        requestPermissions(new String[]{Manifest.permission.WRITE_EXTERNAL_STORAGE}, 1002);
+                        return;
+                    }
+                    byte[] bytes = Base64.decode(base64, Base64.DEFAULT);
+                    File pictures = new File(Environment.getExternalStoragePublicDirectory(Environment.DIRECTORY_PICTURES), "DelegueFootball");
+                    if (!pictures.exists() && !pictures.mkdirs()) throw new IOException("Dossier photo indisponible");
+                    String safeName = filename == null ? "Composition.png" : filename.replaceAll("[^a-zA-Z0-9._-]", "_");
+                    File file = new File(pictures, safeName);
+                    try (FileOutputStream stream = new FileOutputStream(file)) { stream.write(bytes); }
+                    MediaScannerConnection.scanFile(MainActivity.this, new String[]{file.getAbsolutePath()}, new String[]{mimeType == null ? "image/png" : mimeType}, null);
+                    Toast.makeText(MainActivity.this, "Photo enregistrée dans Images/DelegueFootball", Toast.LENGTH_LONG).show();
+                } catch (Exception e) {
+                    android.util.Log.e("DelegueFootball", "Enregistrement de la photo impossible", e);
+                    Toast.makeText(MainActivity.this, "Erreur : photo non enregistrée.", Toast.LENGTH_LONG).show();
                 }
             });
         }
