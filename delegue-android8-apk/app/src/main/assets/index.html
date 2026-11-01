@@ -2070,10 +2070,17 @@ function exportWordReport(deliveryMode){ if(!window.JSZip){alert("Le module Word
   nodes[0].setAttributeNS("http://www.w3.org/XML/1998/namespace","xml:space","preserve");
   for(var i=1;i<nodes.length;i++)nodes[i].textContent="";
  }
- fetch("../delegue-test/rapport-modele.docx.docx?v=124",{cache:"no-store"}).then(function(r){
-  if(!r.ok)throw new Error("Modèle Word introuvable ("+r.status+").");
-  return r.arrayBuffer();
- }).then(function(buf){return JSZip.loadAsync(buf);}).then(function(zip){
+ (function(){
+  if(window.AndroidBridge&&window.AndroidBridge.loadWordTemplate){
+   var encoded=window.AndroidBridge.loadWordTemplate();
+   if(!encoded)throw new Error("Modèle Word absent de l’application.");
+   return JSZip.loadAsync(encoded,{base64:true});
+  }
+  return fetch("../delegue-test/rapport-modele.docx.docx?v=124",{cache:"no-store"}).then(function(r){
+   if(!r.ok)throw new Error("Modèle Word introuvable ("+r.status+").");
+   return r.arrayBuffer();
+  }).then(function(buf){return JSZip.loadAsync(buf);});
+ })().then(function(zip){
   var file=zip.file("word/document.xml");if(!file)throw new Error("Le document Word est invalide.");
   return file.async("string").then(function(xml){
    var parser=new DOMParser(),doc=parser.parseFromString(xml,"application/xml");
@@ -2149,6 +2156,12 @@ function exportWordReport(deliveryMode){ if(!window.JSZip){alert("Le module Word
  }).catch(function(err){console.error(err);alert("Export Word impossible : "+(err&&err.message?err.message:"erreur inconnue"));});
 }
 function downloadWordBlob(blob,filename){
+ if(window.AndroidBridge&&window.AndroidBridge.saveFileToDownloads){
+  var reader=new FileReader();reader.onloadend=function(){
+   try{window.AndroidBridge.saveFileToDownloads(String(reader.result||"").split(",")[1]||"",filename,"application/vnd.openxmlformats-officedocument.wordprocessingml.document");}
+   catch(e){alert("Impossible d’enregistrer le rapport Word.");}
+  };reader.readAsDataURL(blob);return;
+ }
  var url=URL.createObjectURL(blob),a=document.createElement("a");
  a.href=url;a.download=filename;document.body.appendChild(a);a.click();a.remove();
  setTimeout(function(){URL.revokeObjectURL(url);},3000);

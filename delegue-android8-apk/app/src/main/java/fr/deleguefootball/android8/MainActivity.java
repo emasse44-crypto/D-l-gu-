@@ -171,6 +171,44 @@ public class MainActivity extends Activity {
         }
 
         @JavascriptInterface
+        public String loadWordTemplate() {
+            try (java.io.InputStream input = getAssets().open("rapport-modele.docx.docx");
+                 java.io.ByteArrayOutputStream output = new java.io.ByteArrayOutputStream()) {
+                byte[] buffer = new byte[8192]; int count;
+                while ((count = input.read(buffer)) != -1) output.write(buffer, 0, count);
+                return Base64.encodeToString(output.toByteArray(), Base64.NO_WRAP);
+            } catch (Exception e) {
+                android.util.Log.e("DelegueFootball", "Modèle Word introuvable", e);
+                return "";
+            }
+        }
+
+        @JavascriptInterface
+        public void saveFileToDownloads(String base64, String filename, String mimeType) {
+            runOnUiThread(() -> {
+                try {
+                    if (android.os.Build.VERSION.SDK_INT >= 23 &&
+                            checkSelfPermission(Manifest.permission.WRITE_EXTERNAL_STORAGE) != PackageManager.PERMISSION_GRANTED) {
+                        Toast.makeText(MainActivity.this, "Autorisez l’accès au stockage puis réessayez.", Toast.LENGTH_LONG).show();
+                        requestPermissions(new String[]{Manifest.permission.WRITE_EXTERNAL_STORAGE}, 1003);
+                        return;
+                    }
+                    byte[] bytes = Base64.decode(base64, Base64.DEFAULT);
+                    File downloads = Environment.getExternalStoragePublicDirectory(Environment.DIRECTORY_DOWNLOADS);
+                    if (!downloads.exists() && !downloads.mkdirs()) throw new IOException("Dossier Téléchargements indisponible");
+                    String safeName = filename == null ? "Rapport_delegue.docx" : filename.replaceAll("[^a-zA-Z0-9._-]", "_");
+                    File file = new File(downloads, safeName);
+                    try (FileOutputStream stream = new FileOutputStream(file)) { stream.write(bytes); }
+                    MediaScannerConnection.scanFile(MainActivity.this, new String[]{file.getAbsolutePath()}, new String[]{mimeType}, null);
+                    Toast.makeText(MainActivity.this, "Rapport Word enregistré dans Téléchargements", Toast.LENGTH_LONG).show();
+                } catch (Exception e) {
+                    android.util.Log.e("DelegueFootball", "Enregistrement Word impossible", e);
+                    Toast.makeText(MainActivity.this, "Erreur : rapport Word non enregistré.", Toast.LENGTH_LONG).show();
+                }
+            });
+        }
+
+        @JavascriptInterface
         public void saveImageToPictures(String base64, String filename, String mimeType) {
             runOnUiThread(() -> {
                 try {
