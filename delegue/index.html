@@ -1960,7 +1960,8 @@ function saveCompositionAsImage(){
   ctx.fillStyle="#111";ctx.textAlign="center";ctx.font="bold 34px Arial";
   ctx.fillText("FEUILLE DE COMPOSITION DES ÉQUIPES",800,54);
   ctx.font="22px Arial";
-  ctx.fillText((el("teamA").textContent||"Équipe A")+"  -  "+(el("teamB").textContent||"Équipe B")+"   ·   "+(el("matchDate")?el("matchDate").value:""),800,91);\n  ctx.font="bold 18px Arial";ctx.fillText("Arbitre : "+(matchInfo.referee||"Non renseigné")+"   ·   Assistant 1 : "+(matchInfo.assistant1||"Non renseigné")+"   ·   Assistant 2 : "+(matchInfo.assistant2||"Non renseigné"),800,119);\n  ctx.fillText("Délégué principal : "+(matchInfo.delegate||"Non renseigné"),800,145);
+  ctx.fillText((el("teamA").textContent||"Équipe A")+"  -  "+(el("teamB").textContent||"Équipe B")+"   ·   "+(el("matchDate")?el("matchDate").value:""),800,91);
+  ctx.font="bold 18px Arial";ctx.fillText("Arbitre : "+(matchInfo.referee||"Non renseigné")+"   ·   Assistant 1 : "+(matchInfo.assistant1||"Non renseigné")+"   ·   Assistant 2 : "+(matchInfo.assistant2||"Non renseigné"),800,119);\n  ctx.fillText("Délégué principal : "+(matchInfo.delegate||"Non renseigné"),800,145);
   function drawTeam(team,staff,licenses,name,x){
    var y=165,w=760;
    ctx.strokeStyle="#111";ctx.lineWidth=2;ctx.strokeRect(x,y,w,810);
