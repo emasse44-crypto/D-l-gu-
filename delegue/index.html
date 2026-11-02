@@ -1954,16 +1954,22 @@ document.querySelectorAll("[data-page]").forEach(function(b){b.onclick=function(
 function saveCompositionAsImage(){
  try{
   readPlayers(playersA,"playersA");readPlayers(playersB,"playersB");
-  readStaff(staffA,"staffA");readStaff(staffB,"staffB");saveState();
+  readStaff(staffA,"staffA");readStaff(staffB,"staffB");
+  saveMatchInfo();saveState();
   var canvas=document.createElement("canvas");canvas.width=1600;canvas.height=1131;
   var ctx=canvas.getContext("2d");ctx.fillStyle="#fff";ctx.fillRect(0,0,canvas.width,canvas.height);
   ctx.fillStyle="#111";ctx.textAlign="center";ctx.font="bold 34px Arial";
   ctx.fillText("FEUILLE DE COMPOSITION DES ÉQUIPES",800,54);
   ctx.font="22px Arial";
   ctx.fillText((el("teamA").textContent||"Équipe A")+"  -  "+(el("teamB").textContent||"Équipe B")+"   ·   "+(el("matchDate")?el("matchDate").value:""),800,91);
+  ctx.font="bold 18px Arial";ctx.textAlign="center";
+  var officials1=["Arbitre : "+(matchInfo.referee||"Non renseigné"),"Assistant 1 : "+(matchInfo.assistant1||"Non renseigné"),"Assistant 2 : "+(matchInfo.assistant2||"Non renseigné")].join("     |     ");
+  var officials2="Délégué : "+(matchInfo.delegate||"Non renseigné");
+  ctx.fillText(officials1,800,124,1500);
+  ctx.fillText(officials2,800,151,1500);
   function drawTeam(team,staff,licenses,name,x){
-   var y=125,w=760;
-   ctx.strokeStyle="#111";ctx.lineWidth=2;ctx.strokeRect(x,y,w,850);
+   var y=175,w=760;
+   ctx.strokeStyle="#111";ctx.lineWidth=2;ctx.strokeRect(x,y,w,800);
    ctx.fillStyle="#e5e7eb";ctx.fillRect(x,y,w,55);ctx.strokeRect(x,y,w,55);
    ctx.fillStyle="#111";ctx.font="bold 29px Arial";ctx.textAlign="center";ctx.fillText(name||"Équipe",x+w/2,y+36);
    var yy=y+85;ctx.textAlign="left";ctx.font="bold 21px Arial";ctx.fillText("TITULAIRES",x+20,yy);yy+=15;
@@ -1982,7 +1988,7 @@ function saveCompositionAsImage(){
    (staff||[]).forEach(function(value,i){
     var parsed=parseStaffEntry(value),lic=String((licenses||[])[i]||"").trim();
     if(!parsed.name&&!parsed.role&&!lic)return;
-    if(yy>y+815)return;
+    if(yy>y+765)return;
     var role=parsed.role?(" · "+parsed.role):"";
     ctx.textAlign="left";ctx.fillText((i+1)+". "+(parsed.name||"Membre du staff")+role,x+22,yy,500);
     ctx.textAlign="right";ctx.font="13px Arial";ctx.fillText(lic,x+w-18,yy,190);ctx.font="16px Arial";
@@ -2351,7 +2357,7 @@ renderStaffHistory=function(){_renderStaffHistoryMinute();refreshStaffCardMinute
 
 
 loadState();renderInterruptionClock();if(interruptionRunning){interruptionStartedAt=Date.now()-interruptionSeconds*1000;interruptionTimer=setInterval(function(){renderInterruptionClock();saveState();},500);}playersA.forEach(function(p,i){if(typeof p.active!=="boolean")p.active=i<11;});playersB.forEach(function(p,i){if(typeof p.active!=="boolean")p.active=i<11;});if(playersA.every(function(p){return p.active===true;})&&playersA.some(function(p){return p.name;})){playersA.forEach(function(p,i){p.active=i<11;});}if(playersB.every(function(p){return p.active===true;})&&playersB.some(function(p){return p.name;})){playersB.forEach(function(p,i){p.active=i<11;});}saveState();if(running&&typeof chronoStartedAt==="number"){startChronoRefresh();syncChrono();}
-if("serviceWorker" in navigator){window.addEventListener("load",function(){navigator.serviceWorker.register("sw.js?v=106").catch(function(){});});}
+if("serviceWorker" in navigator){window.addEventListener("load",function(){navigator.serviceWorker.register("sw.js?v=107").catch(function(){});});}
 renderAllPlayers();update();updateGoalButtonLabels();
 })();
 </script>
